@@ -1,0 +1,23 @@
+Metrics/AbcSize:
+  Max: 23
+
+Metrics/LineLength:
+  Max: 133
+
+Metrics/MethodLength:
+  Max: 18
+
+Style/Documentation:
+  Exclude:
+    - app/models/application_record.rb
+
+AllCops:
+  Exclude:
+    - config.ru
+    - Gemfile
+    - Rakefile
+    - bin/*
+    - config/**/*
+    - db/schema.rb
+    - db/seeds.rb
+    - db/migrate/*

@@ -1,4 +1,5 @@
-#!/usr/bin/env ruby
+# frozen_string_literal: true
+
 #
 # It takes a plain-English sentence as input and returns parsing results by accessing an Enju cgi server.
 #
@@ -57,7 +58,7 @@ class EnjuAccess::CGIAccessor
     case response.code
     when 200 # 200 means success
       raise EnjuAccess::EnjuError, 'Empty input.' if response.body =~ /^Empty line/
-      raise EnjuAccess::EnjuError, 'Enju CGI server returns html instead of tsv' if response.headers[:content_type] === 'text/html'
+      raise EnjuAccess::EnjuError, 'Enju CGI server returns html instead of tsv' if response.headers[:content_type] == 'text/html'
 
       tokens = []
 
@@ -99,17 +100,17 @@ class EnjuAccess::CGIAccessor
     beg = -1
     head = -1
     tokens.each_with_index do |t, i|
-      beg  = t[:idx] if beg < 0 && NC_CAT.include?(t[:cat])
+      beg  = t[:idx] if beg.negative? && NC_CAT.include?(t[:cat])
       head = t[:idx] if beg >= 0 && NC_HEAD_CAT.include?(t[:cat]) && t[:args].nil?
       next unless beg >= 0 && !NC_CAT.include?(t[:cat])
-      head = t[:idx] if head < 0
+      head = t[:idx] if head.negative?
       base_noun_chunks << { head: head, beg: beg, end: tokens[i - 1][:idx] }
       beg = -1
       head = -1
     end
 
     if beg >= 0
-      raise 'Strange parse!' if head < 0
+      raise 'Strange parse!' if head.negative?
       base_noun_chunks << { head: head, beg: beg, end: tokens.last[:idx] }
     end
 

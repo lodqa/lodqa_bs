@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Receive a query and register a job to search query.
 class QueriesController < ApplicationController
   rescue_from ActionController::ParameterMissing do
     render nothing: true, status: :bad_request

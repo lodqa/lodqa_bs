@@ -1,4 +1,5 @@
-#!/usr/bin/env ruby
+# frozen_string_literal: true
+
 #
 # It parses a query and produces its parse rendering and PGP.
 #

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'logger'
 
 class Logger::Logger
@@ -9,7 +11,7 @@ class Logger::Logger
     end
 
     def generate_request_id
-      SecureRandom.uuid.tap{ |id| self.request_id = id }
+      SecureRandom.uuid.tap { |id| self.request_id = id }
     end
 
     def request_id
@@ -21,21 +23,21 @@ class Logger::Logger
     end
 
     def info(message, id = nil, **rest)
-      @log.info "#{{
+      @log.inf({
         request_id: id || request_id,
         message: message
       }
-      .merge(rest)
-      .to_json}"
+        .merge(rest)
+        .to_json.to_s)
     end
 
     def debug(message, id = nil, **rest)
-      @log.debug "#{{
+      @log.debug({
         request_id: id || request_id,
         message: message
       }
-      .merge(rest)
-      .to_json}"
+          .merge(rest)
+          .to_json.to_s)
     end
 
     def error(error, **rest)
@@ -46,15 +48,15 @@ class Logger::Logger
         trace: error&.backtrace
       }.merge(rest)
 
-      @log.error "#{error_info.to_json}"
+      @log.error error_info.to_json.to_s
     end
 
     protected
 
-    def init()
+    def init
       @log = ::Logger.new(STDOUT)
     end
   end
 
-  self.init
+  init
 end

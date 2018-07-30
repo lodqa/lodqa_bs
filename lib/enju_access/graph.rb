@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+# frozen_string_literal: true
 
 class Graph
   def initialize
@@ -7,7 +7,8 @@ class Graph
     @INFINITY = 1 << 64
   end
 
-  def add_edge(s, t, w)	# s= source, t= target, w= weight
+  # s= source, t= target, w= weight
+  def add_edge(s, t, w)
     if !@g.key?(s)
       @g[s] = { t => w }
     else

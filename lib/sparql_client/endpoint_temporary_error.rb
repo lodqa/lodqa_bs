@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sparql_client/endpoint_error'
 
 module SparqlClient

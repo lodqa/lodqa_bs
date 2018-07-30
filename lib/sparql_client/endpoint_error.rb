@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SparqlClient
   class EndpointError < StandardError
     attr_reader :endpoint_name

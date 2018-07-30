@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 require 'lodqa/sources'
 require 'lodqa/one_by_one_executor'
 
+# Parse query to generate SPARQLs and search all SPARQLs
 class LodqaSearchJob < ApplicationJob
   queue_as :default
 
@@ -25,7 +28,7 @@ class LodqaSearchJob < ApplicationJob
                   finish_at: finish_time,
                   elapsed_time: finish_time - start_time,
                   answers: Answer.select(:uri, :label)
-                                 .where(request_id: request_id)
+                    .where(request_id: request_id)
                                  .as_json(except: :id)
   end
 
@@ -47,15 +50,13 @@ class LodqaSearchJob < ApplicationJob
 
         # Bind events to save answers
         executor.on(:answer) do |_, val|
-          begin
-            Answer.create request_id: request_id, uri: val[:answer][:uri], label: val[:answer][:label]
-          rescue ActiveRecord::RecordNotUnique
-            logger.debug "Duplicated answer: request_id: #{request_id}, uri: #{val[:answer][:uri]}"
-          rescue StandardError => e
-            logger.error "#{e.class}, #{e.message}"
-          ensure
-            ActiveRecord::Base.connection_pool.checkin Answer.connection
-          end
+          Answer.create request_id: request_id, uri: val[:answer][:uri], label: val[:answer][:label]
+        rescue ActiveRecord::RecordNotUnique
+          logger.debug "Duplicated answer: request_id: #{request_id}, uri: #{val[:answer][:uri]}"
+        rescue StandardError => e
+          logger.error "#{e.class}, #{e.message}"
+        ensure
+          ActiveRecord::Base.connection_pool.checkin Answer.connection
         end
 
         executor.perform
@@ -70,8 +71,7 @@ class LodqaSearchJob < ApplicationJob
     req = Net::HTTP::Post.new uri.path, 'Content-Type' => 'application/json'
     req.body = data.to_json
     res = http.request req
-    unless res.is_a? Net::HTTPSuccess
-      logger.error "Request to callback url is failed. URL: #{callback_url}, message: #{res.message}"
-    end
+
+    logger.error "Request to callback url is failed. URL: #{callback_url}, message: #{res.message}" unless res.is_a? Net::HTTPSuccess
   end
 end

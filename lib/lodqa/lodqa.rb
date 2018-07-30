@@ -1,4 +1,5 @@
-#!/usr/bin/env ruby
+# frozen_string_literal: true
+
 require 'net/http'
 require 'json'
 require 'enju_access/cgi_accessor'
@@ -27,13 +28,11 @@ module Lodqa
       Logger::Logger.debug "start #{self.class.name}##{__method__}"
 
       Enumerator.new do |y|
-        begin
-          anchored_pgps.each do |anchored_pgp|
-            to_sparql(anchored_pgp) { |sparql| y << sparql }
-          end
-        rescue SparqlClient::EndpointError => e
-          Logger::Logger.debug "The SPARQL Endpoint #{e.endpoint_name} has a persistent error, continue to the next Endpoint", error_message: e.message
+        anchored_pgps.each do |anchored_pgp|
+          to_sparql(anchored_pgp) { |sparql| y << sparql }
         end
+      rescue SparqlClient::EndpointError => e
+        Logger::Logger.debug "The SPARQL Endpoint #{e.endpoint_name} has a persistent error, continue to the next Endpoint", error_message: e.message
       end
     end
 
@@ -140,7 +139,7 @@ module Lodqa
         count -= 1
       end
 
-      if (error + success) > 0
+      if (error + success).positive?
         stats = {
           parallel: parallel,
           duration: Time.now - start,

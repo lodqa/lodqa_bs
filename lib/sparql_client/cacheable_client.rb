@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sparql/client'
 require 'logger/async'
 require 'logger/logger'
@@ -34,7 +36,7 @@ module SparqlClient
     def query_async(sparql)
       Logger::Async.defer do
         yield [nil, query(sparql)]
-      rescue => e
+      rescue StandardError => e
         yield [e, nil]
       end
     end
@@ -44,7 +46,7 @@ module SparqlClient
         @cache[sparql]
       else
         begin
-          @client.query(sparql).tap{ |result| @cache[sparql] = result }
+          @client.query(sparql).tap { |result| @cache[sparql] = result }
         rescue Net::HTTP::Persistent::Error => e
           # A timeout error was reterned from the Endpoint
           Logger::Logger.debug 'SPARQL Timeout Error', error_messsage: e.message, trace: e.backtrace
@@ -54,10 +56,10 @@ module SparqlClient
           Logger::Logger.debug 'SPARQL Endpoint Temporary Error', error_messsage: e.message, trace: e.backtrace
           raise EndpointTemporaryError.new e, @endpoint_url, sparql
         rescue OpenSSL::SSL::SSLError, SPARQL::Client::ClientError => e
-          # TODO What is the SPARQL::Client::ClientError?
+          # TODO: What is the SPARQL::Client::ClientError?
           Logger::Logger.debug 'SPARQL Endpoint Persistent Error', error_messsage: e.message, trace: e.backtrace
           raise EndpointError.new e, @endpoint_url
-        rescue => e
+        rescue StandardError => e
           Logger::Logger.error e, message: 'Unknown Error occurs during request SPARQL to the Endpoint'
           raise e
         end

@@ -1,4 +1,5 @@
-#!/usr/bin/env ruby
+# frozen_string_literal: true
+
 #
 # An instance of the class searches the SPARQL endpoint for a pseudo graph pattern.
 #
@@ -80,9 +81,7 @@ module Lodqa
       # filter out sotral predicates
       ex_predicates += @sortal_predicates
 
-      unless ex_predicates.empty?
-        p_variables.each { |v| query += %| FILTER (str(?#{v}) NOT IN (#{ex_predicates.map { |s| '"' + s + '"' }.join(', ')}))| }
-      end
+      p_variables.each { |v| query += %| FILTER (str(?#{v}) NOT IN (#{ex_predicates.map { |s| '"' + s + '"' }.join(', ')}))| } unless ex_predicates.empty?
 
       ## constraintes on s-variables
       s_variables = variables.dup.keep_if { |v| v[0] == 's' }
@@ -199,7 +198,7 @@ module Lodqa
     end
 
     def class?(term)
-      yield false unless /^http:/.match(term)
+      yield false unless /^http:/ =~ term
 
       @endpoint.query_async(sparql_for(term)) do |err, result|
         yield [err, result ? !result.empty? : false]

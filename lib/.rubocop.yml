@@ -1,0 +1,44 @@
+inherit_from:
+  - ../.rubocop.yml
+
+Lint/NonLocalExitFromIterator:
+  Enabled: false
+
+Metrics/AbcSize:
+  Max: 76
+
+Metrics/ClassLength:
+  Max: 172
+
+Metrics/CyclomaticComplexity:
+  Max: 14
+
+Metrics/LineLength:
+  Max: 200
+
+Metrics/MethodLength:
+  Max: 80
+
+Metrics/ParameterLists:
+  Max: 25
+
+Metrics/PerceivedComplexity:
+  Max: 14
+
+Naming/MethodName:
+  Enabled: false
+
+Naming/UncommunicativeMethodParamName:
+  MinNameLength: 1
+
+Naming/VariableName:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/Semicolon:
+  Enabled: false
