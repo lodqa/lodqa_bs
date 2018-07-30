@@ -12,14 +12,17 @@ class LodqaSearchJob < ApplicationJob
     request_id = job_id
     query = args[0]
 
-    result = execute request_id, query do
+    elapsed_time = execute request_id, query do
       # TODO: call the callback with an accepting query event
       p "Searching the query #{request_id} have been starting."
     end
 
     # TODO: call the callback with finishing query event
-    p result
+    p "Elapsed time: #{Time.at(elapsed_time).utc.strftime('%H:%M:%S')}"
+    p Answer.select(:uri, :label).where(request_id: request_id).as_json(except: :id)
   end
+
+  private
 
   def execute(request_id, query)
     start_time = Time.now
@@ -27,9 +30,8 @@ class LodqaSearchJob < ApplicationJob
 
     yield
 
-    answer_set = threads.each_with_object({}) { |t, summary| t.join.value.each { |a| summary[a[:uri]] = a[:label] } }
-    "Elapsed time: #{Time.at(Time.now - start_time).utc.strftime('%H:%M:%S')}\n\n" +
-      JSON.pretty_generate(answer_set.map { |k, v| { url: k, label: v } })
+    threads.each(&:join)
+    Time.now - start_time
   end
 
   def execute_on_all_datasets(request_id, query)
@@ -37,25 +39,20 @@ class LodqaSearchJob < ApplicationJob
       Thread.start do
         executor = Lodqa::OneByOneExecutor.new dataset, query, debug: false
 
-        # Bind events to colletc answers
-        collected_answers = []
+        # Bind events to save answers
         executor.on(:answer) do |_, val|
           begin
             Answer.create request_id: request_id, uri: val[:answer][:uri], label: val[:answer][:label]
-
-            collected_answers << val[:answer]
           rescue ActiveRecord::RecordNotUnique
-            Rails.logger.debug "Duplicated answer: request_id: #{request_id}, uri: #{val[:answer][:uri].to_s}"
-          rescue => e
-            Rails.logger.orrer "#{e.class}, #{e.message}"
+            logger.debug "Duplicated answer: request_id: #{request_id}, uri: #{val[:answer][:uri]}"
+          rescue StandardError => e
+            logger.error "#{e.class}, #{e.message}"
           ensure
             ActiveRecord::Base.connection_pool.checkin Answer.connection
           end
         end
 
         executor.perform
-
-        collected_answers
       end
     end
   end
