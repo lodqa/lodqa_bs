@@ -9,13 +9,12 @@ module Lodqa
   class OneByOneExecutor
     attr_accessor :cancel_flag
 
-    def initialize(
-      dataset, query,
-      parser_url: 'http://enju-gtrec.dbcls.jp',
-      urilinks_url: 'http://urilinks.lodqa.org',
-      read_timeout: 5,
-      debug: false
-    )
+    def initialize dataset, query,
+                   parser_url: 'http://enju-gtrec.dbcls.jp',
+                   urilinks_url: 'http://urilinks.lodqa.org',
+                   read_timeout: 5,
+                   debug: false
+
       @target_dataset = dataset
       @query = query
       @default_parser_url = parser_url
@@ -33,7 +32,7 @@ module Lodqa
     end
 
     # Bind event handler to events
-    def on(*events, &block)
+    def on *events, &block
       return unless events.is_a? Array
       events.each do |e|
         @event_hadlers[e] = [] unless @event_hadlers[e]
@@ -42,7 +41,7 @@ module Lodqa
     end
 
     # Merage previouse event data and call all event handlers.
-    def emit(event, data)
+    def emit event, data
       @event_hadlers[event]&.each { |h| h.call(event, data) }
     end
 
@@ -153,7 +152,7 @@ module Lodqa
 
     private
 
-    def get_solutions_of_sparql_async(endpoint, pgp, mappings, anchored_pgp, bgp, sparql, queue)
+    def get_solutions_of_sparql_async endpoint, pgp, mappings, anchored_pgp, bgp, sparql, queue
       # Get solutions of SPARQL
       endpoint.query_async(sparql) do |e, result|
         case e
@@ -186,7 +185,7 @@ module Lodqa
       end
     end
 
-    def get_label_of_url(endpoint, pgp, mappings, anchored_pgp, bgp, sparql, solutions, solution, uri)
+    def get_label_of_url endpoint, pgp, mappings, anchored_pgp, bgp, sparql, solutions, solution, uri
       # WebSocket message will be disorderd if additional informations are get ascynchronously
       label = label(endpoint, uri)
       urls, first_rendering = forwarded_urls(uri)
@@ -202,18 +201,18 @@ module Lodqa
                                  @query
     end
 
-    def mappings(dictionary_url, pgp)
+    def mappings dictionary_url, pgp
       tf = Term::Finder.new(dictionary_url)
       keywords = pgp[:nodes].values.map { |n| n[:text] }.concat(pgp[:edges].map { |e| e[:text] })
       tf.find(keywords)
     end
 
-    def label(endpoint, uri)
+    def label endpoint, uri
       query_for_solution = "select ?label where { <#{uri}>  rdfs:label ?label }"
       endpoint.query(query_for_solution).map { |s| s.to_h[:label] }.first
     end
 
-    def forwarded_urls(uri)
+    def forwarded_urls uri
       urls = RestClient.get("#{@urilinks_url}/url/translate.json?query=#{uri}") do |res|
         return nil unless res.code == 200
 

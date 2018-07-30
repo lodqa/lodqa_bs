@@ -8,7 +8,7 @@ class Graph
   end
 
   # s= source, t= target, w= weight
-  def add_edge(s, t, w)
+  def add_edge s, t, w
     if !@g.key?(s)
       @g[s] = { t => w }
     else
@@ -35,7 +35,7 @@ class Graph
 
   # Dijkstra's shortest path algorithm
   # implemented based on wikipedia's pseudocode: http://en.wikipedia.org/wiki/Dijkstra's_algorithm
-  def dijkstra(s)
+  def dijkstra s
     @d = {}
     @prev = {}
 
@@ -64,14 +64,14 @@ class Graph
   end
 
   # To print the full shortest route to a node
-  def print_path(dest)
+  def print_path dest
     print_path @prev[dest] if @prev[dest] != -1
     print ">#{dest}"
   end
 
   # Gets all shortests paths using dijkstra
 
-  def shortest_paths(s)
+  def shortest_paths s
     dijkstra s
     puts "Source: #{s}"
     @nodes.each do |dest|
@@ -85,20 +85,20 @@ class Graph
     end
   end
 
-  def add_path(dest)
+  def add_path dest
     add_path @prev[dest] if @prev[dest] != -1
     @path << dest
   end
 
   # get the shortest path between two nodes
-  def shortest_path(s, d)
+  def shortest_path s, d
     dijkstra s
     @path = []
     add_path d
     @path
   end
 
-  def adjacent_node(n)
+  def adjacent_node n
     @g[n].keys
   end
 end

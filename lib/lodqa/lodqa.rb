@@ -18,7 +18,7 @@ module Lodqa
 
     attr_reader :endpoint
 
-    def initialize(ep_url, endpoint_options, graph_uri, graph_finder_options)
+    def initialize ep_url, endpoint_options, graph_uri, graph_finder_options
       @sparql_client = SparqlClient::CacheableClient.new(ep_url, endpoint_options)
       @graph_finder = GraphFinder.new(@sparql_client, graph_uri, graph_finder_options)
     end
@@ -36,7 +36,7 @@ module Lodqa
       end
     end
 
-    def each_anchored_pgp_and_sparql_and_solution(proc_anchored_pgp, proc_solution)
+    def each_anchored_pgp_and_sparql_and_solution proc_anchored_pgp, proc_solution
       Logger::Logger.debug "start #{self.class.name}##{__method__}"
 
       if @cancel_flag
@@ -50,7 +50,7 @@ module Lodqa
       end
     end
 
-    def dispose(request_id)
+    def dispose request_id
       Logger::Logger.debug "Cancel query for pgp: #{@pgp}", request_id
       @cancel_flag = true
     end
@@ -82,7 +82,7 @@ module Lodqa
 
     private
 
-    def to_sparql(anchored_pgp)
+    def to_sparql anchored_pgp
       if @cancel_flag
         Logger::Logger.debug "Stop during creating SPARQLs for anchored_pgp: #{anchored_pgp}"
         return
@@ -101,7 +101,7 @@ module Lodqa
       end
     end
 
-    def deal_anchored_pgp(anchored_pgp, proc_solution, parallel)
+    def deal_anchored_pgp anchored_pgp, proc_solution, parallel
       Logger::Logger.debug "Query sparqls for anchored_pgp: #{anchored_pgp}"
 
       if @cancel_flag
@@ -155,7 +155,7 @@ module Lodqa
       Logger::Logger.debug "Finish anchored_pgp: #{anchored_pgp}"
     end
 
-    def query_sparql(endpoint, bgp, sparql, proc_solution, queue)
+    def query_sparql endpoint, bgp, sparql, proc_solution, queue
       Logger::Logger.debug "#{sparql}\n++++++++++"
 
       endpoint.query_async(sparql) do |e, result|
@@ -166,7 +166,7 @@ module Lodqa
       Logger::Logger.debug "==========\n"
     end
 
-    def handle_result(e, bgp, sparql, result, proc_solution)
+    def handle_result e, bgp, sparql, result, proc_solution
       case e
       when nil
         proc_solution.call bgp: bgp,

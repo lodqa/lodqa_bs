@@ -12,7 +12,7 @@ module Lodqa
   class GraphFinder
     # This constructor takes the URL of an end point to be searched
     # optionally options can be passed to the server of the end point.
-    def initialize(endpoint, graph_uri, options)
+    def initialize endpoint, graph_uri, options
       @endpoint = endpoint
       @graph_uri = graph_uri
       @ignore_predicates = options[:ignore_predicates] || []
@@ -23,7 +23,7 @@ module Lodqa
     end
 
     # Genenerate bgps and SPARQLs of each bgp.
-    def sparqls_of(anchored_pgp)
+    def sparqls_of anchored_pgp
       bgps(anchored_pgp).each { |bgp| yield [bgp, compose_sparql(bgp, anchored_pgp)] }
     end
 
@@ -31,7 +31,7 @@ module Lodqa
 
     # It generates bgps by applying variation operations to the pgp.
     # The option _max_hop_ specifies the maximum number of hops to be searched.
-    def bgps(pgp)
+    def bgps pgp
       Enumerator.new do |y|
         generate_inverse_variations(
           generate_split_variations(
@@ -46,7 +46,7 @@ module Lodqa
       end
     end
 
-    def compose_sparql(bgp, pgp)
+    def compose_sparql bgp, pgp
       nodes = pgp[:nodes]
 
       # get the variables
@@ -93,7 +93,7 @@ module Lodqa
       query += "} LIMIT #{@answer_limit}"
     end
 
-    def generate_split_variations(bgps, max_hop = 2)
+    def generate_split_variations bgps, max_hop = 2
       Enumerator.new do |sbgps|
         bgps.each do |bgp|
           sortal_tps, non_sortal_tps = bgp.partition { |tp| tp[1].start_with? 's' }
@@ -105,7 +105,7 @@ module Lodqa
       end
     end
 
-    def generate_split_tps(tps, split_scheme)
+    def generate_split_tps tps, split_scheme
       split_tps = []
       tps.each_with_index do |tp, i|
         x_variables = (1...split_scheme[i]).collect { |j| "x#{i}#{j}".to_s }
@@ -122,7 +122,7 @@ module Lodqa
     end
 
     # make variations by inversing each triple pattern
-    def generate_inverse_variations(bgps)
+    def generate_inverse_variations bgps
       Enumerator.new do |rbgps|
         bgps.each do |bgp|
           sortal_tps, non_sortal_tps = bgp.partition { |tp| tp[1].start_with? 's' }
@@ -135,7 +135,7 @@ module Lodqa
     end
 
     # make variations by instantiating terms
-    def generate_instantiation_variations(pgp)
+    def generate_instantiation_variations pgp
       return [] if pgp[:edges].empty?
 
       iids = instantiation_ids pgp
@@ -144,7 +144,7 @@ module Lodqa
       instantiated_BGPs(iids, bgps, pgp[:focus])
     end
 
-    def instantiation_ids(pgp)
+    def instantiation_ids pgp
       iids = {}
       queue = Queue.new
       pgp[:nodes].each do |id, node|
@@ -163,12 +163,12 @@ module Lodqa
       iids
     end
 
-    def bgp(pgp)
+    def bgp pgp
       connections = pgp[:edges]
       connections.map.with_index { |c, i| [c[:subject].to_sym, "p#{i + 1}".to_sym, c[:object].to_sym] }
     end
 
-    def instantiated_BGPs(iids, bgps, focus_id)
+    def instantiated_BGPs iids, bgps, focus_id
       Enumerator.new do |ibgps|
         [false, true].repeated_permutation(iids.keys.length) do |instantiate_scheme|
           # id of the terms to be instantiated
@@ -193,11 +193,11 @@ module Lodqa
       end
     end
 
-    def uri?(term)
+    def uri? term
       term.start_with? 'http://'
     end
 
-    def class?(term)
+    def class? term
       yield false unless /^http:/ =~ term
 
       @endpoint.query_async(sparql_for(term)) do |err, result|
@@ -205,14 +205,14 @@ module Lodqa
       end
     end
 
-    def sparql_for(term)
+    def sparql_for term
       sparql  = "SELECT ?p\n"
       sparql += "FROM <#{@graph_uri}>\n" unless @graph_uri.nil? || @graph_uri.empty?
       sparql += "WHERE {?s ?p <#{term}> FILTER (str(?p) IN (#{@sortal_predicates.map { |s| '"' + s + '"' }.join(', ')}))} LIMIT 1"
       sparql
     end
 
-    def stringify_term(t)
+    def stringify_term t
       if t.class == RDF::URI
         %(<#{t}>)
       elsif t.class == RDF::Literal
@@ -227,7 +227,7 @@ module Lodqa
     end
 
     # the sparql-client gem does not support FILTER pattern
-    def _compose_sparql(x_variables, p_variables, bgp)
+    def _compose_sparql x_variables, p_variables, bgp
       query = @endpoint.select(*p_variables, *x_variables).where(*bgp).limit(10)
       query.to_s
     end

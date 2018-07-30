@@ -8,7 +8,7 @@ module Lodqa
     DEFAULT_URL = 'http://targets.lodqa.org/targets.json'
 
     class << self
-      def datasets(target_url = DEFAULT_URL)
+      def datasets target_url = DEFAULT_URL
         RestClient.get target_url do |response, _request, _result|
           case response.code
           when 200 then JSON.parse response, symbolize_names: true

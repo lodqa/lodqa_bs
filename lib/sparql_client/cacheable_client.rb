@@ -10,7 +10,7 @@ require 'sparql_client/endpoint_timeout_error'
 # Cache results of sparql to speed up SPARQL queries.
 module SparqlClient
   class CacheableClient
-    def initialize(endpoint_url, endpoint_options = {})
+    def initialize endpoint_url, endpoint_options = {}
       @endpoint_url = endpoint_url
 
       endpoint_options[:read_timeout] ||= 60
@@ -33,7 +33,7 @@ module SparqlClient
     #     # handle a result
     #   end
     # end
-    def query_async(sparql)
+    def query_async sparql
       Logger::Async.defer do
         yield [nil, query(sparql)]
       rescue StandardError => e
@@ -41,7 +41,7 @@ module SparqlClient
       end
     end
 
-    def query(sparql)
+    def query sparql
       if @cache.key? sparql
         @cache[sparql]
       else
@@ -66,7 +66,7 @@ module SparqlClient
       end
     end
 
-    def select(*args)
+    def select *args
       @cilent.select(*args)
     end
   end

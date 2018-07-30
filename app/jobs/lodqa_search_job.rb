@@ -11,7 +11,7 @@ class LodqaSearchJob < ApplicationJob
     logger.fatal exception
   end
 
-  def perform(query, start_search_callback_url, finish_search_callback_url)
+  def perform query, start_search_callback_url, finish_search_callback_url
     request_id = job_id
     start_time = Time.now
     finish_time = execute request_id, query, start_time do
@@ -34,7 +34,7 @@ class LodqaSearchJob < ApplicationJob
 
   private
 
-  def execute(request_id, query, _start_time)
+  def execute request_id, query, _start_time
     threads = execute_on_all_datasets request_id, query
 
     yield
@@ -43,7 +43,7 @@ class LodqaSearchJob < ApplicationJob
     Time.now
   end
 
-  def execute_on_all_datasets(request_id, query)
+  def execute_on_all_datasets request_id, query
     Lodqa::Sources.datasets.map do |dataset|
       Thread.start do
         executor = Lodqa::OneByOneExecutor.new dataset, query, debug: false
@@ -64,7 +64,7 @@ class LodqaSearchJob < ApplicationJob
     end
   end
 
-  def post_callback(callback_url, data)
+  def post_callback callback_url, data
     uri = URI callback_url
     http = Net::HTTP.new uri.hostname
     # http.set_debug_output $stderr

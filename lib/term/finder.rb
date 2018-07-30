@@ -9,12 +9,12 @@ module Term
   class Finder
     attr_reader :dictionary
 
-    def initialize(dictionary_url)
+    def initialize dictionary_url
       raise ArgumentError, 'dictionary_url should be given.' if dictionary_url.nil? || dictionary_url.empty?
       @dictionary = RestClient::Resource.new dictionary_url, headers: { content_type: :json, accept: :json }, timeout: 10
     end
 
-    def find(terms)
+    def find terms
       return nil if terms.nil?
       return {} if terms.empty?
 
@@ -40,7 +40,7 @@ module Term
 
     private
 
-    def _lookup(terms)
+    def _lookup terms
       @dictionary.post terms.to_json do |response, request|
         case response.code
         when 200

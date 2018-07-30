@@ -12,12 +12,12 @@ module Lodqa; end unless defined? Lodqa
 class Lodqa::Graphicator
   attr_reader :parser
 
-  def initialize(parser_url)
+  def initialize parser_url
     raise ArgumentError, 'parser_url should be given.' if parser_url.nil? || parser_url.empty?
     @parser = EnjuAccess::CGIAccessor.new(parser_url)
   end
 
-  def parse(query)
+  def parse query
     @parse = @parser.parse(query)
     self
   end
@@ -32,7 +32,7 @@ class Lodqa::Graphicator
 
   private
 
-  def pgp2template(pgp)
+  def pgp2template pgp
     nodes = pgp[:nodes]
     edges = pgp[:edges]
     focus = pgp[:focus].to_sym
@@ -65,7 +65,7 @@ class Lodqa::Graphicator
     { query: query, slots: slots }
   end
 
-  def graphicate(parse)
+  def graphicate parse
     # [Exception Handling] Treat the entire sentence as a BNC when no BNC was found
     if parse[:base_noun_chunks].empty?
       last_idx = parse[:tokens].last[:idx]
@@ -95,7 +95,7 @@ class Lodqa::Graphicator
     }
   end
 
-  def get_nodes(parse)
+  def get_nodes parse
     nodes = {}
 
     variable = 't0'
@@ -110,7 +110,7 @@ class Lodqa::Graphicator
     nodes
   end
 
-  def get_edges(parse, node_index)
+  def get_edges parse, node_index
     parse[:relations].collect do |s, p, o|
       {
         subject: node_index[s].to_s,
@@ -121,7 +121,7 @@ class Lodqa::Graphicator
   end
 
   # post_processing may be dependent on Enju
-  def post_processing!(nodes, edges)
+  def post_processing! nodes, edges
     # 'and' coordination
     edges.reject! { |e| e[:text] == 'and' }
 

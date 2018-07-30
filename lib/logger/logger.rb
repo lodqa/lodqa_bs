@@ -6,7 +6,7 @@ class Logger::Logger
   class << self
     $stdout.sync = true
 
-    def level=(level)
+    def level= level
       @log.level = level
     end
 
@@ -18,11 +18,11 @@ class Logger::Logger
       Thread.current.thread_variable_get(:request_id)
     end
 
-    def request_id=(id)
+    def request_id= id
       Thread.current.thread_variable_set(:request_id, id)
     end
 
-    def info(message, id = nil, **rest)
+    def info message, id = nil, **rest
       @log.inf({
         request_id: id || request_id,
         message: message
@@ -31,7 +31,7 @@ class Logger::Logger
         .to_json.to_s)
     end
 
-    def debug(message, id = nil, **rest)
+    def debug message, id = nil, **rest
       @log.debug({
         request_id: id || request_id,
         message: message
@@ -40,7 +40,7 @@ class Logger::Logger
           .to_json.to_s)
     end
 
-    def error(error, **rest)
+    def error error, **rest
       error_info = {
         request_id: request_id,
         message: error&.message,
