@@ -1,7 +1,17 @@
+# frozen_string_literal: true
+
 class QueriesController < ApplicationController
+  rescue_from ActionController::ParameterMissing do
+    render nothing: true, status: :bad_request
+  end
+
   def create
-    LodqaSearchJob.perform_later params[:query],
-                                 'https://webhook.site/1469caf6-efeb-4fb1-93b0-103ae91d4741',
-                                 'https://webhook.site/1469caf6-efeb-4fb1-93b0-103ae91d4741'
+    LodqaSearchJob.perform_later(*lodqa_search_params)
+  end
+
+  private
+
+  def lodqa_search_params
+    params.require(%i[query start_search_callback_url finish_search_callback_url])
   end
 end
