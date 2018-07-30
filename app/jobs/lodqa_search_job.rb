@@ -8,30 +8,36 @@ class LodqaSearchJob < ApplicationJob
     logger.fatal exception
   end
 
-  def perform(*args)
+  def perform(query, start_search_callback_url, finish_search_callback_url)
     request_id = job_id
-    query = args[0]
-
-    elapsed_time = execute request_id, query do
-      # TODO: call the callback with an accepting query event
-      p "Searching the query #{request_id} have been starting."
+    start_time = Time.now
+    finish_time = execute request_id, query, start_time do
+      post_callback start_search_callback_url,
+                    event: 'start_search',
+                    query: query,
+                    start_at: start_time,
+                    message: "Searching the query #{request_id} have been starting."
     end
-
-    # TODO: call the callback with finishing query event
-    p "Elapsed time: #{Time.at(elapsed_time).utc.strftime('%H:%M:%S')}"
-    p Answer.select(:uri, :label).where(request_id: request_id).as_json(except: :id)
+    post_callback finish_search_callback_url,
+                  event: 'finish_search',
+                  query: query,
+                  start_at: start_time,
+                  finish_at: finish_time,
+                  elapsed_time: finish_time - start_time,
+                  answers: Answer.select(:uri, :label)
+                                 .where(request_id: request_id)
+                                 .as_json(except: :id)
   end
 
   private
 
-  def execute(request_id, query)
-    start_time = Time.now
+  def execute(request_id, query, _start_time)
     threads = execute_on_all_datasets request_id, query
 
     yield
 
     threads.each(&:join)
-    Time.now - start_time
+    Time.now
   end
 
   def execute_on_all_datasets(request_id, query)
@@ -54,6 +60,18 @@ class LodqaSearchJob < ApplicationJob
 
         executor.perform
       end
+    end
+  end
+
+  def post_callback(callback_url, data)
+    uri = URI callback_url
+    http = Net::HTTP.new uri.hostname
+    # http.set_debug_output $stderr
+    req = Net::HTTP::Post.new uri.path, 'Content-Type' => 'application/json'
+    req.body = data.to_json
+    res = http.request req
+    unless res.is_a? Net::HTTPSuccess
+      logger.error "Request to callback url is failed. URL: #{callback_url}, message: #{res.message}"
     end
   end
 end
