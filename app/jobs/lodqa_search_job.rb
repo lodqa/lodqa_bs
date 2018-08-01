@@ -66,7 +66,8 @@ class LodqaSearchJob < ApplicationJob
 
   def post_callback callback_url, data
     uri = URI callback_url
-    http = Net::HTTP.new uri.hostname
+    http = Net::HTTP.new uri.hostname, uri.port
+    http.use_ssl = uri.instance_of? URI::HTTPS
     # http.set_debug_output $stderr
     req = Net::HTTP::Post.new uri.path, 'Content-Type' => 'application/json'
     req.body = data.to_json
