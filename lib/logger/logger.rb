@@ -23,7 +23,7 @@ class Logger::Logger
     end
 
     def info message, id = nil, **rest
-      @log.inf({
+      @log.info({
         request_id: id || request_id,
         message: message
       }
