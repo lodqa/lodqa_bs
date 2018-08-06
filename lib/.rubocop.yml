@@ -7,8 +7,11 @@ Lint/NonLocalExitFromIterator:
 Metrics/AbcSize:
   Max: 76
 
+Metrics/BlockLength:
+  Max: 28
+
 Metrics/ClassLength:
-  Max: 172
+  Max: 180
 
 Metrics/CyclomaticComplexity:
   Max: 14
@@ -17,7 +20,7 @@ Metrics/LineLength:
   Max: 200
 
 Metrics/MethodLength:
-  Max: 80
+  Max: 89
 
 Metrics/ParameterLists:
   Max: 25

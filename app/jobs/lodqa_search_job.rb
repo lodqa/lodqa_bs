@@ -44,9 +44,9 @@ class LodqaSearchJob < ApplicationJob
   end
 
   def execute_on_all_datasets query_id, query
-    Lodqa::Sources.datasets.map do |dataset|
+    Lodqa::Sources.datasets.map.with_index(1) do |dataset, n|
       Thread.start do
-        executor = Lodqa::OneByOneExecutor.new dataset, query, debug: false
+        executor = Lodqa::OneByOneExecutor.new dataset.merge(number: n), query, debug: false
 
         # Bind events to save answers
         executor.on(:answer) do |_, val|
