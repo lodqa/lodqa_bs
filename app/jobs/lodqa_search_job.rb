@@ -49,19 +49,31 @@ class LodqaSearchJob < ApplicationJob
         executor = Lodqa::OneByOneExecutor.new dataset.merge(number: n), query, debug: false
 
         # Bind events to save answers
-        executor.on(:answer) do |_, val|
-          Answer.create query_id: query_id, uri: val[:answer][:uri], label: val[:answer][:label]
-        rescue ActiveRecord::RecordNotUnique
-          logger.debug "Duplicated answer: query_id: #{query_id}, uri: #{val[:answer][:uri]}"
-        rescue StandardError => e
-          logger.error "#{e.class}, #{e.message}"
-        ensure
-          ActiveRecord::Base.connection_pool.checkin Answer.connection
+        executor.on :answer do |_, val|
+          dispose_db_connection do
+            Answer.create query_id: query_id, uri: val[:answer][:uri], label: val[:answer][:label]
+          rescue ActiveRecord::RecordNotUnique
+            logger.debug "Duplicated answer: query_id: #{query_id}, uri: #{val[:answer][:uri]}"
+          end
+        end
+
+        # Bind events to save events\
+        executor.on :datasets, :pgp, :mappings, :sparql, :query_sparql, :solutions, :answer, :gateway_error do |event, data|
+          dispose_db_connection { Event.create query_id: query_id, event: event, data: { event: event }.merge(data) }
         end
 
         executor.perform
       end
     end
+  end
+
+  # Release db connection automatically after process done
+  def dispose_db_connection
+    yield
+  rescue StandardError => e
+    logger.error "#{e.class}, #{e.message}"
+  ensure
+    ActiveRecord::Base.connection_pool.checkin ApplicationRecord.connection
   end
 
   def post_callback callback_url, data
