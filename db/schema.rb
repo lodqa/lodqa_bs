@@ -10,16 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_07_025331) do
-
-  create_table "answers", force: :cascade do |t|
-    t.string "query_id", limit: 36, null: false
-    t.string "uri", null: false
-    t.string "label", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["query_id", "uri"], name: "index_answers_on_query_id_and_uri", unique: true
-  end
+ActiveRecord::Schema.define(version: 2018_08_07_101055) do
 
   create_table "events", force: :cascade do |t|
     t.string "query_id", limit: 36, null: false
