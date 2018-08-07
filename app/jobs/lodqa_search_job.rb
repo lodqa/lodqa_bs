@@ -27,9 +27,7 @@ class LodqaSearchJob < ApplicationJob
                   start_at: start_time,
                   finish_at: finish_time,
                   elapsed_time: finish_time - start_time,
-                  answers: Answer.select(:uri, :label)
-                    .where(query_id: query_id)
-                                 .as_json(except: :id)
+                  answers: Event.answers(query_id)
   end
 
   private
@@ -48,16 +46,7 @@ class LodqaSearchJob < ApplicationJob
       Thread.start do
         executor = Lodqa::OneByOneExecutor.new dataset.merge(number: n), query, debug: false
 
-        # Bind events to save answers
-        executor.on :answer do |_, val|
-          dispose_db_connection do
-            Answer.create query_id: query_id, uri: val[:answer][:uri], label: val[:answer][:label]
-          rescue ActiveRecord::RecordNotUnique
-            logger.debug "Duplicated answer: query_id: #{query_id}, uri: #{val[:answer][:uri]}"
-          end
-        end
-
-        # Bind events to save events\
+        # Bind events to save events
         executor.on :datasets, :pgp, :mappings, :sparql, :query_sparql, :solutions, :answer, :gateway_error do |event, data|
           dispose_db_connection { Event.create query_id: query_id, event: event, data: { event: event }.merge(data) }
         end
