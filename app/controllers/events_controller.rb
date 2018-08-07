@@ -2,5 +2,7 @@
 
 # To get old events of the query.
 class EventsController < ApplicationController
-  def index; end
+  def index
+    render json: Event.where(query_id: params[:query_id]).pluck(:data)
+  end
 end
