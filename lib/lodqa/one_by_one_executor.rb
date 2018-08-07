@@ -170,7 +170,8 @@ module Lodqa
       endpoint.query_async(sparql[:query]) do |e, result|
         case e
         when nil
-          solutions = result.map(&:to_h)
+          # Convert to a hash object that contains only simple strings from array of RDF::Query::Solution.
+          solutions = result.map { |s| s.map { |k, v| [k, v.to_s] }.to_h }
 
           emit :solutions, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql, solutions: solutions
 
@@ -220,9 +221,10 @@ module Lodqa
       tf.find(keywords)
     end
 
+    # Return label as stirng
     def label endpoint, uri
       query_for_solution = "select ?label where { <#{uri}>  rdfs:label ?label }"
-      endpoint.query(query_for_solution).map { |s| s.to_h[:label] }.first
+      endpoint.query(query_for_solution).map { |s| s.to_h[:label] }.first.to_s
     end
 
     def forwarded_urls uri
