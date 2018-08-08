@@ -7,7 +7,7 @@ require 'lodqa/one_by_one_executor'
 class LodqaSearchJob < ApplicationJob
   queue_as :default
 
-  rescue_from(StandardError) do |exception|
+  rescue_from StandardError do |exception|
     logger.fatal exception
   end
 
@@ -52,7 +52,7 @@ class LodqaSearchJob < ApplicationJob
   end
 
   def execute_on_all_datasets query_id, query
-    Lodqa::Sources.datasets.map.with_index(1) do |dataset, n|
+    Lodqa::Sources.datasets.map.with_index 1 do |dataset, n|
       Thread.start do
         executor = Lodqa::OneByOneExecutor.new dataset.merge(number: n),
                                                query,
