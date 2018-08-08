@@ -13,7 +13,7 @@ class LodqaSearchJob < ApplicationJob
 
   def perform query, start_search_callback_url, finish_search_callback_url
     start_time = Time.now
-    finish_time = execute job_id, query, start_time do
+    finish_time = execute job_id, query do
       post_callback start_search_callback_url,
                     event: 'start_search',
                     query: query,
@@ -42,7 +42,7 @@ class LodqaSearchJob < ApplicationJob
     gateway_error
   ].freeze
 
-  def execute query_id, query, _start_time
+  def execute query_id, query
     threads = execute_on_all_datasets query_id, query
 
     yield
