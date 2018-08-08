@@ -2,7 +2,7 @@ Metrics/LineLength:
   Max: 100
 
 Metrics/MethodLength:
-  Max: 18
+  Max: 15
 
 Style/Documentation:
   Exclude:

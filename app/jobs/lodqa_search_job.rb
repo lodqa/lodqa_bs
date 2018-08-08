@@ -12,14 +12,13 @@ class LodqaSearchJob < ApplicationJob
   end
 
   def perform query, start_search_callback_url, finish_search_callback_url
-    query_id = job_id
     start_time = Time.now
-    finish_time = execute query_id, query, start_time do
+    finish_time = execute job_id, query, start_time do
       post_callback start_search_callback_url,
                     event: 'start_search',
                     query: query,
                     start_at: start_time,
-                    message: "Searching the query #{query_id} have been starting."
+                    message: "Searching the query #{job_id} have been starting."
     end
     post_callback finish_search_callback_url,
                   event: 'finish_search',
@@ -27,7 +26,7 @@ class LodqaSearchJob < ApplicationJob
                   start_at: start_time,
                   finish_at: finish_time,
                   elapsed_time: finish_time - start_time,
-                  answers: Event.answers(query_id)
+                  answers: Event.answers(job_id)
   end
 
   private
