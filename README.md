@@ -8,3 +8,16 @@ LODQA deals queris that spend long time to perform. This server enqueues queries
 
 LODQA_BS is a API sever with the job queue.
 We implements this server by [Ruby on rails](https://rubyonrails.org/) and [Sidekiq](https://sidekiq.org/).
+
+## How to start
+
+```
+docker-compose build
+docker-compose run --rm lodqa-bs sh
+```
+
+Then
+
+```
+rails s -b 0.0.0.0
+```
