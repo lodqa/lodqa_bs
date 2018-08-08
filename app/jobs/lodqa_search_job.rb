@@ -32,6 +32,17 @@ class LodqaSearchJob < ApplicationJob
 
   private
 
+  EVENTS_TO_SAVE = %i[
+    datasets
+    pgp
+    mappings
+    sparql
+    query_sparql
+    solutions
+    answer
+    gateway_error
+  ].freeze
+
   def execute query_id, query, _start_time
     threads = execute_on_all_datasets query_id, query
 
@@ -44,11 +55,17 @@ class LodqaSearchJob < ApplicationJob
   def execute_on_all_datasets query_id, query
     Lodqa::Sources.datasets.map.with_index(1) do |dataset, n|
       Thread.start do
-        executor = Lodqa::OneByOneExecutor.new dataset.merge(number: n), query, debug: false
+        executor = Lodqa::OneByOneExecutor.new dataset.merge(number: n),
+                                               query,
+                                               debug: false
 
         # Bind events to save events
-        executor.on :datasets, :pgp, :mappings, :sparql, :query_sparql, :solutions, :answer, :gateway_error do |event, data|
-          dispose_db_connection { Event.create query_id: query_id, event: event, data: { event: event }.merge(data) }
+        executor.on(*EVENTS_TO_SAVE) do |event, data|
+          dispose_db_connection do
+            Event.create query_id: query_id,
+                         event: event,
+                         data: { event: event }.merge(data)
+          end
         end
 
         executor.perform
@@ -74,6 +91,7 @@ class LodqaSearchJob < ApplicationJob
     req.body = data.to_json
     res = http.request req
 
-    logger.error "Request to callback url is failed. URL: #{callback_url}, message: #{res.message}" unless res.is_a? Net::HTTPSuccess
+    return if res.is_a? Net::HTTPSuccess
+    logger.error "Request to callback url is failed. URL: #{callback_url}, message: #{res.message}"
   end
 end
