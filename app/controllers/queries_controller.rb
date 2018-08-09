@@ -7,7 +7,8 @@ class QueriesController < ApplicationController
   end
 
   def create
-    LodqaSearchJob.perform_later(*lodqa_search_params)
+    job = LodqaSearchJob.perform_later(*lodqa_search_params)
+    Query.create query_id: job.job_id
   end
 
   private
