@@ -52,24 +52,27 @@ class LodqaSearchJob < ApplicationJob
   end
 
   def execute_on_all_datasets query_id, query
-    Lodqa::Sources.datasets.map.with_index 1 do |dataset, n|
-      Thread.start do
-        executor = Lodqa::OneByOneExecutor.new dataset.merge(number: n),
-                                               query,
-                                               debug: false
+    Lodqa::Sources.datasets.map.with_index 1 do |dataset, number|
+      Thread.start { execute_on_a_dataset query_id, query, dataset, number }
+    end
+  end
 
-        # Bind events to save events
-        executor.on(*EVENTS_TO_SAVE) do |event, data|
-          dispose_db_connection do
-            Event.create query_id: query_id,
-                         event: event,
-                         data: { event: event }.merge(data)
-          end
-        end
+  def execute_on_a_dataset query_id, query, dataset, number
+    executor = Lodqa::OneByOneExecutor.new dataset.merge(number: number),
+                                           query,
+                                           debug: false
+    query = Query.find_by query_id: query_id
 
-        executor.perform
+    # Bind events to save events
+    executor.on(*EVENTS_TO_SAVE) do |event, data|
+      dispose_db_connection do
+        Event.create query: query,
+                     event: event,
+                     data: { event: event }.merge(data)
       end
     end
+
+    executor.perform
   end
 
   # Release db connection automatically after process done
