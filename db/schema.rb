@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_09_035115) do
+ActiveRecord::Schema.define(version: 2018_08_09_063600) do
 
   create_table "events", force: :cascade do |t|
     t.string "query_id", limit: 36, null: false
@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 2018_08_09_035115) do
 
   create_table "queries", force: :cascade do |t|
     t.string "query_id", limit: 36, null: false
+    t.string "statement", default: "", null: false
     t.index ["query_id"], name: "index_queries_on_query_id", unique: true
   end
 
