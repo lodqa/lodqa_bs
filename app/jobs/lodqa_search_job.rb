@@ -14,7 +14,17 @@ class LodqaSearchJob < ApplicationJob
   def perform start_search_callback_url, finish_search_callback_url
     start_time = Time.now
     query = DbConnection.using { Query.find_by query_id: job_id }
-    finish_time = execute query do
+
+    perform_and_callback start_search_callback_url,
+                         finish_search_callback_url,
+                         start_time,
+                         query
+  end
+
+  private
+
+  def perform_and_callback start_search_callback_url, finish_search_callback_url, start_time, query
+    finish_time = LoqdaSearcher.perform query do
       post_callback start_search_callback_url,
                     event: 'start_search',
                     query: query.statement,
@@ -28,50 +38,6 @@ class LodqaSearchJob < ApplicationJob
                   finish_at: finish_time,
                   elapsed_time: finish_time - start_time,
                   answers: Event.answers(job_id)
-  end
-
-  private
-
-  EVENTS_TO_SAVE = %i[
-    datasets
-    pgp
-    mappings
-    sparql
-    query_sparql
-    solutions
-    answer
-    gateway_error
-  ].freeze
-
-  def execute query
-    threads = execute_on_all_datasets query
-
-    yield
-
-    threads.each(&:join)
-    Time.now
-  end
-
-  def execute_on_all_datasets query
-    Lodqa::Sources.datasets.map.with_index 1 do |dataset, number|
-      Thread.start { execute_on_a_dataset query, dataset, number }
-    end
-  end
-
-  def execute_on_a_dataset query, dataset, number
-    executor = Lodqa::OneByOneExecutor.new dataset.merge(number: number),
-                                           query.statement,
-                                           debug: false
-    # Bind events to save events
-    executor.on(*EVENTS_TO_SAVE) do |event, data|
-      DbConnection.using do
-        Event.create query: query,
-                     event: event,
-                     data: { event: event }.merge(data)
-      end
-    end
-
-    executor.perform
   end
 
   def post_callback callback_url, data
