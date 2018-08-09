@@ -13,7 +13,7 @@ class LodqaSearchJob < ApplicationJob
 
   def perform start_search_callback_url, finish_search_callback_url
     start_time = Time.now
-    query = dispose_db_connection { Query.find_by query_id: job_id }
+    query = DbConnection.using { Query.find_by query_id: job_id }
     finish_time = execute query do
       post_callback start_search_callback_url,
                     event: 'start_search',
@@ -64,7 +64,7 @@ class LodqaSearchJob < ApplicationJob
                                            debug: false
     # Bind events to save events
     executor.on(*EVENTS_TO_SAVE) do |event, data|
-      dispose_db_connection do
+      DbConnection.using do
         Event.create query: query,
                      event: event,
                      data: { event: event }.merge(data)
@@ -72,15 +72,6 @@ class LodqaSearchJob < ApplicationJob
     end
 
     executor.perform
-  end
-
-  # Release db connection automatically after process done
-  def dispose_db_connection
-    yield
-  rescue StandardError => e
-    logger.error "#{e.class}, #{e.message}"
-  ensure
-    ActiveRecord::Base.connection_pool.checkin ApplicationRecord.connection
   end
 
   def post_callback callback_url, data
