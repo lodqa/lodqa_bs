@@ -11,18 +11,19 @@ class LodqaSearchJob < ApplicationJob
     logger.fatal exception
   end
 
-  def perform query, start_search_callback_url, finish_search_callback_url
+  def perform start_search_callback_url, finish_search_callback_url
     start_time = Time.now
-    finish_time = execute job_id, query do
+    query = dispose_db_connection { Query.find_by query_id: job_id }
+    finish_time = execute query do
       post_callback start_search_callback_url,
                     event: 'start_search',
-                    query: query,
+                    query: query.statement,
                     start_at: start_time,
                     message: "Searching the query #{job_id} have been starting."
     end
     post_callback finish_search_callback_url,
                   event: 'finish_search',
-                  query: query,
+                  query: query.statement,
                   start_at: start_time,
                   finish_at: finish_time,
                   elapsed_time: finish_time - start_time,
@@ -42,8 +43,8 @@ class LodqaSearchJob < ApplicationJob
     gateway_error
   ].freeze
 
-  def execute query_id, query
-    threads = execute_on_all_datasets query_id, query
+  def execute query
+    threads = execute_on_all_datasets query
 
     yield
 
@@ -51,18 +52,16 @@ class LodqaSearchJob < ApplicationJob
     Time.now
   end
 
-  def execute_on_all_datasets query_id, query
+  def execute_on_all_datasets query
     Lodqa::Sources.datasets.map.with_index 1 do |dataset, number|
-      Thread.start { execute_on_a_dataset query_id, query, dataset, number }
+      Thread.start { execute_on_a_dataset query, dataset, number }
     end
   end
 
-  def execute_on_a_dataset query_id, query, dataset, number
+  def execute_on_a_dataset query, dataset, number
     executor = Lodqa::OneByOneExecutor.new dataset.merge(number: number),
-                                           query,
+                                           query.statement,
                                            debug: false
-    query = Query.find_by query_id: query_id
-
     # Bind events to save events
     executor.on(*EVENTS_TO_SAVE) do |event, data|
       dispose_db_connection do

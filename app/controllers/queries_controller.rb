@@ -8,12 +8,12 @@ class QueriesController < ApplicationController
 
   def create
     job = LodqaSearchJob.perform_later(*lodqa_search_params)
-    Query.create query_id: job.job_id
+    Query.create query_id: job.job_id, statement: params[:query]
   end
 
   private
 
   def lodqa_search_params
-    params.require(%i[query start_search_callback_url finish_search_callback_url])
+    params.require(%i[start_search_callback_url finish_search_callback_url])
   end
 end
