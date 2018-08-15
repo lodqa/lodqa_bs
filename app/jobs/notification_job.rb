@@ -10,7 +10,7 @@ class NotificationJob < ApplicationJob
 
   def perform url, query_id
     return if Notification.send url,
-                                events: Event.occurred(query_id)
+                                events: DbConnection.using { Event.occurred(query_id) }
     logger.error "Request to callback url is failed. URL: #{url}, message: #{res.message}"
   end
 end
