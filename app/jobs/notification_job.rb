@@ -12,5 +12,7 @@ class NotificationJob < ApplicationJob
     return if Notification.send url,
                                 events: DbConnection.using { Event.occurred(query_id) }
     logger.error "Request to callback url is failed. URL: #{url}, message: #{res.message}"
+  rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
+    logger.info "Establishing TCP connection to #{url} failed. Error: #{e.inspect}"
   end
 end
