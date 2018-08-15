@@ -3,10 +3,10 @@
 # Search by LODQA
 module LoqdaSearcher
   class << self
-    def perform query
-      threads = execute_on_all_datasets query
+    def perform query, on_event, on_finish
+      threads = execute_on_all_datasets query, on_event
 
-      yield
+      on_finish.call
 
       threads.each(&:join)
       Time.now
@@ -25,23 +25,19 @@ module LoqdaSearcher
       gateway_error
     ].freeze
 
-    def execute_on_all_datasets query
+    def execute_on_all_datasets query, on_event
       Lodqa::Sources.datasets.map.with_index 1 do |dataset, number|
-        Thread.start { execute_on_a_dataset query, dataset, number }
+        Thread.start { execute_on_a_dataset query, on_event, dataset, number }
       end
     end
 
-    def execute_on_a_dataset query, dataset, number
+    def execute_on_a_dataset query, on_event, dataset, number
       executor = Lodqa::OneByOneExecutor.new dataset.merge(number: number),
                                              query.statement,
                                              debug: false
       # Bind events to save events
       executor.on(*EVENTS_TO_SAVE) do |event, data|
-        DbConnection.using do
-          Event.create query: query,
-                       event: event,
-                       data: { event: event }.merge(data)
-        end
+        on_event.call event, data
       end
 
       executor.perform

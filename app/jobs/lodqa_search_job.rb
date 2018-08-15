@@ -24,13 +24,9 @@ class LodqaSearchJob < ApplicationJob
   private
 
   def perform_and_callback start_search_callback_url, finish_search_callback_url, start_time, query
-    finish_time = LoqdaSearcher.perform query do
-      post_callback start_search_callback_url,
-                    event: 'start_search',
-                    query: query.statement,
-                    start_at: start_time,
-                    message: "Searching the query #{job_id} have been starting."
-    end
+    finish_time = LoqdaSearcher.perform query,
+                                        on_event(query),
+                                        on_finish(query, start_search_callback_url, start_time)
     post_callback finish_search_callback_url,
                   event: 'finish_search',
                   query: query.statement,
@@ -38,6 +34,47 @@ class LodqaSearchJob < ApplicationJob
                   finish_at: finish_time,
                   elapsed_time: finish_time - start_time,
                   answers: Event.answers(job_id)
+  end
+
+  def on_event query
+    ng_urls = []
+    lambda do |event, data|
+      event_data = save_event query, event, data
+      notify query, event_data, ng_urls
+    end
+  end
+
+  def save_event query, event, data
+    DbConnection.using do
+      Event
+        .create(
+          query: query,
+          event: event,
+          data: { event: event }.merge(data)
+        )
+        .data
+    end
+  end
+
+  def notify query, event_data, ng_urls
+    Subscription.get(query.query_id).each do |_, url|
+      next if ng_urls.include? url
+      Notification.send url, events: [event_data]
+    rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
+      logger.info "Establishing TCP connection to #{url} failed. Error: #{e.inspect}"
+      ng_urls << url
+    end
+  end
+
+  def on_finish query, start_search_callback_url, start_time
+    lambda do
+      post_callback start_search_callback_url,
+                    event: 'start_search',
+                    query: query.statement,
+                    start_at: start_time,
+                    message: "Searching the query #{job_id} have been starting."
+      Subscription.remove query.query_id
+    end
   end
 
   def post_callback callback_url, data

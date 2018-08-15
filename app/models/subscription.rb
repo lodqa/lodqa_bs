@@ -7,11 +7,15 @@ class Subscription
 
   class << self
     def add query_id, url
-      @store = @store.concat [query_id, url]
+      @store = @store.concat [[query_id, url]]
     end
 
     def get query_id
       @store.select { |s| s[0] == query_id }
+    end
+
+    def remove query_id
+      @store = @store.reject { |s| s[0] == query_id }
     end
   end
 end
