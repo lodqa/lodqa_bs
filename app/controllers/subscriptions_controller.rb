@@ -3,12 +3,15 @@
 # To get old events of the query.
 class SubscriptionsController < ApplicationController
   def create
-    unless Query.exists? query_id: params[:query_id]
-      return render json: { query_id: params[:query_id] },
+    query_id = params[:query_id]
+    unless Query.exists? query_id: query_id
+      return render json: { query_id: query_id },
                     status: :not_found
     end
 
-    NotificationJob.perform_later params[:query_id],
-                                  params[:callback_url]
+    query_id = params[:query_id]
+    callback_url = params[:callback_url]
+    Subscription.add query_id, callback_url
+    NotificationJob.perform_later query_id, callback_url
   end
 end
