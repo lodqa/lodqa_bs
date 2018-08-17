@@ -69,14 +69,15 @@ module Lodqa
       mappings = mappings @target_dataset[:dictionary_url], pgp
       emit :mappings, dataset: dataset, pgp: pgp, mappings: mappings
 
-      endpoint = SparqlClient::CacheableClient.new(@target_dataset[:endpoint_url], method: :get, read_timeout: @read_timeout)
+      parallel = 16
+      endpoint = SparqlClient::CacheableClient.new @target_dataset[:endpoint_url],
+                                                   parallel,
+                                                   method: :get,
+                                                   read_timeout: @read_timeout
       endpoint.logger = logger
 
-      parallel = 16
       start = Time.now
       count = 0
-      error = 0
-      success = 0
       queue = Queue.new # Wait finishing serach of all SPARQLs.
       known_sparql = Set.new # Skip serach when SPARQL is duplicated.
 
@@ -119,16 +120,11 @@ module Lodqa
           # Emit an event to notify starting of querying the SPARQL.
           emit :query_sparql, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql
           count += 1
-
-          if count >= parallel
-            e, s = queue.pop
-            error += 1 if e
-            success += 1 if s
-            count -= 1
-          end
         end
       end
 
+      error = 0
+      success = 0
       count.times do
         e, s = queue.pop
         error += 1 if e

@@ -1,18 +1,27 @@
 # frozen_string_literal: true
 
 require 'sparql/client'
-require 'logger/async'
 require 'logger/loggable'
 require 'sparql_client/endpoint_error'
 require 'sparql_client/endpoint_temporary_error'
 require 'sparql_client/endpoint_timeout_error'
+require 'concurrent/executor/thread_pool_executor'
 
 # Cache results of sparql to speed up SPARQL queries.
 module SparqlClient
   class CacheableClient
     include Logger::Loggable
 
-    def initialize endpoint_url, endpoint_options = {}
+    DEFAULT_EXECUTOR_OPTIONS = {
+      min_threads:     0,
+      max_threads:     20,
+      auto_terminate:  true,
+      idletime:        60, # 1 minute
+      max_queue:       0, # unlimited
+      fallback_policy: :caller_runs # shouldn't matter -- 0 max queue
+    }.freeze
+
+    def initialize endpoint_url, parallel = 16, endpoint_options = {}
       @endpoint_url = endpoint_url
 
       endpoint_options[:read_timeout] ||= 60
@@ -21,8 +30,9 @@ module SparqlClient
       # But POST method in HTTP 1.1 may occurs conection broken error.
       # If HTTP method is GET, when HTTP connection error occurs, a request is retried by HTTP stack of Ruby standard library.
       endpoint_options[:method] ||= :get
-      @client = SPARQL::Client.new(endpoint_url, endpoint_options)
+      @client = SPARQL::Client.new endpoint_url, endpoint_options
       @cache = {}
+      @executor = Concurrent::ThreadPoolExecutor.new DEFAULT_EXECUTOR_OPTIONS.merge max_threads: parallel
     end
 
     # Query a SPARQL asynchronously.
@@ -36,7 +46,7 @@ module SparqlClient
     #   end
     # end
     def query_async sparql
-      Logger::Async.defer do
+      @executor.post do
         yield [nil, query(sparql)]
       rescue StandardError => e
         yield [e, nil]
