@@ -6,16 +6,18 @@ require 'enju_access/cgi_accessor'
 require 'logger/logger'
 require 'sparql_client/cacheable_client'
 require 'lodqa/graph_finder'
+require 'logger/loggable'
 require 'logger/logger'
 require 'lodqa/sources'
 require 'lodqa/pgp_factory'
 
 module Lodqa
   class Lodqa
+    include Logger::Loggable
+
     attr_reader   :parse_rendering
     attr_accessor :pgp
     attr_accessor :mappings
-
     attr_reader :endpoint
 
     def initialize ep_url, endpoint_options, graph_uri, graph_finder_options
@@ -23,24 +25,30 @@ module Lodqa
       @graph_finder = GraphFinder.new(@sparql_client, graph_uri, graph_finder_options)
     end
 
+    # Override Logger::Loggable#logger=
+    def logger= logger
+      super logger
+      @sparql_client.logger = logger
+    end
+
     # Return an enumerator to speed up checking the existence of sparqls.
     def sparqls
-      Logger::Logger.debug "start #{self.class.name}##{__method__}"
+      logger.debug "start #{self.class.name}##{__method__}"
 
       Enumerator.new do |y|
         anchored_pgps.each do |anchored_pgp|
           to_sparql(anchored_pgp) { |sparql| y << sparql }
         end
       rescue SparqlClient::EndpointError => e
-        Logger::Logger.debug "The SPARQL Endpoint #{e.endpoint_name} has a persistent error, continue to the next Endpoint", error_message: e.message
+        logger.debug "The SPARQL Endpoint #{e.endpoint_name} has a persistent error, continue to the next Endpoint", error_message: e.message
       end
     end
 
     def each_anchored_pgp_and_sparql_and_solution proc_anchored_pgp, proc_solution
-      Logger::Logger.debug "start #{self.class.name}##{__method__}"
+      logger.debug "start #{self.class.name}##{__method__}"
 
       if @cancel_flag
-        Logger::Logger.debug 'Stop before processing anchored_pgps'
+        logger.debug 'Stop before processing anchored_pgps'
         return
       end
 
@@ -51,12 +59,12 @@ module Lodqa
     end
 
     def dispose query_id
-      Logger::Logger.debug "Cancel query for pgp: #{@pgp}", query_id
+      logger.debug "Cancel query for pgp: #{@pgp}", query_id
       @cancel_flag = true
     end
 
     def anchored_pgps
-      Logger::Logger.debug "start #{self.class.name}##{__method__}"
+      logger.debug "start #{self.class.name}##{__method__}"
 
       Enumerator.new do |anchored_pgps|
         @pgp[:nodes].delete_if { |n| nodes_to_delete.include? n }
@@ -65,7 +73,7 @@ module Lodqa
 
         terms.map! { |t| t.nil? ? [] : t }
 
-        Logger::Logger.debug "terms: #{terms.first.product(*terms.drop(1))}"
+        logger.debug "terms: #{terms.first.product(*terms.drop(1))}"
 
         terms.first
              .product(*terms.drop(1))
@@ -84,28 +92,28 @@ module Lodqa
 
     def to_sparql anchored_pgp
       if @cancel_flag
-        Logger::Logger.debug "Stop during creating SPARQLs for anchored_pgp: #{anchored_pgp}"
+        logger.debug "Stop during creating SPARQLs for anchored_pgp: #{anchored_pgp}"
         return
       end
 
-      Logger::Logger.debug 'create graph finder'
+      logger.debug 'create graph finder'
 
       if @cancel_flag
-        Logger::Logger.debug "Stop during creating SPARQLs for anchored_pgp: #{anchored_pgp}"
+        logger.debug "Stop during creating SPARQLs for anchored_pgp: #{anchored_pgp}"
         return
       end
 
-      Logger::Logger.debug 'return SPARQLs of bgps'
+      logger.debug 'return SPARQLs of bgps'
       @graph_finder.sparqls_of(anchored_pgp) do |_bgp, sparql|
         yield sparql
       end
     end
 
     def deal_anchored_pgp anchored_pgp, proc_solution, parallel
-      Logger::Logger.debug "Query sparqls for anchored_pgp: #{anchored_pgp}"
+      logger.debug "Query sparqls for anchored_pgp: #{anchored_pgp}"
 
       if @cancel_flag
-        Logger::Logger.debug "Stop during processing an anchored_pgp: #{anchored_pgp}"
+        logger.debug "Stop during processing an anchored_pgp: #{anchored_pgp}"
         return
       end
 
@@ -117,7 +125,7 @@ module Lodqa
 
       @graph_finder.sparqls_of(anchored_pgp) do |bgp, sparql|
         if @cancel_flag
-          Logger::Logger.debug 'Stop procedure before querying a sparql'
+          logger.debug 'Stop procedure before querying a sparql'
           next
         end
 
@@ -149,21 +157,21 @@ module Lodqa
           error_rate: error / (error + success).to_f
         }
 
-        Logger::Logger.info "Finish stats: #{stats}"
+        logger.info "Finish stats: #{stats}"
       end
 
-      Logger::Logger.debug "Finish anchored_pgp: #{anchored_pgp}"
+      logger.debug "Finish anchored_pgp: #{anchored_pgp}"
     end
 
     def query_sparql endpoint, bgp, sparql, proc_solution, queue
-      Logger::Logger.debug "#{sparql}\n++++++++++"
+      logger.debug "#{sparql}\n++++++++++"
 
       endpoint.query_async(sparql) do |e, result|
         handle_result e, bgp, sparql, result, proc_solution
         queue.push [e, result]
       end
 
-      Logger::Logger.debug "==========\n"
+      logger.debug "==========\n"
     end
 
     def handle_result e, bgp, sparql, result, proc_solution
@@ -177,12 +185,12 @@ module Lodqa
       when SparqlClient::EndpointTemporaryError
         proc_solution.call(bgp: bgp, sparql: sparql, sparql_timeout: { error_message: e }, solutions: [])
       else
-        Logger::Logger.error e
+        logger.error e
       end
     end
 
     def nodes_to_delete
-      Logger::Logger.debug "start #{self.class.name}##{__method__}"
+      logger.debug "start #{self.class.name}##{__method__}"
 
       nodes_to_delete = []
       @pgp[:nodes].each_key do |n|

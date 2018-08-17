@@ -2,7 +2,7 @@
 
 require 'sparql/client'
 require 'logger/async'
-require 'logger/logger'
+require 'logger/loggable'
 require 'sparql_client/endpoint_error'
 require 'sparql_client/endpoint_temporary_error'
 require 'sparql_client/endpoint_timeout_error'
@@ -10,6 +10,8 @@ require 'sparql_client/endpoint_timeout_error'
 # Cache results of sparql to speed up SPARQL queries.
 module SparqlClient
   class CacheableClient
+    include Logger::Loggable
+
     def initialize endpoint_url, endpoint_options = {}
       @endpoint_url = endpoint_url
 
@@ -49,18 +51,18 @@ module SparqlClient
           @client.query(sparql).tap { |result| @cache[sparql] = result }
         rescue Net::HTTP::Persistent::Error => e
           # A timeout error was reterned from the Endpoint
-          Logger::Logger.debug 'SPARQL Timeout Error', error_messsage: e.message, trace: e.backtrace
+          logger.debug 'SPARQL Timeout Error', error_messsage: e.message, trace: e.backtrace
           raise EndpointTimeoutError.new e, @endpoint_url, sparql
         rescue SPARQL::Client::ServerError, SocketError, Errno::ECONNREFUSED => e
           # A temporary error was reterned from the Endpoint
-          Logger::Logger.debug 'SPARQL Endpoint Temporary Error', error_messsage: e.message, trace: e.backtrace
+          logger.debug 'SPARQL Endpoint Temporary Error', error_messsage: e.message, trace: e.backtrace
           raise EndpointTemporaryError.new e, @endpoint_url, sparql
         rescue OpenSSL::SSL::SSLError, SPARQL::Client::ClientError => e
           # TODO: What is the SPARQL::Client::ClientError?
-          Logger::Logger.debug 'SPARQL Endpoint Persistent Error', error_messsage: e.message, trace: e.backtrace
+          logger.debug 'SPARQL Endpoint Persistent Error', error_messsage: e.message, trace: e.backtrace
           raise EndpointError.new e, @endpoint_url
         rescue StandardError => e
-          Logger::Logger.error e, message: 'Unknown Error occurs during request SPARQL to the Endpoint'
+          logger.ror e, message: 'Unknown Error occurs during request SPARQL to the Endpoint'
           raise e
         end
       end

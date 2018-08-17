@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require 'logger/logger'
+require 'logger/loggable'
 require 'term/finder'
 require 'lodqa/lodqa'
 require 'lodqa/graph_finder'
 
 module Lodqa
   class OneByOneExecutor
+    include Logger::Loggable
+
     attr_accessor :cancel_flag
 
     def initialize dataset,
@@ -23,8 +26,7 @@ module Lodqa
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
 
-      Logger::Logger.query_id = query_id
-      Logger::Logger.level = debug ? Logger::DEBUG : Logger::INFO
+      self.logger = Logger::Logger.new query_id, debug ? Logger::DEBUG : Logger::INFO
 
       # Flag to stop search
       @cancel_flag = false
@@ -77,10 +79,12 @@ module Lodqa
                         endpoint_options,
                         @target_dataset[:graph_uri],
                         graph_finder_options
+      lodqa.logger = logger
       lodqa.pgp = pgp
       lodqa.mappings = mappings
 
       endpoint = SparqlClient::CacheableClient.new(@target_dataset[:endpoint_url], method: :get, read_timeout: @read_timeout)
+      endpoint.logger = logger
 
       parallel = 16
       start = Time.now
@@ -92,7 +96,7 @@ module Lodqa
 
       lodqa.anchored_pgps.each do |anchored_pgp|
         if @cancel_flag
-          Logger::Logger.debug "Stop during processing an anchored_pgp: #{anchored_pgp}"
+          logger.debug "Stop during processing an anchored_pgp: #{anchored_pgp}"
           return
         end
 
@@ -100,7 +104,7 @@ module Lodqa
         graph_finder = GraphFinder.new endpoint, nil, graph_finder_options
         graph_finder.sparqls_of anchored_pgp do |bgp, sparql_query|
           if @cancel_flag
-            Logger::Logger.debug "Stop during processing an bgp: #{bgp}"
+            logger.debug "Stop during processing an bgp: #{bgp}"
             return
           end
 
@@ -149,20 +153,20 @@ module Lodqa
           error_rate: error / (error + success).to_f
         }
 
-        Logger::Logger.info "Finish stats: #{JSON.pretty_generate stats}"
+        logger.info "Finish stats: #{JSON.pretty_generate stats}"
       end
     rescue EnjuAccess::EnjuError => e
-      Logger::Logger.debug e.message
+      logger.debug e.message
       emit :gateway_error,
            error_message: 'enju access error'
     rescue Term::FindError => e
-      Logger::Logger.debug e.message
+      logger.debug e.message
       emit :gateway_error,
            error_message: 'dictionary lookup error'
     rescue SparqlClient::EndpointError => e
-      Logger::Logger.debug "The SPARQL Endpoint #{e.endpoint_name} has a persistent error, continue to the next Endpoint", error_message: e.message
+      logger.debug "The SPARQL Endpoint #{e.endpoint_name} has a persistent error, continue to the next Endpoint", error_message: e.message
     rescue StandardError => e
-      Logger::Logger.error e
+      logger.error e
     end
 
     private
@@ -184,17 +188,17 @@ module Lodqa
               .each { |_, uri| get_label_of_url endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql, solutions, solution, uri }
           end
         when SparqlClient::EndpointTimeoutError
-          Logger::Logger.debug "The SPARQL Endpoint #{e.endpoint_name} return a timeout error for #{e.sparql}, continue to the next SPARQL", error_message: e.message
+          logger.debug "The SPARQL Endpoint #{e.endpoint_name} return a timeout error for #{e.sparql}, continue to the next SPARQL", error_message: e.message
           emit :solutions,
                dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql, solutions: [],
                error: 'sparql timeout error'
         when SparqlClient::EndpointTemporaryError
-          Logger::Logger.info "The SPARQL Endpoint #{e.endpoint_name} return a temporary error for #{e.sparql}, continue to the next SPARQL", error_message: e.message
+          logger.info "The SPARQL Endpoint #{e.endpoint_name} return a temporary error for #{e.sparql}, continue to the next SPARQL", error_message: e.message
           emit :solutions,
                dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql, solutions: [],
                error_message: 'endopoint temporary error'
         else
-          Logger::Logger.error e
+          logger.error e
         end
 
         queue.push [e, result]
@@ -219,6 +223,7 @@ module Lodqa
 
     def mappings dictionary_url, pgp
       tf = Term::Finder.new dictionary_url
+      tf.logger = logger
       keywords = pgp[:nodes].values.map { |n| n[:text] }.concat(pgp[:edges].map { |e| e[:text] })
       tf.find keywords
     end
@@ -240,7 +245,7 @@ module Lodqa
       first_rendering = urls.find { |u| u.dig(:rendering, :mime_type)&.start_with? 'image' }&.dig :rendering
       [urls, first_rendering]
     rescue Errno::ECONNREFUSED => e
-      Logger::Logger.debug "Failed to conntect The URL forwarding DB at #{@urilinks_url}, continue to the next SPARQL", error_message: e.message
+      logger.debug "Failed to conntect The URL forwarding DB at #{@urilinks_url}, continue to the next SPARQL", error_message: e.message
       nil
     end
   end

@@ -3,10 +3,13 @@
 require 'rest-client'
 require 'json'
 require 'term/find_error'
+require 'logger/loggable'
 
 module Term
   # An instance of this class is initialized with a dictionary.
   class Finder
+    include Logger::Loggable
+
     attr_reader :dictionary
 
     def initialize dictionary_url
@@ -47,12 +50,12 @@ module Term
           JSON.parse(response, symbolize_names: true)
         else
           # request to dictionary is not success
-          Logger::Logger.debug 'A requet to the dictionary failed', method: request.method, url: request.uri, requet_body: terms.to_json, status: response.code, response_body: response
+          logger.debug 'A requet to the dictionary failed', method: request.method, url: request.uri, requet_body: terms.to_json, status: response.code, response_body: response
           raise FindError, "Term find error to #{request.uri}"
         end
       end
     rescue RestClient::Exceptions::ReadTimeout
-      Logger::Logger.info 'A request to the dictionary was timeout', url: @dictionary.url, requet_body: terms.to_json
+      logger.info 'A request to the dictionary was timeout', url: @dictionary.url, requet_body: terms.to_json
       raise FindError, "Term find timeout error to #{@dictionary.url}"
     end
   end

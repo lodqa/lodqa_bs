@@ -35,7 +35,7 @@ module LoqdaSearcher
       executor = Lodqa::OneByOneExecutor.new dataset.merge(number: number),
                                              query.statement,
                                              query.query_id,
-                                             debug: true
+                                             debug: false
       # Bind events to save events
       executor.on(*EVENTS_TO_SAVE) do |event, data|
         on_event.call event, data
