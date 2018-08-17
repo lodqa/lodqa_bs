@@ -9,6 +9,6 @@ class SubscriptionsController < ApplicationController
                     status: :not_found
     end
 
-    NotificationJob.perform_later query_id, params[:callback_url]
+    NotificationJob.perform_now query_id, params[:callback_url]
   end
 end
