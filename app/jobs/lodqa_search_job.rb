@@ -40,7 +40,7 @@ class LodqaSearchJob < ApplicationJob
     ng_urls = []
     lambda do |event, data|
       event_data = save_event query, event, data
-      notify query, event_data, ng_urls
+      Subscription.publish query, event_data, ng_urls
     end
   end
 
@@ -53,16 +53,6 @@ class LodqaSearchJob < ApplicationJob
           data: { event: event }.merge(data)
         )
         .data
-    end
-  end
-
-  def notify query, event_data, ng_urls
-    Subscription.get(query.query_id).each do |_, url|
-      next if ng_urls.include? url
-      Notification.send url, events: [event_data]
-    rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
-      logger.info "Establishing TCP connection to #{url} failed. Error: #{e.inspect}"
-      ng_urls << url
     end
   end
 
