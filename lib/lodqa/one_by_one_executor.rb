@@ -3,8 +3,11 @@
 require 'logger/logger'
 require 'logger/loggable'
 require 'term/finder'
-require 'lodqa/lodqa'
+require 'lodqa/anchored_pgps'
 require 'lodqa/graph_finder'
+require 'lodqa/pgp_factory'
+require 'enju_access/cgi_accessor'
+require 'sparql_client/cacheable_client'
 
 module Lodqa
   class OneByOneExecutor
@@ -66,23 +69,6 @@ module Lodqa
       mappings = mappings @target_dataset[:dictionary_url], pgp
       emit :mappings, dataset: dataset, pgp: pgp, mappings: mappings
 
-      # Lodqa(anchored_pgp)
-      endpoint_options = {
-        read_timeout: @read_timeout
-      }
-      graph_finder_options = {
-        max_hop: @target_dataset[:max_hop],
-        ignore_predicates: @target_dataset[:ignore_predicates],
-        sortal_predicates: @target_dataset[:sortal_predicates]
-      }
-      lodqa = Lodqa.new @target_dataset[:endpoint_url],
-                        endpoint_options,
-                        @target_dataset[:graph_uri],
-                        graph_finder_options
-      lodqa.logger = logger
-      lodqa.pgp = pgp
-      lodqa.mappings = mappings
-
       endpoint = SparqlClient::CacheableClient.new(@target_dataset[:endpoint_url], method: :get, read_timeout: @read_timeout)
       endpoint.logger = logger
 
@@ -94,13 +80,20 @@ module Lodqa
       queue = Queue.new # Wait finishing serach of all SPARQLs.
       known_sparql = Set.new # Skip serach when SPARQL is duplicated.
 
-      lodqa.anchored_pgps.each do |anchored_pgp|
+      anchored_pgps = AnchoredPgps.new pgp, mappings
+      anchored_pgps.logger = logger
+      anchored_pgps.each do |anchored_pgp|
         if @cancel_flag
           logger.debug "Stop during processing an anchored_pgp: #{anchored_pgp}"
           return
         end
 
         # GraphFinder(bgb)
+        graph_finder_options = {
+          max_hop: @target_dataset[:max_hop],
+          ignore_predicates: @target_dataset[:ignore_predicates],
+          sortal_predicates: @target_dataset[:sortal_predicates]
+        }
         graph_finder = GraphFinder.new endpoint, nil, graph_finder_options
         graph_finder.sparqls_of anchored_pgp do |bgp, sparql_query|
           if @cancel_flag
