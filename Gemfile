@@ -46,4 +46,3 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # lodqa
 gem 'rest-client'
 gem 'sparql-client'
-gem 'eventmachine'

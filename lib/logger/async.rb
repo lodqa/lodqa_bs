@@ -1,22 +1,28 @@
 # frozen_string_literal: true
 
-require 'eventmachine'
 require 'logger/logger'
+require 'concurrent/executor/thread_pool_executor'
 
 class Logger
   module Async
+    DEFAULT_EXECUTOR_OPTIONS = {
+      min_threads:     0,
+      max_threads:     20,
+      auto_terminate:  true,
+      idletime:        60, # 1 minute
+      max_queue:       0, # unlimited
+      fallback_policy: :caller_runs # shouldn't matter -- 0 max queue
+    }.freeze
+
+    @executor = Concurrent::ThreadPoolExecutor.new DEFAULT_EXECUTOR_OPTIONS
+
     # Defer the process received as a block.
     # The process run in an another thread by EM.defer.
     # The request id for logging will be relayed automatically.
     def self.defer
       request_id = Logger.request_id
 
-      # An EventMachine.reactor is not running when no WebSocket request recieved.
-      # https://github.com/faye/faye-websocket-ruby/blob/master/lib/faye/websocket.rb#L39
-      Thread.new { EventMachine.run } unless EventMachine.reactor_running?
-      Thread.pass until EventMachine.reactor_running?
-
-      EM.defer do
+      @executor.post do
         Logger.request_id = request_id
         yield
       end
