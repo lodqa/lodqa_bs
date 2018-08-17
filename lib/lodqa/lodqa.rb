@@ -50,8 +50,8 @@ module Lodqa
       end
     end
 
-    def dispose request_id
-      Logger::Logger.debug "Cancel query for pgp: #{@pgp}", request_id
+    def dispose query_id
+      Logger::Logger.debug "Cancel query for pgp: #{@pgp}", query_id
       @cancel_flag = true
     end
 

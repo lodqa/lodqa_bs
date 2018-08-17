@@ -20,10 +20,10 @@ class Logger
     # The process run in an another thread by EM.defer.
     # The request id for logging will be relayed automatically.
     def self.defer
-      request_id = Logger.request_id
+      query_id = Logger.query_id
 
       @executor.post do
-        Logger.request_id = request_id
+        Logger.query_id = query_id
         yield
       end
     end

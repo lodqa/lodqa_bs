@@ -10,21 +10,17 @@ class Logger::Logger
       @log.level = level
     end
 
-    def generate_request_id
-      SecureRandom.uuid.tap { |id| self.request_id = id }
+    def query_id
+      Thread.current.thread_variable_get(:query_id)
     end
 
-    def request_id
-      Thread.current.thread_variable_get(:request_id)
-    end
-
-    def request_id= id
-      Thread.current.thread_variable_set(:request_id, id)
+    def query_id= id
+      Thread.current.thread_variable_set(:query_id, id)
     end
 
     def info message, id = nil, **rest
       @log.info({
-        request_id: id || request_id,
+        query_id: id || query_id,
         message: message
       }
         .merge(rest)
@@ -33,7 +29,7 @@ class Logger::Logger
 
     def debug message, id = nil, **rest
       @log.debug({
-        request_id: id || request_id,
+        query_id: id || query_id,
         message: message
       }
           .merge(rest)
@@ -42,7 +38,7 @@ class Logger::Logger
 
     def error error, **rest
       error_info = {
-        request_id: request_id,
+        query_id: query_id,
         message: error&.message,
         class: error&.class,
         trace: error&.backtrace

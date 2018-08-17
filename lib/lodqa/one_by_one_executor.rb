@@ -11,6 +11,7 @@ module Lodqa
 
     def initialize dataset,
                    query,
+                   query_id,
                    parser_url: 'http://enju-gtrec.dbcls.jp',
                    urilinks_url: 'http://urilinks.lodqa.org',
                    read_timeout: 5,
@@ -22,6 +23,7 @@ module Lodqa
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
 
+      Logger::Logger.query_id = query_id
       Logger::Logger.level = debug ? Logger::DEBUG : Logger::INFO
 
       # Flag to stop search
