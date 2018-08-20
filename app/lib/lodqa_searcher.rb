@@ -12,7 +12,7 @@ module LoqdaSearcher
 
       # Call value! method to catch errors in sub threads.
       Concurrent::Promises.zip(*tasks).value!
-      Time.now
+      DbConnection.using { query.finish! }
     end
 
     private

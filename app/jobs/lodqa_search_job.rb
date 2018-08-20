@@ -12,28 +12,37 @@ class LodqaSearchJob < ApplicationJob
   end
 
   def perform start_search_callback_url, finish_search_callback_url
-    start_time = Time.now
-    query = DbConnection.using { Query.find_by query_id: job_id }
-
+    query = DbConnection.using { Query.start! job_id }
     perform_and_callback start_search_callback_url,
                          finish_search_callback_url,
-                         start_time,
                          query
   end
 
   private
 
-  def perform_and_callback start_search_callback_url, finish_search_callback_url, start_time, query
-    finish_time = LoqdaSearcher.perform query,
-                                        on_start(query, start_search_callback_url, start_time),
-                                        on_event(query)
+  def perform_and_callback start_search_callback_url, finish_search_callback_url, query
+    query = LoqdaSearcher.perform query,
+                                  on_start(query, start_search_callback_url),
+                                  on_event(query)
+
     post_callback finish_search_callback_url,
                   event: 'finish_search',
                   query: query.statement,
-                  start_at: start_time,
-                  finish_at: finish_time,
-                  elapsed_time: finish_time - start_time,
+                  start_at: query.started_at,
+                  finish_at: query.finished_at,
+                  elapsed_time: query.elapsed_time,
                   answers: Event.answers(job_id)
+  end
+
+  def on_start query, start_search_callback_url
+    lambda do
+      post_callback start_search_callback_url,
+                    event: 'start_search',
+                    query: query.statement,
+                    start_at: query.started_at,
+                    message: "Searching the query #{job_id} have been starting."
+      Subscription.remove query.query_id
+    end
   end
 
   def on_event query
@@ -53,17 +62,6 @@ class LodqaSearchJob < ApplicationJob
           data: { event: event }.merge(data)
         )
         .data
-    end
-  end
-
-  def on_start query, start_search_callback_url, start_time
-    lambda do
-      post_callback start_search_callback_url,
-                    event: 'start_search',
-                    query: query.statement,
-                    start_at: start_time,
-                    message: "Searching the query #{job_id} have been starting."
-      Subscription.remove query.query_id
     end
   end
 
