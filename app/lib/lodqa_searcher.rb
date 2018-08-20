@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
+require 'concurrent/edge/promises'
+
 # Search by LODQA
 module LoqdaSearcher
   class << self
     def perform query, on_event, on_finish
-      threads = execute_on_all_datasets query, on_event
+      tasks = execute_on_all_datasets query, on_event
 
       on_finish.call
 
-      threads.each(&:join)
+      # Call value! method to catch errors in sub threads.
+      Concurrent::Promises.zip(*tasks).value!
       Time.now
     end
 
@@ -27,7 +30,7 @@ module LoqdaSearcher
 
     def execute_on_all_datasets query, on_event
       Lodqa::Sources.datasets.map.with_index 1 do |dataset, number|
-        Thread.start { execute_on_a_dataset query, on_event, dataset, number }
+        Concurrent::Promises.future { execute_on_a_dataset query, on_event, dataset, number }
       end
     end
 
