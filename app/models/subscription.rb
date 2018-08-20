@@ -4,14 +4,15 @@
 # If there are subscriptions of a query, the Event of the query will be sent when it is created.
 class Subscription
   @store = []
+  @semaphore = Mutex.new
 
   class << self
     def add query_id, url
-      @store = @store.concat [[query_id, url]]
+      @semaphore.synchronize { @store = @store.concat [[query_id, url]] }
     end
 
     def remove query_id
-      @store = @store.reject { |s| s[0] == query_id }
+      @semaphore.synchronize { @store = @store.reject { |s| s[0] == query_id } }
     end
 
     def publish query, event_data, ng_urls
