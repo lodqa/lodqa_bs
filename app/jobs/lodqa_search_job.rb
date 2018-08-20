@@ -25,8 +25,8 @@ class LodqaSearchJob < ApplicationJob
 
   def perform_and_callback start_search_callback_url, finish_search_callback_url, start_time, query
     finish_time = LoqdaSearcher.perform query,
-                                        on_event(query),
-                                        on_finish(query, start_search_callback_url, start_time)
+                                        on_start(query, start_search_callback_url, start_time),
+                                        on_event(query)
     post_callback finish_search_callback_url,
                   event: 'finish_search',
                   query: query.statement,
@@ -56,7 +56,7 @@ class LodqaSearchJob < ApplicationJob
     end
   end
 
-  def on_finish query, start_search_callback_url, start_time
+  def on_start query, start_search_callback_url, start_time
     lambda do
       post_callback start_search_callback_url,
                     event: 'start_search',

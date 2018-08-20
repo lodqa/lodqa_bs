@@ -5,10 +5,10 @@ require 'concurrent/edge/promises'
 # Search by LODQA
 module LoqdaSearcher
   class << self
-    def perform query, on_event, on_finish
+    def perform query, on_start, on_event
       tasks = execute_on_all_datasets query, on_event
 
-      on_finish.call
+      on_start.call
 
       # Call value! method to catch errors in sub threads.
       Concurrent::Promises.zip(*tasks).value!
