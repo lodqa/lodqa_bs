@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'concurrent/edge/promises'
+require 'lodqa/sources'
+require 'lodqa/one_by_one_executor'
 
 # Search by LODQA
 module LoqdaSearcher
@@ -12,7 +14,6 @@ module LoqdaSearcher
 
       # Call value! method to catch errors in sub threads.
       Concurrent::Promises.zip(*tasks).value!
-      DbConnection.using { query.finish! { Subscription.remove query.query_id } }
     end
 
     private

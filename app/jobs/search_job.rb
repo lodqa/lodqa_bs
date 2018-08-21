@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
-require 'lodqa/sources'
-require 'lodqa/one_by_one_executor'
-
 # A job to search query
-class LodqaSearchJob < ApplicationJob
+class SearchJob < ApplicationJob
   queue_as :default
 
   rescue_from StandardError do |exception|
@@ -13,27 +10,22 @@ class LodqaSearchJob < ApplicationJob
 
   def perform start_search_callback_url, finish_search_callback_url
     query = DbConnection.using { Query.start! job_id }
-    perform_and_callback start_search_callback_url,
-                         finish_search_callback_url,
-                         query
+    run_and_clean_up start_search_callback_url,
+                     finish_search_callback_url,
+                     query
   end
 
   private
 
-  def perform_and_callback start_search_callback_url, finish_search_callback_url, query
-    query = LoqdaSearcher.perform query,
-                                  on_start(query, start_search_callback_url),
-                                  on_event(query)
+  def run_and_clean_up start_search_callback_url, finish_search_callback_url, query
+    LoqdaSearcher.perform query,
+                          on_start(query, start_search_callback_url),
+                          on_event(query)
 
-    post_callback finish_search_callback_url,
-                  event: 'finish_search',
-                  query: query.statement,
-                  start_at: query.started_at,
-                  finish_at: query.finished_at,
-                  elapsed_time: query.elapsed_time,
-                  answers: Event.answers(job_id)
+    clean_up query, finish_search_callback_url
   end
 
+  # Return a proc to be called when the search will starts.
   def on_start query, start_search_callback_url
     lambda do
       post_callback start_search_callback_url,
@@ -44,8 +36,11 @@ class LodqaSearchJob < ApplicationJob
     end
   end
 
+  # Return a proc to be called when events of the search will occur.
   def on_event query
+    # A list of urls that is failed to send any message.
     ng_urls = []
+
     lambda do |event, data|
       event_data = save_event query, event, data
       Subscription.publish query, event_data, ng_urls
@@ -62,6 +57,17 @@ class LodqaSearchJob < ApplicationJob
         )
         .data
     end
+  end
+
+  def clean_up query, finish_search_callback_url
+    query = DbConnection.using { query.finish! { Subscription.remove query.query_id } }
+    post_callback finish_search_callback_url,
+                  event: 'finish_search',
+                  query: query.statement,
+                  start_at: query.started_at,
+                  finish_at: query.finished_at,
+                  elapsed_time: query.elapsed_time,
+                  answers: Event.answers(job_id)
   end
 
   def post_callback callback_url, data
