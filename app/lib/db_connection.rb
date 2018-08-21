@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Release db connection automatically after process done
+# Release db connection automatically after invoke the block
 module DbConnection
   def self.using
     yield
