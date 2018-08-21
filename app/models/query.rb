@@ -16,7 +16,7 @@ class Query < ApplicationRecord
   end
 
   def elapsed_time
-    raise RangeError, 'Query does not finish' unless started_at.present? && finished_at.present?
+    return nil unless started_at.present? && finished_at.present?
 
     finished_at - started_at
   end

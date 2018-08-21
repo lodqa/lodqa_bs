@@ -1,0 +1,33 @@
+<head>
+  <title>Queued queries</title>
+  <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+
+<body>
+  <h1>Queries</h1>
+
+  <table class="striped">
+    <thead>
+      <tr>
+        <th>Query id</th>
+        <th>Statement</th>
+        <th>Queued at</th>
+        <th>Started at</th>
+        <th>Finished at</th>
+        <th>Elapsed Time(s)</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @queries.each do |query| %>
+        <tr>
+          <td><%= query.query_id %></td>
+          <td><%= query.statement %></td>
+          <td><%= query.queued_at.in_time_zone.strftime('%m/%d %H:%M') %></td>
+          <td><%= query.started_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
+          <td><%= query.finished_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
+          <td><%= query.elapsed_time %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</body>
