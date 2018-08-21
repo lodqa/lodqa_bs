@@ -41,7 +41,6 @@ class LodqaSearchJob < ApplicationJob
                     query: query.statement,
                     start_at: query.started_at,
                     message: "Searching the query #{job_id} have been starting."
-      Subscription.remove query.query_id
     end
   end
 

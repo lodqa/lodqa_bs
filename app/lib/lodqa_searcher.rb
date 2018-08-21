@@ -12,7 +12,7 @@ module LoqdaSearcher
 
       # Call value! method to catch errors in sub threads.
       Concurrent::Promises.zip(*tasks).value!
-      DbConnection.using { query.finish! }
+      DbConnection.using { query.finish! { Subscription.remove query.query_id } }
     end
 
     private
