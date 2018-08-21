@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-# To get old events of the query.
+# A controller to register a new subscription to the query
 class SubscriptionsController < ApplicationController
+  # Register a new subscription to the query
   def create
     query_id = params[:query_id]
     unless Query.exists? query_id: query_id

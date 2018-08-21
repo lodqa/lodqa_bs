@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-# Receive a query and register a job to search query.
+# A controller to register a new query.
 class QueriesCreateController < ActionController::API
   rescue_from ActionController::ParameterMissing do
     render nothing: true, status: :bad_request
   end
 
+  # Register a new query and run a new job to search the query.
   def create
     job = LodqaSearchJob.perform_later(*lodqa_search_params)
     Query.create query_id: job.job_id, statement: params[:query], queued_at: Time.now

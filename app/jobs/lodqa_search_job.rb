@@ -3,7 +3,7 @@
 require 'lodqa/sources'
 require 'lodqa/one_by_one_executor'
 
-# Parse query to generate SPARQLs and search all SPARQLs
+# A job to search query
 class LodqaSearchJob < ApplicationJob
   queue_as :default
 
