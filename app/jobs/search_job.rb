@@ -18,9 +18,9 @@ class SearchJob < ApplicationJob
   private
 
   def run_and_clean_up start_search_callback_url, finish_search_callback_url, query
-    LoqdaSearcher.perform query,
-                          on_start(query, start_search_callback_url),
-                          on_event(query)
+    Search.start query,
+                 on_start(query, start_search_callback_url),
+                 on_event(query)
 
     clean_up query, finish_search_callback_url
   end
