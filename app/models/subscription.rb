@@ -3,34 +3,41 @@
 # The on memory container of subscriptions of query.
 # If there are subscriptions of a query, the Event of the query will be sent when it is created.
 class Subscription
-  @store = []
+  @container = []
   @semaphore = Mutex.new
 
+  # A Set of urls that is failed to send any message.
+  @unreachable_url = Set.new
+
   class << self
-    def add query_id, url
-      @semaphore.synchronize { @store = @store.concat [[query_id, url]] }
-      pp ['ABCD', @store]
+    # Add a subscription for the query.
+    def add_for query, url
+      @semaphore.synchronize { @container = @container.concat [[query.query_id, url]] }
+
+      # Delete re-registered url.
+      @unreachable_url.delete url
     end
 
-    def remove query_id
-      @semaphore.synchronize { @store = @store.reject { |s| s[0] == query_id } }
-      pp ['ABCD', @store]
+    # Remove all subscriptions for the query.
+    def remove_all_for query
+      @semaphore.synchronize { @container = @container.reject { |s| s[0] == query.query_id } }
     end
 
-    def publish query, event_data, ng_urls
+    # Publish a event of the query to subscribers.
+    def publish event, query
       select(query.query_id).each do |_, url|
-        next if ng_urls.include? url
-        Notification.send url, events: [event_data]
+        next if @unreachable_url.member? url
+        Notification.send url, events: [event]
       rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
         logger.info "Establishing TCP connection to #{url} failed. Error: #{e.inspect}"
-        ng_urls << url
+        @unreachable_url << url
       end
     end
 
     private
 
     def select query_id
-      @store.select { |s| s[0] == query_id }
+      @container.select { |s| s[0] == query_id }
     end
   end
 end

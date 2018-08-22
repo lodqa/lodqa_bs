@@ -10,12 +10,12 @@ class Query < ApplicationRecord
       query.save!
       query
     end
+  end
 
-    # Invoke received block if the query finished.
-    def finished? query_id
-      Query.transaction do
-        yield unless Query.find_by(query_id: query_id).finished_at.present?
-      end
+  # Invoke received block if the query finished.
+  def finished?
+    transaction do
+      yield unless reload.finished_at.present?
     end
   end
 

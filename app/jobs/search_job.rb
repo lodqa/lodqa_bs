@@ -38,29 +38,22 @@ class SearchJob < ApplicationJob
 
   # Return a proc to be called when events of the search will occur.
   def on_event query
-    # A list of urls that is failed to send any message.
-    ng_urls = []
-
     lambda do |event, data|
-      event_data = save_event query, event, data
-      Subscription.publish query, event_data, ng_urls
+      event = save_event! query, event, data
+      Subscription.publish event.data, query
     end
   end
 
-  def save_event query, event, data
+  def save_event! query, event, data
     DbConnection.using do
-      Event
-        .create(
-          query: query,
-          event: event,
-          data: { event: event }.merge(data)
-        )
-        .data
+      Event .create query: query,
+                    event: event,
+                    data: { event: event }.merge(data)
     end
   end
 
   def clean_up query, finish_search_callback_url
-    query = DbConnection.using { query.finish! { Subscription.remove query.query_id } }
+    query = DbConnection.using { query.finish! { Subscription.remove_all_for query } }
     post_callback finish_search_callback_url,
                   event: 'finish_search',
                   query: query.statement,

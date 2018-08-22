@@ -7,7 +7,7 @@ class Event < ApplicationRecord
   serialize :data
 
   class << self
-    # Return answers of the query
+    # Return answers of the query.
     def answers_of query
       where(query_id: query.query_id, event: :answer)
         .pluck(:data)
@@ -16,9 +16,10 @@ class Event < ApplicationRecord
         .uniq
     end
 
-    def occurred query_id
-      where(query_id: query_id)
-        .pluck(:data)
+    # Events that occurred while searching for queries.
+    def occurred_for query
+      where(query_id: query.query_id)
+        .pluck :data
     end
   end
 end

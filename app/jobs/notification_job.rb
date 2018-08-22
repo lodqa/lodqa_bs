@@ -9,9 +9,10 @@ class NotificationJob < ApplicationJob
   end
 
   def perform query_id, url
-    Query.finished?(query_id) { Subscription.add query_id, url }
+    query = Query.find_by query_id: query_id
+    query.finished? { Subscription.add_for query, url }
     return if Notification.send url,
-                                events: DbConnection.using { Event.occurred(query_id) }
+                                events: DbConnection.using { Event.occurred_for query }
     logger.error "Request to callback url is failed. URL: #{url}, message: #{res.message}"
   rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
     logger.info "Establishing TCP connection to #{url} failed. Error: #{e.inspect}"
