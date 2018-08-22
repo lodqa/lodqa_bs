@@ -64,7 +64,8 @@ class SearchJob < ApplicationJob
   end
 
   def post_callback callback_url, data
-    return if Notification.send callback_url, data
-    logger.error "Request to callback url is failed. URL: #{callback_url}, message: #{res.message}"
+    error = Notification.send callback_url, data
+    return unless error
+    logger.error "Request to callback url is failed. URL: #{callback_url}, error_message: #{error}"
   end
 end

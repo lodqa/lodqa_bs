@@ -12,6 +12,7 @@ module Notification
     req.body = data.to_json
     res = http.request req
 
-    res.is_a? Net::HTTPSuccess
+    return nil if res.is_a? Net::HTTPSuccess
+    res.message
   end
 end
