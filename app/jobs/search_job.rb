@@ -67,7 +67,7 @@ class SearchJob < ApplicationJob
                   start_at: query.started_at,
                   finish_at: query.finished_at,
                   elapsed_time: query.elapsed_time,
-                  answers: Event.answers(job_id)
+                  answers: Event.answers_of(query).as_json
   end
 
   def post_callback callback_url, data
