@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
 # A controller to register a new query.
-class QueriesCreateController < ActionController::API
+class QueriesApiController < ActionController::API
   rescue_from ActionController::ParameterMissing do
     render nothing: true, status: :bad_request
+  end
+
+  # Show information about a registered query.
+  def show
+    render json: Query.find_by(query_id: params[:id]), except: :id
   end
 
   # Register a new query and run a new job to search the query.
