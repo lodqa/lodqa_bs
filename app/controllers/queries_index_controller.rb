@@ -4,7 +4,7 @@
 class QueriesIndexController < ActionController::Base
   # Show registered queries
   def index
-    @queries = Query.all.order queued_at: :desc
+    @queries = Query.all.includes(:events).order queued_at: :desc
     respond_to do |format|
       format.html
       format.json { render json: @queries }

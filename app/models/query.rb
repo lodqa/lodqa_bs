@@ -2,14 +2,14 @@
 
 # The query accepted.
 class Query < ApplicationRecord
-  class << self
-    # Start to search the query and save the start time.
-    def start! query_id
-      query = find_by query_id: query_id
-      query.started_at = Time.now.utc
-      query.save!
-      query
-    end
+  has_many :events, primary_key: :query_id
+
+  # Start to search the query and save the start time.
+  def self.start! query_id
+    query = find_by query_id: query_id
+    query.started_at = Time.now.utc
+    query.save!
+    query
   end
 
   # Invoke received block if the query finished.
@@ -30,6 +30,11 @@ class Query < ApplicationRecord
 
       self
     end
+  end
+
+  # Return answers of the query.
+  def answers
+    events.select(&:answer?).map(&:to_answer).uniq
   end
 
   # Return elapsed time of the finished query.

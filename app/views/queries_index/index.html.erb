@@ -14,6 +14,7 @@
         <th>Started at</th>
         <th>Finished at</th>
         <th>Elapsed Time(s)</th>
+        <th>Number of answers</th>
       </tr>
     </thead>
 
@@ -26,6 +27,7 @@
           <td><%= query.started_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
           <td><%= query.finished_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
           <td><%= query.elapsed_time %></td>
+          <td><%= query.answers.size %></td>
         </tr>
       <% end %>
     </tbody>

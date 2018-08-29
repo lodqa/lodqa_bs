@@ -7,19 +7,18 @@ class Event < ApplicationRecord
   serialize :data
 
   class << self
-    # Return answers of the query.
-    def answers_of query
-      where(query_id: query.query_id, event: :answer)
-        .pluck(:data)
-        .pluck(:answer)
-        .map { |a| a.slice(:uri, :label) }
-        .uniq
-    end
-
     # Events that occurred while searching for queries.
     def occurred_for query
       where(query_id: query.query_id)
         .pluck :data
     end
+  end
+
+  def answer?
+    event == 'answer'
+  end
+
+  def to_answer
+    data[:answer].slice(:uri, :label)
   end
 end
