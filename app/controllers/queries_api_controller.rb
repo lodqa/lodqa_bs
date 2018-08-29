@@ -14,8 +14,12 @@ class QueriesApiController < ActionController::API
   # Register a new query and run a new job to search the query.
   def create
     job = SearchJob.perform_later(*lodqa_search_params)
-    Query.create query_id: job.job_id, statement: params[:query], queued_at: Time.now
-    render json: { query_id: job.job_id }
+    query_id = job.job_id
+    Query.create query_id: query_id, statement: params[:query], queued_at: Time.now
+    render json: {
+      query_id: query_id,
+      query_url: "#{ENV['LODQA']}/answer?query_id=#{query_id}"
+    }
   end
 
   private
