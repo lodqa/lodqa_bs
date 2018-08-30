@@ -10,6 +10,9 @@
       <tr>
         <th>Query id</th>
         <th>Statement</th>
+        <th>Read timeout</th>
+        <th>SPAQL limit</th>
+        <th>Answer limit</th>
         <th>State</th>
         <th>Queued at</th>
         <th>Started at</th>
@@ -24,6 +27,9 @@
         <tr>
           <td><%= query.query_id %></td>
           <td><%= query.statement %></td>
+          <td><%= query.read_timeout %></td>
+          <td><%= query.sparql_limit %></td>
+          <td><%= query.answer_limit %></td>
           <td><%= query.state %></td>
           <td><%= query.queued_at.in_time_zone.strftime('%H:%M') %></td>
           <td><%= query.started_at&.in_time_zone&.strftime('%H:%M') %></td>

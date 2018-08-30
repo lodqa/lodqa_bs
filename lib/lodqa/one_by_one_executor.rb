@@ -21,6 +21,8 @@ module Lodqa
                    parser_url: 'http://enju-gtrec.dbcls.jp',
                    urilinks_url: 'http://urilinks.lodqa.org',
                    read_timeout: 5,
+                   sparql_limit: nil,
+                   answer_limit: nil,
                    debug: false
 
       @target_dataset = dataset
@@ -28,6 +30,8 @@ module Lodqa
       @default_parser_url = parser_url
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
+      @sparql_limit = sparql_limit
+      @answer_limit = answer_limit
 
       self.logger = Logger::Logger.new query_id, debug ? Logger::DEBUG : Logger::INFO
 
@@ -93,7 +97,9 @@ module Lodqa
         graph_finder_options = {
           max_hop: @target_dataset[:max_hop],
           ignore_predicates: @target_dataset[:ignore_predicates],
-          sortal_predicates: @target_dataset[:sortal_predicates]
+          sortal_predicates: @target_dataset[:sortal_predicates],
+          sparql_limit: @sparql_limit,
+          answer_limit: @answer_limit
         }
         graph_finder = GraphFinder.new endpoint, nil, graph_finder_options
         graph_finder.sparqls_of anchored_pgp do |bgp, sparql_query|

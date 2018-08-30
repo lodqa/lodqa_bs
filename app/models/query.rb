@@ -3,18 +3,19 @@
 # The query accepted.
 class Query < ApplicationRecord
   has_many :events, primary_key: :query_id
+  before_create { self.queued_at = Time.now }
 
   class << self
-    # Add new query
-    def add query_id, statement
-      Query.create query_id: query_id, statement: statement, queued_at: Time.now
-    end
-
     # Check does a same statement exists?
-    def exists? statement
+    def equals_in other
       Query.where(queued_at: Date.today.all_day)
            .where(aborted_at: nil)
-           .where(statement: statement)
+           .where(statement: other.statement)
+           .where(start_search_callback_url: other.start_search_callback_url)
+           .where(finish_search_callback_url: other.finish_search_callback_url)
+           .where(read_timeout: other.read_timeout)
+           .where(sparql_limit: other.sparql_limit)
+           .where(answer_limit: other.answer_limit)
            .order(queued_at: :desc)
            .first
     end

@@ -13,8 +13,7 @@ class QueriesApiController < ActionController::API
 
   # Register a new query and run a new job to search the query.
   def create
-    statement = params[:query]
-    query_id = register statement
+    query_id = register Query.new query_attributes
     render json: to_hash(query_id)
   end
 
@@ -22,17 +21,32 @@ class QueriesApiController < ActionController::API
 
   # Register a statement.
   # return query_id if same statement exists.
-  def register statement
-    cache = Query.exists? statement
+  def register query
+    cache = Query.equals_in query
 
     return cache.query_id if cache
 
-    job = SearchJob.perform_later(*lodqa_search_params)
-    Query.add(job.job_id, statement).query_id
+    job = SearchJob.perform_later query.start_search_callback_url, query.finish_search_callback_url
+    query.query_id = job.job_id
+    query.save!
+    query.query_id
   end
 
-  def lodqa_search_params
-    params.require(%i[start_search_callback_url finish_search_callback_url])
+  def query_attributes
+    params.require(%i[
+                     query
+                     start_search_callback_url
+                     finish_search_callback_url
+                   ])
+    params.tap { |p| p[:statement] = p[:query] }
+          .permit(%i[
+                    statement
+                    start_search_callback_url
+                    finish_search_callback_url
+                    read_timeout
+                    sparql_limit
+                    answer_limit
+                  ])
   end
 
   def to_hash query_id
