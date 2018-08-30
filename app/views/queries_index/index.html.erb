@@ -25,10 +25,10 @@
           <td><%= query.query_id %></td>
           <td><%= query.statement %></td>
           <td><%= query.state %></td>
-          <td><%= query.queued_at.in_time_zone.strftime('%m/%d %H:%M') %></td>
-          <td><%= query.started_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
-          <td><%= query.finished_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
-          <td><%= query.elapsed_time %></td>
+          <td><%= query.queued_at.in_time_zone.strftime('%H:%M') %></td>
+          <td><%= query.started_at&.in_time_zone&.strftime('%H:%M') %></td>
+          <td><%= query.finished_at&.in_time_zone&.strftime('%H:%M') %></td>
+          <td><%= number_with_precision(query.elapsed_time, precision: 1) %></td>
           <td><%= query.answers.size %></td>
         </tr>
       <% end %>
