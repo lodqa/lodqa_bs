@@ -42,7 +42,7 @@ class Query < ApplicationRecord
   end
 
   # Invoke received block if the query finished.
-  def finished?
+  def not_finished?
     transaction do
       yield unless reload.finished_at.present?
     end
