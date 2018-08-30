@@ -5,6 +5,20 @@ class Query < ApplicationRecord
   has_many :events, primary_key: :query_id
 
   class << self
+    # Add new query
+    def add query_id, statement
+      Query.create query_id: query_id, statement: statement, queued_at: Time.now
+    end
+
+    # Check does a same statement exists?
+    def exists? statement
+      Query.where(queued_at: Date.today.all_day)
+           .where(aborted_at: nil)
+           .where(statement: statement)
+           .order(queued_at: :desc)
+           .first
+    end
+
     # Start to search the query and save the start time.
     def start! query_id
       query = find_by query_id: query_id

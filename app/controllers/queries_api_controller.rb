@@ -13,18 +13,32 @@ class QueriesApiController < ActionController::API
 
   # Register a new query and run a new job to search the query.
   def create
-    job = SearchJob.perform_later(*lodqa_search_params)
-    query_id = job.job_id
-    Query.create query_id: query_id, statement: params[:query], queued_at: Time.now
-    render json: {
-      query_id: query_id,
-      query_url: "#{ENV['LODQA']}/answer?query_id=#{query_id}"
-    }
+    statement = params[:query]
+    query_id = register statement
+    render json: to_hash(query_id)
   end
 
   private
 
+  # Register a statement.
+  # return query_id if same statement exists.
+  def register statement
+    cache = Query.exists? statement
+
+    return cache.query_id if cache
+
+    job = SearchJob.perform_later(*lodqa_search_params)
+    Query.add(job.job_id, statement).query_id
+  end
+
   def lodqa_search_params
     params.require(%i[start_search_callback_url finish_search_callback_url])
+  end
+
+  def to_hash query_id
+    {
+      query_id: query_id,
+      query_url: "#{ENV['LODQA']}/answer?query_id=#{query_id}"
+    }
   end
 end
