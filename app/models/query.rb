@@ -4,12 +4,27 @@
 class Query < ApplicationRecord
   has_many :events, primary_key: :query_id
 
-  # Start to search the query and save the start time.
-  def self.start! query_id
-    query = find_by query_id: query_id
-    query.started_at = Time.now.utc
-    query.save!
-    query
+  class << self
+    # Start to search the query and save the start time.
+    def start! query_id
+      query = find_by query_id: query_id
+      query.started_at = Time.now.utc
+      query.save!
+      query
+    end
+
+    # Abort unfinished queries
+    def abort_unfinished_queries
+      transaction do
+        done = Query.where(finished_at: nil)
+                    .where(aborted_at: nil)
+                    .each do |q|
+          q.aborted_at = Time.now.utc
+          q.save!
+        end
+        p 'Abort unfinished query' unless done.empty?
+      end
+    end
   end
 
   # Invoke received block if the query finished.

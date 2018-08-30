@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_20_083423) do
+ActiveRecord::Schema.define(version: 2018_08_30_043447) do
 
   create_table "events", force: :cascade do |t|
     t.string "query_id", limit: 36, null: false
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(version: 2018_08_20_083423) do
     t.datetime "queued_at", default: "-4712-01-01 00:00:00", null: false
     t.datetime "started_at"
     t.datetime "finished_at"
+    t.datetime "aborted_at"
     t.index ["query_id"], name: "index_queries_on_query_id", unique: true
   end
 
