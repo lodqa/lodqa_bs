@@ -10,6 +10,7 @@
       <tr>
         <th>Query id</th>
         <th>Statement</th>
+        <th>State</th>
         <th>Queued at</th>
         <th>Started at</th>
         <th>Finished at</th>
@@ -23,6 +24,7 @@
         <tr>
           <td><%= query.query_id %></td>
           <td><%= query.statement %></td>
+          <td><%= query.state %></td>
           <td><%= query.queued_at.in_time_zone.strftime('%m/%d %H:%M') %></td>
           <td><%= query.started_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
           <td><%= query.finished_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>

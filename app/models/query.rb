@@ -58,4 +58,12 @@ class Query < ApplicationRecord
 
     finished_at - started_at
   end
+
+  # Return state of query to use in the index page of queries.
+  def state
+    return :aborted if aborted_at.present?
+    return :finished if finished_at.present?
+    return :running if started_at.present?
+    :queued
+  end
 end
