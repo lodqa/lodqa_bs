@@ -40,7 +40,7 @@ class SearchJob < ApplicationJob
   def on_event search
     lambda do |event, data|
       event = save_event! search, event, data
-      Subscription.publish event.data, search
+      SubscriptionContainer.publish_for search, event.data
     end
   end
 
@@ -53,7 +53,7 @@ class SearchJob < ApplicationJob
   end
 
   def clean_up search, finish_search_callback_url
-    search = DbConnection.using { search.finish! { Subscription.remove_all_for search } }
+    search = DbConnection.using { search.finish! { SubscriptionContainer.remove_all_for search } }
     post_callback finish_search_callback_url,
                   event: 'finish_search',
                   query: search.query,
