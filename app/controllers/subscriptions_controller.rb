@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-# A controller to register a new subscription to the query
+# A controller to register a new subscription to the search
 class SubscriptionsController < ApplicationController
-  # Register a new subscription to the query
+  # Register a new subscription to the search
   def create
-    query_id = params[:query_id]
-    unless Query.exists? query_id: query_id
-      return render json: { query_id: query_id },
+    search_id = params[:search_id]
+    unless Search.exists? search_id: search_id
+      return render json: { search_id: search_id },
                     status: :not_found
     end
 
     return render nothing: true, status: :bad_request unless valid_url? params[:callback_url]
 
-    NotificationJob.perform_now query_id, params[:callback_url]
+    NotificationJob.perform_now search_id, params[:callback_url]
   end
 
   private

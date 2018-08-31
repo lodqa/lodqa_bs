@@ -10,22 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_30_084120) do
+ActiveRecord::Schema.define(version: 2018_08_31_063102) do
 
   create_table "events", force: :cascade do |t|
-    t.string "query_id", limit: 36, null: false
+    t.string "search_id", limit: 36, null: false
     t.string "event", null: false
     t.text "data", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["event"], name: "index_events_on_event"
-    t.index ["query_id"], name: "index_events_on_query_id"
+    t.index ["search_id"], name: "index_events_on_search_id"
   end
 
-  create_table "queries", force: :cascade do |t|
-    t.string "query_id", limit: 36, null: false
-    t.string "statement", default: "", null: false
-    t.datetime "queued_at", default: "-4712-01-01 00:00:00", null: false
+  create_table "searches", force: :cascade do |t|
+    t.string "search_id", limit: 36, null: false
+    t.string "query", default: "", null: false
+    t.datetime "created_at", default: "-4712-01-01 00:00:00", null: false
     t.datetime "started_at"
     t.datetime "finished_at"
     t.datetime "aborted_at"
@@ -34,7 +34,7 @@ ActiveRecord::Schema.define(version: 2018_08_30_084120) do
     t.integer "answer_limit", default: 10, null: false
     t.string "start_search_callback_url", default: "http://example.com/", null: false
     t.string "finish_search_callback_url", default: "http://example.com/", null: false
-    t.index ["query_id"], name: "index_queries_on_query_id", unique: true
+    t.index ["search_id"], name: "index_searches_on_search_id", unique: true
   end
 
 end

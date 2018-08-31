@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# The on memory container of subscriptions of query.
-# If there are subscriptions of a query, the Event of the query will be sent when it is created.
+# The on memory container of subscriptions of search.
+# If there are subscriptions of a search, the Event of the search will be sent when it is created.
 class Subscription
   @container = []
   @semaphore = Mutex.new
@@ -10,22 +10,22 @@ class Subscription
   @unreachable_url = Set.new
 
   class << self
-    # Add a subscription for the query.
-    def add_for query, url
-      @semaphore.synchronize { @container = @container.concat [[query.query_id, url]] }
+    # Add a subscription for the search.
+    def add_for search, url
+      @semaphore.synchronize { @container = @container.concat [[search.search_id, url]] }
 
       # Delete re-registered url.
       @unreachable_url.delete url
     end
 
-    # Remove all subscriptions for the query.
-    def remove_all_for query
-      @semaphore.synchronize { @container = @container.reject { |s| s[0] == query.query_id } }
+    # Remove all subscriptions for the search.
+    def remove_all_for search
+      @semaphore.synchronize { @container = @container.reject { |s| s[0] == search.search_id } }
     end
 
-    # Publish a event of the query to subscribers.
-    def publish event, query
-      select(query.query_id).each do |_, url|
+    # Publish a event of the search to subscribers.
+    def publish event, search
+      select(search.search_id).each do |_, url|
         next if @unreachable_url.member? url
         Notification.send url, events: [event]
       rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
@@ -36,8 +36,8 @@ class Subscription
 
     private
 
-    def select query_id
-      @container.select { |s| s[0] == query_id }
+    def select search_id
+      @container.select { |s| s[0] == search_id }
     end
   end
 end

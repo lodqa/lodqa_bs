@@ -1,0 +1,42 @@
+<head>
+  <title>Queued Searches</title>
+  <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+<body>
+  <h1>Searches</h1>
+
+  <table class="striped">
+    <thead>
+      <tr>
+        <th>Search id</th>
+        <th>Query</th>
+        <th>Read timeout</th>
+        <th>SPAQL limit</th>
+        <th>Answer limit</th>
+        <th>State</th>
+        <th>Created at</th>
+        <th>Started at</th>
+        <th>Finished at</th>
+        <th>Elapsed Time(s)</th>
+        <th>Number of answers</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @searches.each do |search| %>
+        <tr>
+          <td><%= search.search_id %></td>
+          <td><%= search.query %></td>
+          <td><%= search.read_timeout %></td>
+          <td><%= search.sparql_limit %></td>
+          <td><%= search.answer_limit %></td>
+          <td><%= search.state %></td>
+          <td><%= search.created_at.in_time_zone.strftime('%H:%M') %></td>
+          <td><%= search.started_at&.in_time_zone&.strftime('%H:%M') %></td>
+          <td><%= search.finished_at&.in_time_zone&.strftime('%H:%M') %></td>
+          <td><%= number_with_precision(search.elapsed_time, precision: 1) %></td>
+          <td><%= search.answers.size %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</body>

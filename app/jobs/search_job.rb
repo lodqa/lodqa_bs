@@ -9,58 +9,58 @@ class SearchJob < ApplicationJob
   end
 
   def perform start_search_callback_url, finish_search_callback_url
-    query = DbConnection.using { Query.start! job_id }
+    search = DbConnection.using { Search.start! job_id }
     run_and_clean_up start_search_callback_url,
                      finish_search_callback_url,
-                     query
+                     search
   end
 
   private
 
-  def run_and_clean_up start_search_callback_url, finish_search_callback_url, query
-    Search.start query,
-                 on_start(query, start_search_callback_url),
-                 on_event(query)
+  def run_and_clean_up start_search_callback_url, finish_search_callback_url, search
+    Lodqa::Search.start search,
+                        on_start(search, start_search_callback_url),
+                        on_event(search)
 
-    clean_up query, finish_search_callback_url
+    clean_up search, finish_search_callback_url
   end
 
   # Return a proc to be called when the search will starts.
-  def on_start query, start_search_callback_url
+  def on_start search, start_search_callback_url
     lambda do
       post_callback start_search_callback_url,
                     event: 'start_search',
-                    query: query.statement,
-                    start_at: query.started_at,
+                    query: search.query,
+                    start_at: search.started_at,
                     message: "Searching the query #{job_id} have been starting."
     end
   end
 
   # Return a proc to be called when events of the search will occur.
-  def on_event query
+  def on_event search
     lambda do |event, data|
-      event = save_event! query, event, data
-      Subscription.publish event.data, query
+      event = save_event! search, event, data
+      Subscription.publish event.data, search
     end
   end
 
-  def save_event! query, event, data
+  def save_event! search, event, data
     DbConnection.using do
-      Event .create query: query,
+      Event .create search: search,
                     event: event,
                     data: { event: event }.merge(data)
     end
   end
 
-  def clean_up query, finish_search_callback_url
-    query = DbConnection.using { query.finish! { Subscription.remove_all_for query } }
+  def clean_up search, finish_search_callback_url
+    search = DbConnection.using { search.finish! { Subscription.remove_all_for search } }
     post_callback finish_search_callback_url,
                   event: 'finish_search',
-                  query: query.statement,
-                  start_at: query.started_at,
-                  finish_at: query.finished_at,
-                  elapsed_time: query.elapsed_time,
-                  answers: query.answers.as_json
+                  query: search.query,
+                  start_at: search.started_at,
+                  finish_at: search.finished_at,
+                  elapsed_time: search.elapsed_time,
+                  answers: search.answers.as_json
   end
 
   def post_callback callback_url, data
