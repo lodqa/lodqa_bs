@@ -69,9 +69,9 @@ class Query < ApplicationRecord
 
   # Return elapsed time of the finished query.
   def elapsed_time
-    return nil unless started_at.present? && finished_at.present?
+    return nil if !started_at.present? || aborted_at.present?
 
-    finished_at - started_at
+    (finished_at.present? ? finished_at : Time.now) - started_at
   end
 
   # Return state of query to use in the index page of queries.
