@@ -5,7 +5,9 @@ class SubscriptionsController < ApplicationController
   # Register a new subscription to the search
   def create
     search_id = params[:search_id]
-    unless Search.exists? search_id: search_id
+    unless Search.at_today
+                 .alive?
+                 .exists? search_id: search_id
       return render json: { search_id: search_id },
                     status: :not_found
     end
