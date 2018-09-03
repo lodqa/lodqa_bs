@@ -8,7 +8,7 @@ class SearchesApiController < ActionController::API
 
   # Show information about a registered search.
   def show
-    render pretty_json: Search.find_by(search_id: params[:id]), except: :id
+    render pretty_json: Search.find_by!(search_id: params[:id]), except: :id
   end
 
   # Register a new search and run a new job to search the search.
