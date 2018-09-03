@@ -4,7 +4,7 @@
 class SearchesIndexController < ActionController::Base
   # Show registered searches
   def index
-    @searches = Search.where(created_at: Date.today.all_day)
+    @searches = Search.at_today
                       .includes(:events)
                       .order created_at: :desc
     pp @searches.to_sql
