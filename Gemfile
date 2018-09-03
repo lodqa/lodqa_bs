@@ -46,3 +46,4 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'rest-client'
 gem 'sparql-client'
 gem 'concurrent-ruby-edge'
+gem 'rails_pretty_json_rednerer'

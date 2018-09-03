@@ -80,4 +80,8 @@ class Search < ApplicationRecord
     return :running if started_at.present?
     :queued
   end
+
+  def as_json option = nil
+    super.merge answers: answers
+  end
 end
