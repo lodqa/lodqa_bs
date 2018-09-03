@@ -31,13 +31,12 @@ class Search < ApplicationRecord
     # Abort unfinished searches
     def abort_unfinished_searches!
       transaction do
-        done = Search.where(finished_at: nil)
+        Search.where(finished_at: nil)
                      .where(aborted_at: nil)
                      .each do |q|
           q.aborted_at = Time.now.utc
           q.save!
-        end
-        p 'Abort unfinished searches' unless done.empty?
+        end.any?
       end
     end
   end
