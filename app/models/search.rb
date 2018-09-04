@@ -2,6 +2,8 @@
 
 # The search accepted.
 class Search < ApplicationRecord
+  include Subscribable
+
   has_many :events, primary_key: :search_id
   before_create { self.created_at = Time.now }
 

@@ -4,17 +4,16 @@
 class SubscriptionsController < ApplicationController
   # Register a new subscription to the search
   def create
-    search_id = params[:search_id]
-    unless Search.at_today
-                 .alive?
-                 .exists? search_id: search_id
-      return render json: { search_id: search_id },
-                    status: :not_found
-    end
-
     return render nothing: true, status: :bad_request unless valid_url? params[:callback_url]
+    callback_url = params[:callback_url]
 
-    NotificationJob.perform_later search_id, params[:callback_url]
+    search_id = params[:search_id]
+    search = Search.at_today
+                   .alive?
+                   .find_by search_id: search_id
+    return render json: { search_id: search_id }, status: :not_found unless search
+
+    search.subscribe callback_url
   end
 
   private

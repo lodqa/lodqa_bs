@@ -1,16 +1,11 @@
 # frozen_string_literal: true
 
-# Send events of the search asynchronously
-class NotificationJob < ApplicationJob
-  queue_as :default
+module Subscribable
+  extend ActiveSupport::Concern
 
-  rescue_from StandardError do |exception|
-    logger.fatal exception
-  end
-
-  def perform search, url
-    subsribe_serach_if_running search, url
-    notify_existing_events_to url, search
+  def subscribe url
+    subsribe_serach_if_running self, url
+    notify_existing_events_to url, self
   rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
     logger.info "Establishing TCP connection to #{url} failed. Error: #{e.inspect}"
   end
