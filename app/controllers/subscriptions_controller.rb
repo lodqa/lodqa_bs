@@ -13,7 +13,7 @@ class SubscriptionsController < ApplicationController
                    .find_by search_id: search_id
     return render json: { search_id: search_id }, status: :not_found unless search
 
-    search.subscribe callback_url
+    SubscribeJob.perform_later search, callback_url
   end
 
   private

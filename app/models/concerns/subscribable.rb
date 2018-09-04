@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Subscribe search
 module Subscribable
   extend ActiveSupport::Concern
 
@@ -12,6 +13,7 @@ module Subscribable
 
   private
 
+  # There is no trigger to delete subscription of finished search.
   def subsribe_serach_if_running search, url
     search.not_finished? { SubscriptionContainer.add_for search, url }
   end
