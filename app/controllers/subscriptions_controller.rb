@@ -14,7 +14,7 @@ class SubscriptionsController < ApplicationController
 
     return render nothing: true, status: :bad_request unless valid_url? params[:callback_url]
 
-    NotificationJob.perform_now search_id, params[:callback_url]
+    NotificationJob.perform_later search_id, params[:callback_url]
   end
 
   private
