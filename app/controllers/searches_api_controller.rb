@@ -14,7 +14,7 @@ class SearchesApiController < ActionController::API
   # Register a new search and run a new job to search the search.
   def create
     search_id = register Search.new search_attributes
-    render json: to_hash(search_id)
+    render pretty_json: to_hash(search_id)
   end
 
   private
@@ -52,7 +52,8 @@ class SearchesApiController < ActionController::API
   def to_hash search_id
     {
       search_id: search_id,
-      search_url: "#{ENV['LODQA']}/answer?search_id=#{search_id}"
+      resouce_url: search_url(search_id),
+      subscribe_url: search_subscriptions_url(search_id)
     }
   end
 end
