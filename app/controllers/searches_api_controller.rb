@@ -2,6 +2,8 @@
 
 # A controller to register a new search.
 class SearchesApiController < ActionController::API
+  include UrlValidator
+  before_action :require_callback, only: [:create]
   rescue_from ActionController::ParameterMissing do
     render nothing: true, status: :bad_request
   end
@@ -18,6 +20,17 @@ class SearchesApiController < ActionController::API
   end
 
   private
+
+  def require_callback
+    callback_urls = [
+      params[:start_search_callback_url],
+      params[:finish_search_callback_url]
+    ]
+    invalid_urls = callback_urls.reject do |url|
+      valid_url? url
+    end
+    render json: UrlValidator::MESSAGE, status: :bad_request unless invalid_urls.empty?
+  end
 
   # Register a query.
   # return search_id if same query exists.
