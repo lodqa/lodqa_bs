@@ -29,10 +29,10 @@ class SearchJob < ApplicationJob
   def on_start search, start_search_callback_url
     lambda do
       post_callback start_search_callback_url,
-                    event: 'start_search',
+                    event: :start,
                     query: search.query,
-                    start_at: search.started_at,
-                    message: "Searching the query #{job_id} have been starting."
+                    search_id: search.search_id,
+                    start_at: search.started_at
     end
   end
 
@@ -55,8 +55,9 @@ class SearchJob < ApplicationJob
   def clean_up search, finish_search_callback_url
     search = DbConnection.using { search.finish! { SubscriptionContainer.remove_all_for search } }
     post_callback finish_search_callback_url,
-                  event: 'finish_search',
+                  event: :finish,
                   query: search.query,
+                  search_id: search.search_id,
                   start_at: search.started_at,
                   finish_at: search.finished_at,
                   elapsed_time: search.elapsed_time,
