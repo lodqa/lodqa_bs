@@ -4,7 +4,7 @@
 # All subscriptions share unreachable url.
 class Subscription
   # A Set of urls that is failed to send any message.
-  @@unreachable_url = Set.new
+  @@unreachable_url = Set.new # rubocop:disable Style/ClassVars
 
   def initialize url
     @url = url
