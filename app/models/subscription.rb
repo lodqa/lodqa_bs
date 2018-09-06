@@ -16,7 +16,7 @@ class Subscription
   # Publish a event of the search to subscribers.
   def publish data
     return if @unreachable_url.member? @url
-    Notification.send @url, data
+    HTTP.post @url, data
   rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
     logger.info "Establishing TCP connection to #{url} failed. Error: #{e.inspect}"
     @@unreachable_url << url
