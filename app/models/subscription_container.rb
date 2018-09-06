@@ -12,7 +12,7 @@ class SubscriptionContainer
       @semaphore.synchronize do
         @container = @container.concat [[
           search.search_id,
-          Subscription.new(url)
+          Channel.new(url)
         ]]
       end
     end
@@ -26,8 +26,8 @@ class SubscriptionContainer
 
     # Publish a event of the search to subscribers.
     def publish_for search, event
-      select(search.search_id).each do |_, subscription|
-        subscription.publish events: [event]
+      select(search.search_id).each do |_, channel|
+        channel.transmit events: [event]
       rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
         logger.info "Establishing TCP connection to #{url} failed. Error: #{e.inspect}"
       end

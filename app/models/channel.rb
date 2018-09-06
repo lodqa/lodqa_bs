@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# The subscription.
-# All subscriptions share unreachable url.
-class Subscription
+# The channels.
+# All channesls share unreachable url.
+class Channel
   # A Set of urls that is failed to send any message.
   @@unreachable_url = Set.new # rubocop:disable Style/ClassVars
 
@@ -13,8 +13,8 @@ class Subscription
     @@unreachable_url.delete url
   end
 
-  # Publish a event of the search to subscribers.
-  def publish data
+  # Transmit a event of the search to subscribers.
+  def transmit data
     return if @unreachable_url.member? @url
     HTTP.post @url, data
   rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
