@@ -8,27 +8,25 @@ class SearchJob < ApplicationJob
     logger.fatal exception
   end
 
-  def perform start_search_callback_url, finish_search_callback_url
+  def perform
     search = DbConnection.using { Search.start! job_id }
-    run_and_clean_up start_search_callback_url,
-                     finish_search_callback_url,
-                     search
+    run_and_clean_up search
   end
 
   private
 
-  def run_and_clean_up start_search_callback_url, finish_search_callback_url, search
+  def run_and_clean_up search
     Lodqa::Search.start search,
-                        on_start(search, start_search_callback_url),
+                        on_start(search),
                         on_event(search)
 
-    clean_up search, finish_search_callback_url
+    clean_up search
   end
 
   # Return a proc to be called when the search will starts.
-  def on_start search, start_search_callback_url
+  def on_start search
     lambda do
-      post_callback start_search_callback_url,
+      post_callback search.start_search_callback_url,
                     event: :start,
                     query: search.query,
                     search_id: search.search_id,
@@ -52,9 +50,9 @@ class SearchJob < ApplicationJob
     end
   end
 
-  def clean_up search, finish_search_callback_url
+  def clean_up search
     search = DbConnection.using { search.finish! { SubscriptionContainer.remove_all_for search } }
-    post_callback finish_search_callback_url,
+    post_callback search.finish_search_callback_url,
                   event: :finish,
                   query: search.query,
                   search_id: search.search_id,

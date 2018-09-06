@@ -39,8 +39,7 @@ class SearchesApiController < ActionController::API
 
     return cache.search_id if cache
 
-    job = SearchJob.perform_later search.start_search_callback_url,
-                                  search.finish_search_callback_url
+    job = SearchJob.perform_later
     search.search_id = job.job_id
     search.save!
     search.search_id
