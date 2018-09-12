@@ -5,6 +5,7 @@ class SearchJob < ApplicationJob
   queue_as :default
 
   rescue_from StandardError do |exception|
+    Search.abort! job_id
     logger.fatal exception
   end
 
