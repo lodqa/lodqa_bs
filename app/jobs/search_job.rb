@@ -64,7 +64,7 @@ class SearchJob < ApplicationJob
   end
 
   def post_callback callback_url, data
-    error = HTTP.post callback_url, data
+    error = Channel.new(callback_url).transmit data
     return unless error
     logger.error "Request to callback url is failed. URL: #{callback_url}, error_message: #{error}"
   end
