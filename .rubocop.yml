@@ -27,3 +27,5 @@ AllCops:
     - db/schema.rb
     - db/seeds.rb
     - db/migrate/*
+    - spec/spec_helper.rb
+    - spec/rails_helper.rb

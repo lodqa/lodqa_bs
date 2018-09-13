@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 # The channels.
+require 'http'
+
 # All channesls share unreachable url.
 class Channel
   # A Set of urls that is failed to send any message.
@@ -22,7 +24,7 @@ class Channel
     return if self.class.unreachable_url.member? @url
     HTTP.post @url, data
   rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError
-    self.class.unreachable_url << url
+    self.class.unreachable_url << @url
     raise
   end
 end
