@@ -15,7 +15,7 @@ class SearchesApiController < ActionController::API
 
   # Register a new search and run a new job to search the search.
   def create
-    search_id = register Search.new search_attributes
+    search_id = ReigsterSearchService.register search_attributes
     render pretty_json: to_hash(search_id)
   end
 
@@ -29,33 +29,6 @@ class SearchesApiController < ActionController::API
       valid_url? url
     end
     render json: UrlValidator::MESSAGE, status: :bad_request unless invalid_urls.empty?
-  end
-
-  # Register a query.
-  # return search_id if same query exists.
-  def register search
-    dupulicate_query = Search.equals_in search
-
-    return send_callback_about dupulicate_query if dupulicate_query
-
-    start_new_job_for search
-  end
-
-  def send_callback_about query
-    case query.state
-    when :finished
-      EventSender.send_to query.finish_search_callback_url,
-                          query.dafa_for_finish_event
-    end
-
-    query.search_id
-  end
-
-  def start_new_job_for search
-    job = SearchJob.perform_later
-    search.search_id = job.job_id
-    search.save!
-    search.search_id
   end
 
   def search_attributes
