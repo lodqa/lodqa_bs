@@ -34,10 +34,24 @@ class SearchesApiController < ActionController::API
   # Register a query.
   # return search_id if same query exists.
   def register search
-    cache = Search.equals_in search
+    dupulicate_query = Search.equals_in search
 
-    return cache.search_id if cache
+    return send_callback_about dupulicate_query if dupulicate_query
 
+    start_new_job_for search
+  end
+
+  def send_callback_about query
+    case query.state
+    when :finished
+      EventSender.send_to query.finish_search_callback_url,
+                          query.dafa_for_finish_event
+    end
+
+    query.search_id
+  end
+
+  def start_new_job_for search
     job = SearchJob.perform_later
     search.search_id = job.job_id
     search.save!
