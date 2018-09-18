@@ -27,4 +27,9 @@ class Channel
     self.class.unreachable_url << @url
     raise
   end
+
+  # Show URL for logging.
+  def to_s
+    @url
+  end
 end

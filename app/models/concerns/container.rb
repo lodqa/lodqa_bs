@@ -5,7 +5,7 @@ module Container
   extend ActiveSupport::Concern
 
   included do
-    @container = []
+    @container = {}
     @semaphore = Mutex.new
   end
 
@@ -13,33 +13,31 @@ module Container
     # Add a subscription for the search.
     def add_for search, url
       @semaphore.synchronize do
-        @container = @container.concat [[
-          search.search_id,
-          Channel.new(url)
-        ]]
+        channels = @container[search.search_id] || []
+        @container[search.search_id] = channels.concat [Channel.new(url)]
       end
     end
 
     # Remove all subscriptions for the search.
     def remove_all_for search
       @semaphore.synchronize do
-        @container = @container.reject { |s| s[0] == search.search_id }
+        @container.delete search.search_id
       end
     end
 
     # Publish a event of the search to subscribers.
     def publish_for search, event
-      select(search.search_id).each do |_, channel|
+      select(search.search_id).each do |channel|
         channel.transmit events: [event]
       rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
-        logger.info "Establishing TCP connection to #{url} failed. Error: #{e.inspect}"
+        Rails.logger.info "Establishing TCP connection to #{channel} failed. Error: #{e.inspect}"
       end
     end
 
     private
 
     def select search_id
-      @container.select { |s| s[0] == search_id }
+      @container[search_id] || []
     end
   end
 end
