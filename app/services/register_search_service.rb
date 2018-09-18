@@ -19,7 +19,14 @@ module ReigsterSearchService
     # Call back events about an exiting search.
     def send_callback_about query
       case query.state
+      # when :queued Callbacks will be called after the job start.
+      when :running
+        EventSender.send_to query.start_search_callback_url,
+                            query.data_for_start_event
+      # when :aborted Aborted seraches do not match new queries.
       when :finished
+        EventSender.send_to query.start_search_callback_url,
+                            query.data_for_start_event
         EventSender.send_to query.finish_search_callback_url,
                             query.dafa_for_finish_event
       end
