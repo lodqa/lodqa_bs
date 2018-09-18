@@ -27,8 +27,8 @@ class SearchJob < ApplicationJob
   # Return a proc to be called when the search will starts.
   def on_start search
     lambda do
-      post_callback search.start_search_callback_url,
-                    search.data_for_start_event
+      EventSender.send_to search.start_search_callback_url,
+                          search.data_for_start_event
     end
   end
 
@@ -42,21 +42,15 @@ class SearchJob < ApplicationJob
 
   def save_event! search, event, data
     DbConnection.using do
-      Event .create search: search,
-                    event: event,
-                    data: { event: event }.merge(data)
+      Event.create search: search,
+                   event: event,
+                   data: { event: event }.merge(data)
     end
   end
 
   def clean_up search
     search = DbConnection.using { search.finish! { SubscriptionContainer.remove_all_for search } }
-    post_callback search.finish_search_callback_url,
-                  search.dafa_for_finish_event
-  end
-
-  def post_callback callback_url, data
-    error = Channel.new(callback_url).transmit data
-    return unless error
-    logger.error "Request to callback url is failed. URL: #{callback_url}, error_message: #{error}"
+    EventSender.send_to search.finish_search_callback_url,
+                        search.dafa_for_finish_event
   end
 end
