@@ -28,10 +28,7 @@ class SearchJob < ApplicationJob
   def on_start search
     lambda do
       post_callback search.start_search_callback_url,
-                    event: :start,
-                    query: search.query,
-                    search_id: search.search_id,
-                    start_at: search.started_at
+                    search.data_for_start_event
     end
   end
 
@@ -54,13 +51,7 @@ class SearchJob < ApplicationJob
   def clean_up search
     search = DbConnection.using { search.finish! { SubscriptionContainer.remove_all_for search } }
     post_callback search.finish_search_callback_url,
-                  event: :finish,
-                  query: search.query,
-                  search_id: search.search_id,
-                  start_at: search.started_at,
-                  finish_at: search.finished_at,
-                  elapsed_time: search.elapsed_time,
-                  answers: search.answers.as_json
+                  search.dafa_for_finish_event
   end
 
   def post_callback callback_url, data
