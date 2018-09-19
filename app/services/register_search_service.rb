@@ -24,14 +24,11 @@ module ReigsterSearchService
         # Callbacks will be called after the job start.
         LateCallback.add_for search, callback_url
       when :running
-        ImmediatelyCall.back search.data_for_start_event,
-                             search.start_search_callback_url
+        ImmediatelyCall.back search.data_for_start_event, callback_url
         LateCallback.add_for search, callback_url
       when :finished
-        ImmediatelyCall.back search.data_for_start_event,
-                             search.start_search_callback_url
-        ImmediatelyCall.back search.dafa_for_finish_event,
-                             search.finish_search_callback_url
+        ImmediatelyCall.back search.data_for_start_event, callback_url
+        ImmediatelyCall.back search.dafa_for_finish_event, callback_url
       end
 
       search.search_id

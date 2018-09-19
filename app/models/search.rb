@@ -21,8 +21,6 @@ class Search < ApplicationRecord
       Search.at_today
             .alive?
             .where(query: other.query)
-            .where(start_search_callback_url: other.start_search_callback_url)
-            .where(finish_search_callback_url: other.finish_search_callback_url)
             .where(read_timeout: other.read_timeout)
             .where(sparql_limit: other.sparql_limit)
             .where(answer_limit: other.answer_limit)

@@ -36,18 +36,14 @@ class SearchesApiController < ActionController::API
 
   def search_attributes
     params.require(%i[query callback_url])
-    params.tap do |p|
-      p[:start_search_callback_url] = p[:callback_url]
-      p[:finish_search_callback_url] = p[:callback_url]
-    end
-          .permit %i[
-            query
-            start_search_callback_url
-            finish_search_callback_url
-            read_timeout
-            sparql_limit
-            answer_limit
-          ]
+    params.permit %i[
+      query
+      start_search_callback_url
+      finish_search_callback_url
+      read_timeout
+      sparql_limit
+      answer_limit
+    ]
   end
 
   def to_hash search_id
