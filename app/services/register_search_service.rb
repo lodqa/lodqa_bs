@@ -5,8 +5,7 @@ module ReigsterSearchService
   class << self
     # Register a query.
     # return search_id if same query exists.
-    def register attributes
-      search = Search.new attributes
+    def register search
       dupulicate_query = Search.equals_in search
 
       return send_callback_about dupulicate_query if dupulicate_query

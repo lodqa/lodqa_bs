@@ -15,7 +15,8 @@ class SearchesApiController < ActionController::API
 
   # Register a new search and run a new job to search the search.
   def create
-    search_id = ReigsterSearchService.register search_attributes
+    search = Search.new search_attributes
+    search_id = ReigsterSearchService.register search
     render pretty_json: to_hash(search_id)
   end
 
