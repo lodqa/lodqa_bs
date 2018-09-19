@@ -16,6 +16,8 @@ class SearchesApiController < ActionController::API
   # Register a new search and run a new job to search the search.
   def create
     search = Search.new search_attributes
+    return render json: search.errors, status: :bad_request if search.invalid?
+
     search_id = ReigsterSearchService.register search
     render pretty_json: to_hash(search_id)
   end

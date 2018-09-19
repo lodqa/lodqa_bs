@@ -5,6 +5,11 @@ class Search < ApplicationRecord
   include Subscribable
 
   has_many :events, primary_key: :search_id
+  validates :read_timeout,
+            :sparql_limit,
+            :answer_limit,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
   before_create { self.created_at = Time.now }
 
   scope :at_today, -> { where created_at: Date.today.all_day }
