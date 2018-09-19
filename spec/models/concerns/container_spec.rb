@@ -14,8 +14,8 @@ describe Container do
 
   describe 'add_for' do
     it 'one search multiple callback URLs' do
-      stub1 = stub_request(:post, 'foo.com').with body: { events: [data] }
-      stub2 = stub_request(:post, 'bar.com').with body: { events: [data] }
+      stub1 = stub_request(:post, 'foo.com').with body: data
+      stub2 = stub_request(:post, 'bar.com').with body: data
 
       subject.add_for search, 'http://foo.com/'
       subject.add_for search, 'http://bar.com/'

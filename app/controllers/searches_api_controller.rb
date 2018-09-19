@@ -18,7 +18,7 @@ class SearchesApiController < ActionController::API
     search = Search.new search_attributes
     return render json: search.errors, status: :bad_request if search.invalid?
 
-    search_id = ReigsterSearchService.register search
+    search_id = ReigsterSearchService.register search, params[:callback_url]
     render pretty_json: to_hash(search_id)
   end
 
