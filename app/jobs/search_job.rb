@@ -49,8 +49,9 @@ class SearchJob < ApplicationJob
   end
 
   def clean_up search
-    search = DbConnection.using { search.finish! { SubscriptionContainer.remove_all_for search } }
+    DbConnection.using { search.finish! }
     LateCallback.publish_for search,
                              search.dafa_for_finish_event
+    SubscriptionContainer.remove_all_for search
   end
 end

@@ -61,16 +61,9 @@ class Search < ApplicationRecord
   end
 
   # Finish to search and save the finish time.
-  # And invoke received block. For example remove subscriptions of the search.
   def finish!
-    transaction do
-      self.finished_at = Time.now.utc
-      save!
-
-      yield
-
-      self
-    end
+    self.finished_at = Time.now.utc
+    save!
   end
 
   # Abort to search and save the abort time.
