@@ -83,6 +83,9 @@ class Search < ApplicationRecord
   def data_for_start_event
     { event: :start,
       query: query,
+      read_timeout: read_timeout,
+      sparql_limit: sparql_limit,
+      answer_limit: answer_limit,
       search_id: search_id,
       start_at: started_at }
   end
@@ -91,6 +94,9 @@ class Search < ApplicationRecord
   def dafa_for_finish_event
     { event: :finish,
       query: query,
+      read_timeout: read_timeout,
+      sparql_limit: sparql_limit,
+      answer_limit: answer_limit,
       search_id: search_id,
       start_at: started_at,
       finish_at: finished_at,
