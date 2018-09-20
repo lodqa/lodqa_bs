@@ -92,16 +92,10 @@ class Search < ApplicationRecord
 
   # Data to sent at the finish event
   def dafa_for_finish_event
-    { event: :finish,
-      query: query,
-      read_timeout: read_timeout,
-      sparql_limit: sparql_limit,
-      answer_limit: answer_limit,
-      search_id: search_id,
-      start_at: started_at,
-      finish_at: finished_at,
-      elapsed_time: elapsed_time,
-      answers: answers.as_json }
+    data_for_start_event.merge event: :finish,
+                               finish_at: finished_at,
+                               elapsed_time: elapsed_time,
+                               answers: answers.as_json
   end
 
   # Return answers of the search.
