@@ -6,7 +6,8 @@ class SearchJob < ApplicationJob
 
   def perform
     search = DbConnection.using { Search.start! job_id }
-    run_and_clean_up search
+    run search
+    clean_up search
   rescue StandardError => exception
     logger.fatal exception
     search.abort!
@@ -16,12 +17,10 @@ class SearchJob < ApplicationJob
 
   private
 
-  def run_and_clean_up search
+  def run search
     Lodqa::Search.start search,
                         on_start(search),
                         on_event(search)
-
-    clean_up search
   end
 
   # Return a proc to be called when the search will starts.
