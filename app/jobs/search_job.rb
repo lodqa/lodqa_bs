@@ -4,14 +4,14 @@
 class SearchJob < ApplicationJob
   queue_as :default
 
-  rescue_from StandardError do |exception|
-    Search.abort! job_id
-    logger.fatal exception
-  end
-
   def perform
     search = DbConnection.using { Search.start! job_id }
     run_and_clean_up search
+  rescue StandardError => exception
+    logger.fatal exception
+    search.abort!
+  ensure
+    dispose_notifications_for search
   end
 
   private
@@ -52,6 +52,10 @@ class SearchJob < ApplicationJob
     DbConnection.using { search.finish! }
     LateCallback.publish_for search,
                              search.dafa_for_finish_event
+  end
+
+  def dispose_notifications_for search
     SubscriptionContainer.remove_all_for search
+    LateCallback.remove_all_for search
   end
 end

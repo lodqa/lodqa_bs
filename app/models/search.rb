@@ -36,12 +36,6 @@ class Search < ApplicationRecord
       search
     end
 
-    # Abort to search and save the abort time.
-    def abort! search_id
-      search = find_by search_id: search_id
-      search.abort!
-    end
-
     # Abort unfinished searches
     def abort_unfinished_searches!
       transaction do
