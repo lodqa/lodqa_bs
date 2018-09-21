@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_31_063102) do
+ActiveRecord::Schema.define(version: 2018_09_21_045527) do
 
   create_table "events", force: :cascade do |t|
     t.string "search_id", limit: 36, null: false
@@ -32,8 +32,6 @@ ActiveRecord::Schema.define(version: 2018_08_31_063102) do
     t.integer "read_timeout", default: 5, null: false
     t.integer "sparql_limit", default: 100, null: false
     t.integer "answer_limit", default: 10, null: false
-    t.string "start_search_callback_url", default: "http://example.com/", null: false
-    t.string "finish_search_callback_url", default: "http://example.com/", null: false
     t.index ["search_id"], name: "index_searches_on_search_id", unique: true
   end
 
