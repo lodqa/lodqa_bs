@@ -19,11 +19,11 @@ POST /searches with below parameters:
 -   query
 -   callback_url
 
-Curl exapmle:
+#### Curl exapmle:
 
     curl http://localhost/searches -d query='Which genes are associated with Endothelin receptor type B?' -d callback_url='https://webhook.site/310d4eab-d454-4087-954e-a4b1638c5af2'
 
-Return value example:
+#### Return value example:
 
 ```json
 {
@@ -32,6 +32,19 @@ Return value example:
   "subscribe_url": "http://localhost/searches/f47bb3d7-f1c9-4720-a824-2baf4a78c757/subscriptions"
 }
 ```
+
+#### Option parameters:
+
+| name           | default value | description                                              |
+| :------------- | :------------ | :------------------------------------------------------- |
+| sparql_timeout | 5             | Duration in seconds to expire SPARQL                     |
+| sparql_limit   | 100           | Limit on the number of SPARQL generated per anchored pgp |
+| answer_limit   | 10            | Limit of number of results of SPARQL                     |
+| cache          | yes           | Disable cache of answers of query if this value is 'no'  |
+
+##### Curl exapmle:
+
+    curl http://localhost/searches -d query='Which genes are associated with Endothelin receptor type B?' -d callback_url='https://webhook.site/310d4eab-d454-4087-954e-a4b1638c5af2' -d -sparql_timeout=1 -d sparql_limit=10 -d answer_limit=5 -d cache=no
 
 #### callback
 
@@ -121,7 +134,7 @@ GET /searches/:search_id
 
     curl http://localhost/searches/f47bb3d7-f1c9-4720-a824-2baf4a78c757
 
-Return value example:
+#### Return value example:
 
 ```json
 {
@@ -148,7 +161,7 @@ POST /searches/:search_id/subscriptions withe blow parameters:
 
 -   callback_url
 
-Curl example:
+#### Curl example:
 
     curl http://localhost/searches/f47bb3d7-f1c9-4720-a824-2baf4a78c757/subscriptions -d callback_url='https://webhook.site/310d4eab-d454-4087-954e-a4b1638c5af2'
 
