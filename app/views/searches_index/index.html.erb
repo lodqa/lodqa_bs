@@ -12,6 +12,7 @@
         <th>Read timeout</th>
         <th>SPAQL limit</th>
         <th>Answer limit</th>
+        <th>Private</th>
         <th>State</th>
         <th>Created at</th>
         <th>Started at</th>
@@ -29,6 +30,7 @@
           <td><%= search.read_timeout %></td>
           <td><%= search.sparql_limit %></td>
           <td><%= search.answer_limit %></td>
+          <td><%= search.private? %></td>
           <td><%= search.state %></td>
           <td><%= search.created_at.in_time_zone.strftime('%H:%M') %></td>
           <td><%= search.started_at&.in_time_zone&.strftime('%H:%M') %></td>
