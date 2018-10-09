@@ -22,10 +22,10 @@ module ReigsterSearchService
       # when :aborted Aborted seraches do not match new queries.
       when :queued
         # Callbacks will be called after the job start.
-        LateCallback.add_for search, callback_url
+        LateCallbacks.add_for search, callback_url
       when :running
         ImmediatelyCall.back search.data_for_start_event, callback_url
-        LateCallback.add_for search, callback_url
+        LateCallbacks.add_for search, callback_url
       when :finished
         ImmediatelyCall.back search.data_for_start_event, callback_url
         ImmediatelyCall.back search.dafa_for_finish_event, callback_url
@@ -40,7 +40,7 @@ module ReigsterSearchService
       search.search_id = job.job_id
       search.save!
 
-      LateCallback.add_for search, callback_url
+      LateCallbacks.add_for search, callback_url
 
       search.search_id
     end
