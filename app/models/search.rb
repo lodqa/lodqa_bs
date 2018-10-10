@@ -12,7 +12,10 @@ class Search < ApplicationRecord
 
   before_create { self.created_at = Time.now }
 
-  scope :at_today, -> { where created_at: Date.today.all_day }
+  scope :at_today, lambda {
+    where(created_at: Date.today.all_day)
+      .or(where(finished_at: Date.today.all_day))
+  }
   scope :alive?, -> { where aborted_at: nil }
 
   class << self
