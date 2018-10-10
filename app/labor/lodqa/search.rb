@@ -9,7 +9,11 @@ module Lodqa
   module Search
     class << self
       def start search, on_start, on_event
-        tasks = search_for_all_datasets_async search, on_event
+        tasks = if search.target.present?
+                  search_for_dataset_async search, on_event
+                else
+                  search_for_all_datasets_async search, on_event
+                end
 
         on_start.call
 
@@ -28,6 +32,11 @@ module Lodqa
         answer
         gateway_error
       ].freeze
+
+      def search_for_dataset_async search, on_event
+        dataset = Sources.dataset_of_target search.target
+        Concurrent::Promises.future { search_for dataset, search, on_event }
+      end
 
       def search_for_all_datasets_async search, on_event
         Sources.datasets.map.with_index 1 do |dataset, number|

@@ -27,6 +27,7 @@ class Search < ApplicationRecord
             .where(read_timeout: other.read_timeout)
             .where(sparql_limit: other.sparql_limit)
             .where(answer_limit: other.answer_limit)
+            .where(target: other.target)
             .where(private: false)
             .order(created_at: :desc)
             .first

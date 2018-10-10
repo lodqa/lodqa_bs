@@ -45,6 +45,7 @@ class SearchesApiController < ActionController::API
       read_timeout
       sparql_limit
       answer_limit
+      target
       private
     ]
   end

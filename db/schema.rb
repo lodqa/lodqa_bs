@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_21_062042) do
+ActiveRecord::Schema.define(version: 2018_10_10_090831) do
 
   create_table "events", force: :cascade do |t|
     t.string "search_id", limit: 36, null: false
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 2018_09_21_062042) do
     t.integer "sparql_limit", default: 100, null: false
     t.integer "answer_limit", default: 10, null: false
     t.boolean "private", default: false, null: false
+    t.string "target", default: "", null: false
     t.index ["search_id"], name: "index_searches_on_search_id", unique: true
   end
 
