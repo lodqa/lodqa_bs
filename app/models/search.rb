@@ -79,12 +79,14 @@ class Search < ApplicationRecord
       answer_limit: answer_limit,
       cache: private ? :no : :yes,
       search_id: search_id,
-      start_at: started_at }
+      start_at: started_at,
+      expiration_date: created_at + 1.days }
   end
 
   # Data to sent at the finish event
   def dafa_for_finish_event
     data_for_start_event.merge event: :finish,
+                               expiration_date: finished_at + 1.days,
                                finish_at: finished_at,
                                elapsed_time: elapsed_time,
                                answers: answers.as_json
