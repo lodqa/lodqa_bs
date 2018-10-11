@@ -19,8 +19,15 @@ module Subscribable
   end
 
   def notify_existing_events_to url, search
-    error = HTTP.post url,
-                      events: DbConnection.using { Event.occurred_for search }
-    logger.error "Request to callback url is failed. URL: #{url}, error_message: #{error}" if error
+    events = DbConnection.using { Event.occurred_for search }
+    # pp events.count
+    while events.any?
+      parts = events.shift 100
+      error = HTTP.post url,
+                        events: parts
+      if error
+        break logger.error "Request to callback url is failed. URL: #{url}, error_message: #{error}"
+      end
+    end
   end
 end
