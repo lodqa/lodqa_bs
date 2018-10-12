@@ -72,7 +72,7 @@ module SparqlClient
           logger.debug 'SPARQL Endpoint Persistent Error', error_messsage: e.message, trace: e.backtrace
           raise EndpointError.new e, @endpoint_url
         rescue StandardError => e
-          logger.ror e, message: 'Unknown Error occurs during request SPARQL to the Endpoint'
+          logger.error e, message: 'Unknown Error occurs during request SPARQL to the Endpoint'
           raise e
         end
       end
