@@ -8,8 +8,12 @@ class SearchJob < ApplicationJob
     search = DbConnection.using { Search.start! job_id }
     run search
     clean_up search
-  rescue StandardError => exception
-    logger.fatal exception
+  rescue StandardError => error
+    logger.error message: 'Execution of SearchJob failed.',
+                 error: { message: error.message,
+                          class: error.class.to_s,
+                          trace: error.backtrace }
+
     search.abort!
   ensure
     dispose_notifications_for search
