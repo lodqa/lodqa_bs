@@ -34,8 +34,8 @@ class Logger::Logger
   def error error, **rest
     error_info = {
       query_id: query_id,
-      message: error&.message,
-      class: error&.class,
+      error_message: error&.message,
+      class: error&.class.to_s,
       trace: error&.backtrace
     }.merge(rest)
 
