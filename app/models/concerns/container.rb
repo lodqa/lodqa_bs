@@ -19,9 +19,9 @@ module Container
     end
 
     # Remove all channels for the search.
-    def remove_all_for search
+    def remove_all_for search_id
       @semaphore.synchronize do
-        @container.delete search.search_id
+        @container.delete search_id
       end
     end
 

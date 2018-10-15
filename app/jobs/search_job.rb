@@ -14,9 +14,9 @@ class SearchJob < ApplicationJob
                           class: error.class.to_s,
                           trace: error.backtrace }
 
-    search.abort!
+    search&.abort!
   ensure
-    dispose_notifications_for search
+    dispose_notifications_for job_id
   end
 
   private
@@ -57,8 +57,8 @@ class SearchJob < ApplicationJob
                               search.dafa_for_finish_event
   end
 
-  def dispose_notifications_for search
-    SubscriptionContainer.remove_all_for search
-    LateCallbacks.remove_all_for search
+  def dispose_notifications_for search_id
+    SubscriptionContainer.remove_all_for search_id
+    LateCallbacks.remove_all_for search_id
   end
 end

@@ -30,7 +30,7 @@ describe Container do
     it 'one search Callback URLs, they will not be called after removed' do
       subject.add_for search, 'http://foo.com/'
       subject.add_for search, 'http://bar.com/'
-      subject.remove_all_for search
+      subject.remove_all_for search.search_id
       subject.publish_for search, data
     end
   end
