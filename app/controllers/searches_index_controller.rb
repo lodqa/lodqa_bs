@@ -4,9 +4,7 @@
 class SearchesIndexController < ActionController::Base
   # Show registered searches
   def index
-    @searches = Search.at_today
-                      .includes(:events)
-                      .order created_at: :desc
+    @searches = Search.queued_searches
     respond_to do |format|
       format.html
       format.json { render json: @searches }

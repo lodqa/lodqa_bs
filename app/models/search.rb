@@ -19,6 +19,12 @@ class Search < ApplicationRecord
   scope :alive?, -> { where aborted_at: nil }
 
   class << self
+    def queued_searches
+      Search.at_today
+            .includes(:events)
+            .order created_at: :desc
+    end
+
     # Check does a same condition search exists?
     def equals_in other
       Search.at_today
