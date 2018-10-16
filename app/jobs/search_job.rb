@@ -31,7 +31,7 @@ class SearchJob < ApplicationJob
   def on_start search
     lambda do
       LateCallbacks.publish_for search,
-                                search.data_for_start_event
+                                DbConnection.using { search.data_for_start_event }
     end
   end
 
@@ -54,7 +54,7 @@ class SearchJob < ApplicationJob
   def clean_up search
     DbConnection.using { search.finish! }
     LateCallbacks.publish_for search,
-                              search.dafa_for_finish_event
+                              DbConnection.using { search.dafa_for_finish_event }
   end
 
   def dispose_notifications_for search_id
