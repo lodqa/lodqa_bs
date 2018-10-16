@@ -7,7 +7,6 @@ class SearchesIndexController < ActionController::Base
     @searches = Search.at_today
                       .includes(:events)
                       .order created_at: :desc
-    pp @searches.to_sql
     respond_to do |format|
       format.html
       format.json { render json: @searches }
