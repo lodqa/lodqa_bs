@@ -4,7 +4,7 @@
 # This instances are saved to the database and sent the data attribute to the LODQA WS.
 class Event < ApplicationRecord
   belongs_to :search, primary_key: :search_id
-  serialize :data
+  serialize :data, JSON
 
   class << self
     # Events that occurred while searching for queries.
@@ -15,6 +15,6 @@ class Event < ApplicationRecord
   end
 
   def to_answer
-    data[:answer].slice(:uri, :label)
+    data['answer'].slice('uri', 'label')
   end
 end
