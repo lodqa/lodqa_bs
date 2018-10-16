@@ -4,7 +4,9 @@
 class Search < ApplicationRecord
   include Subscribable
 
-  has_many :events, primary_key: :search_id
+  has_many :all_answers, -> { where(event: 'answer') },
+           primary_key: :search_id,
+           class_name: :Event
   validates :read_timeout,
             :sparql_limit,
             :answer_limit,
@@ -21,7 +23,7 @@ class Search < ApplicationRecord
   class << self
     def queued_searches
       Search.at_today
-            .includes(:events)
+            .includes(:all_answers)
             .order created_at: :desc
     end
 
@@ -101,7 +103,7 @@ class Search < ApplicationRecord
 
   # Return answers of the search.
   def answers
-    events.select(&:answer?).map(&:to_answer).uniq
+    all_answers.map(&:to_answer).uniq
   end
 
   # Return elapsed time of the finished search.

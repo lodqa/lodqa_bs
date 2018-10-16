@@ -14,10 +14,6 @@ class Event < ApplicationRecord
     end
   end
 
-  def answer?
-    event == 'answer'
-  end
-
   def to_answer
     data[:answer].slice(:uri, :label)
   end
