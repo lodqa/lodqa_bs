@@ -35,7 +35,7 @@ module HTTP
       res = @http.request req
 
       return nil if res.is_a? Net::HTTPSuccess
-      res.message
+      res
     end
   end
 end

@@ -25,7 +25,7 @@ module Subscribable
       error = HTTP.post url,
                         events: parts
       if error
-        break logger.error "Request to callback url is failed. URL: #{url}, error_message: #{error}"
+        break logger.error "Request to url is failed. URL: #{url}, error_message: #{error.message}"
       end
     end
   end

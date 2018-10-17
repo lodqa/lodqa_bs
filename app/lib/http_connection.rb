@@ -7,7 +7,7 @@ module HTTPConnection
       data.each do |datum|
         error = http_conn.post datum
         next unless error
-        Rails.logger.error "Request to callback url is failed. URL: #{url}, error_message: #{error}"
+        Rails.logger.error "Request to callback url is failed. URL: #{url}, error_message: #{error.message}"
       end
     end
   end
