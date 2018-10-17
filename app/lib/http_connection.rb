@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # Utility class to send HTTP requests.
-module ImmediatelyCall
-  def self.back url, *data
+module HTTPConnection
+  def self.send url, *data
     HTTP.start(url) do |http_conn|
       data.each do |datum|
         error = http_conn.post datum

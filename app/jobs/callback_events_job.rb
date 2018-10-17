@@ -23,13 +23,13 @@ class CallbackEventsJob < ApplicationJob
       # Callbacks will be called after the job start.
       LateCallbacks.add_for search, callback_url
     when :running
-      ImmediatelyCall.back callback_url,
-                           DbConnection.using { search.data_for_start_event }
+      HTTPConnection.send callback_url,
+                          DbConnection.using { search.data_for_start_event }
       LateCallbacks.add_for search, callback_url
     when :finished
-      ImmediatelyCall.back callback_url,
-                           DbConnection.using { search.data_for_start_event },
-                           DbConnection.using { search.dafa_for_finish_event }
+      HTTPConnection.send callback_url,
+                          DbConnection.using { search.data_for_start_event },
+                          DbConnection.using { search.dafa_for_finish_event }
     end
   end
 end
