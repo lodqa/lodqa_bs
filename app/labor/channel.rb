@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 # The channels.
-require 'http'
-
 # All channesls share unreachable url.
 class Channel
   # A Set of urls that is failed to send any message.
@@ -22,7 +20,7 @@ class Channel
   # Transmit a event of the search to subscribers.
   def transmit data
     return if self.class.unreachable_url.member? @url
-    HTTP.post @url, data
+    JSONResource.append @url, data
   rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError
     self.class.unreachable_url << @url
     raise

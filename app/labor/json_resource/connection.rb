@@ -1,20 +1,8 @@
 # frozen_string_literal: true
 
-# Send JSON message by HTTP POST mesthod.
-module HTTP
-  class << self
-    def post url, datum
-      http = HTTP::Conneciton.new(url)
-      http.post datum
-    end
-
-    def start url, &block
-      HTTP::Conneciton.new(url).start block
-    end
-  end
-
+module JSONResource
   # HTTP Connction
-  class Conneciton
+  class Connection
     def initialize url
       @uri = URI url
       @http = Net::HTTP.new @uri.hostname, @uri.port
@@ -29,7 +17,7 @@ module HTTP
     end
 
     # Send single datum
-    def post datum
+    def append datum
       req = Net::HTTP::Post.new @uri.path, 'Content-Type' => 'application/json'
       req.body = datum.to_json
       res = @http.request req

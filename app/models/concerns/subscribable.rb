@@ -22,8 +22,8 @@ module Subscribable
     events = DbConnection.using { Event.occurred_for search }
     # pp events.count
     split(events).each do |parts|
-      error = HTTP.post url,
-                        events: parts
+      error = JSONResource.append url,
+                                  events: parts
       if error
         break logger.error "Request to url is failed. URL: #{url}, error_message: #{error.message}"
       end
