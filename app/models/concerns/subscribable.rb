@@ -21,13 +21,7 @@ module Subscribable
   def notify_existing_events_to url, search
     events = DbConnection.using { Event.occurred_for search }
     # pp events.count
-    split(events).each do |parts|
-      error = JSONResource.append url,
-                                  events: parts
-      if error
-        break logger.error "Request to url is failed. URL: #{url}, error_message: #{error.message}"
-      end
-    end
+    JSONResource.append_all url, *(split(events).map { |e| { events: e } })
   end
 
   def split events
