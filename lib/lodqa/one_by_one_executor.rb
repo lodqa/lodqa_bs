@@ -239,7 +239,7 @@ module Lodqa
 
       first_rendering = urls.find { |u| u.dig(:rendering, :mime_type)&.start_with? 'image' }&.dig :rendering
       [urls, first_rendering]
-    rescue Errno::ECONNREFUSED => e
+    rescue Errno::ECONNREFUSED, RestClient::Exceptions::ReadTimeout => e
       logger.debug "Failed to conntect The URL forwarding DB at #{@urilinks_url}, continue to the next SPARQL", error_message: e.message
       nil
     end
