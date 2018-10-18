@@ -2,6 +2,7 @@
 
 # Subscribe search
 module Subscribable
+  TRANSMIT_DATA_SIZE_UPPER_LIMIT = 500_000
   extend ActiveSupport::Concern
 
   def subscribe url
@@ -24,7 +25,18 @@ module Subscribable
     JSONResource.append_all url, *(split(events).map { |e| { events: e } })
   end
 
+  # Divide the event array into a size approximate to the transmission data size upper limit.
   def split events
-    events.each_slice(100).to_a
+    return events unless events.any?
+
+    total_size = events.to_json.length
+    return events if total_size <= TRANSMIT_DATA_SIZE_UPPER_LIMIT
+
+    # One transmission data size is calculated by the number of events.
+    # Please note that if an event is huge, the send data size limit may be exceeded.
+    number_of_chunk = total_size.fdiv(TRANSMIT_DATA_SIZE_UPPER_LIMIT).ceil
+    chunk_size = events.length / number_of_chunk
+    pp [total_size, events.length, number_of_chunk, chunk_size]
+    events.each_slice(chunk_size).to_a
   end
 end
