@@ -4,7 +4,7 @@
 module JSONResource
   class << self
     def append_all url, *data
-      open_resource(url) do |resource|
+      start url do |resource|
         data.each do |datum|
           res = resource.append datum
 
@@ -33,7 +33,7 @@ module JSONResource
 
     private
 
-    def open_resource url, &block
+    def start url, &block
       JSONResource::Connection.new(url).start block
     end
   end

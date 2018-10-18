@@ -9,6 +9,14 @@ module JSONResource
       @http.use_ssl = @uri.instance_of? URI::HTTPS
     end
 
+    def open!
+      @http.start
+    end
+
+    def opened?
+      @http.started?
+    end
+
     # To send multiple data via same conneciton.
     def start block
       @http.start
