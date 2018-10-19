@@ -37,17 +37,17 @@ class SearchJob < ApplicationJob
 
   # Return a proc to be called when events of the search will occur.
   def on_event search
-    lambda do |event, data|
-      event = save_event! search, event, data
+    lambda do |event_type, data|
+      event = save_event! search, event_type, data
       SubscriptionContainer.publish_for search, event.data
     end
   end
 
-  def save_event! search, event, data
+  def save_event! search, event_type, data
     DbConnection.using do
       Event.create search: search,
-                   event: event,
-                   data: { event: event }.merge(data)
+                   event: event_type,
+                   data: { event: event_type }.merge(data)
     end
   end
 
