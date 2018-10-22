@@ -36,7 +36,6 @@ module Subscribable
     # Please note that if an event is huge, the send data size limit may be exceeded.
     number_of_chunk = total_size.fdiv(TRANSMIT_DATA_SIZE_UPPER_LIMIT).ceil
     chunk_size = events.length / number_of_chunk
-    pp [total_size, events.length, number_of_chunk, chunk_size]
     events.each_slice(chunk_size).to_a
   end
 end
