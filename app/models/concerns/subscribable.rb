@@ -30,7 +30,7 @@ module Subscribable
     return events unless events.any?
 
     total_size = events.to_json.length
-    return events if total_size <= TRANSMIT_DATA_SIZE_UPPER_LIMIT
+    return [events] if total_size <= TRANSMIT_DATA_SIZE_UPPER_LIMIT
 
     # One transmission data size is calculated by the number of events.
     # Please note that if an event is huge, the send data size limit may be exceeded.
