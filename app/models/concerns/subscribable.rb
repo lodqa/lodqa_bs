@@ -21,7 +21,6 @@ module Subscribable
 
   def notify_existing_events_to url, search
     events = DbConnection.using { Event.occurred_for search }
-    # pp events.count
     JSONResource.append_all url, *(split(events).map { |e| { events: e } })
   end
 
