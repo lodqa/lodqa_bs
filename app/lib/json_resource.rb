@@ -26,11 +26,6 @@ module JSONResource
       end
     end
 
-    def append url, datum
-      con = JSONResource::Connection.new url
-      con.append datum
-    end
-
     private
 
     def start url, &block
