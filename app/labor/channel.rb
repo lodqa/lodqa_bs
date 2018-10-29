@@ -27,7 +27,7 @@ class Channel
 
     # It may take time to open a connection.
     # Instead of opening a connection at initialization, open a connection when using a connection.
-    conn.open! unless conn.opened?
+    conn.open!
     conn.append data
   rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError
     self.class.unreachable_url << @url

@@ -11,11 +11,11 @@ module JSONResource
     end
 
     def open!
-      @http.start
-    end
-
-    def opened?
-      @http.started?
+      # To save HTTP connections, use Keep Alive to share the same connection with multiple threads.
+      # At the same time, when a transmission request arrives,
+      # try to open a new HTTP connection while opening other HTTP connection.
+      # To prevent this, we use semaphores to prevent conflicts of opening HTTP connections.
+      @semaphore.synchronize { @http.start unless @http.started? }
     end
 
     # To send multiple data via same conneciton.
