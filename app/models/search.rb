@@ -62,6 +62,9 @@ class Search < ApplicationRecord
 
   # Invoke received block if the search finished.
   def not_finished?
+    # Subscriptions to search are managed in memory and deleted when the search ends.
+    # If you subscribe to a finished search, the subscription will remain permanently in memory.
+    # Use transactions to prevent the search from being terminated just before subscribing to it.
     transaction do
       yield unless reload.finished_at.present?
     end
