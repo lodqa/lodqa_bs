@@ -63,7 +63,7 @@ module SparqlClient
           # A timeout error was reterned from the Endpoint
           logger.debug 'SPARQL Timeout Error', error_messsage: e.message, trace: e.backtrace
           raise EndpointTimeoutError.new e, @endpoint_url, sparql
-        rescue SPARQL::Client::ServerError, SocketError, Errno::ECONNREFUSED => e
+        rescue SPARQL::Client::ServerError, SocketError, Errno::ECONNREFUSED, Net::OpenTimeout => e
           # A temporary error was reterned from the Endpoint
           logger.debug 'SPARQL Endpoint Temporary Error', error_messsage: e.message, trace: e.backtrace
           raise EndpointTemporaryError.new e, @endpoint_url, sparql
