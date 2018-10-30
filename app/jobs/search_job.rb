@@ -4,8 +4,8 @@
 class SearchJob < ApplicationJob
   queue_as :default
 
-  def perform
-    search = DbConnection.using { Search.start! job_id }
+  def perform search_id
+    search = DbConnection.using { Search.start! search_id }
     run search
     clean_up search
   rescue StandardError => error
@@ -16,7 +16,7 @@ class SearchJob < ApplicationJob
 
     search&.abort!
   ensure
-    dispose_notifications_for job_id
+    dispose_notifications_for search_id
   end
 
   private
