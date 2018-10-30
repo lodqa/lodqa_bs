@@ -18,12 +18,6 @@ module ReigsterSearchService
 
     private
 
-    # Call back events about an exiting search.
-    def call_back_events_about search, callback_url
-      CallbackEventsJob.perform_later search, callback_url
-      search.search_id
-    end
-
     # Start new job for new search.
     def start_new_job_for search, callback_url
       # Now I will generate search_id myself.
@@ -45,6 +39,12 @@ module ReigsterSearchService
       SearchJob.perform_later search_id
       LateCallbacks.add_for search, callback_url
 
+      search.search_id
+    end
+
+    # Call back events about an exiting search.
+    def call_back_events_about search, callback_url
+      CallbackEventsJob.perform_later search, callback_url
       search.search_id
     end
   end
