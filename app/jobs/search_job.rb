@@ -2,8 +2,6 @@
 
 # A job to search query
 class SearchJob < ApplicationJob
-  queue_as :default
-
   def perform search_id
     search = DbConnection.using { Search.start! search_id }
     run search

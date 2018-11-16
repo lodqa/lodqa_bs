@@ -3,8 +3,6 @@
 # Send events of the search asynchronously
 # This is for performance. Sending events may be executed for more than 5 seconds.
 class SubscribeJob < ApplicationJob
-  queue_as :default
-
   rescue_from StandardError do |exception|
     logger.fatal exception
   end

@@ -3,8 +3,6 @@
 # Send a search event asynchronously. This is for performance.
 # Because the time it takes to send an event depends on the performance of the receiving server.
 class CallbackEventsJob < ApplicationJob
-  queue_as :default
-
   rescue_from StandardError do |exception|
     logger.fatal exception
   end

@@ -33,5 +33,6 @@ module Myapp
     config.api_only = true
 
     config.time_zone = 'Tokyo'
+    config.active_job.queue_adapter = :sucker_punch
   end
 end
