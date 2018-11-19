@@ -24,7 +24,8 @@ class SearchJob < ApplicationJob
   def run search
     Lodqa::Search.start search,
                         on_start(search),
-                        on_event(search)
+                        on_event(search),
+                        logger
   end
 
   # Return a proc to be called when the search will starts.

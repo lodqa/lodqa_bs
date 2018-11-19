@@ -8,11 +8,11 @@ module Lodqa
   # Search the query by the LODQA
   module Search
     class << self
-      def start search, on_start, on_event
+      def start search, on_start, on_event, logger
         tasks = if search.target.present?
-                  search_for_dataset_async search, on_event
+                  search_for_dataset_async search, on_event, logger
                 else
-                  search_for_all_datasets_async search, on_event
+                  search_for_all_datasets_async search, on_event, logger
                 end
 
         on_start.call
@@ -33,23 +33,25 @@ module Lodqa
         gateway_error
       ].freeze
 
-      def search_for_dataset_async search, on_event
+      def search_for_dataset_async search, on_event, logger
         dataset = Sources.dataset_of_target search.target
-        Concurrent::Promises.future { search_for dataset, search, on_event }
+        Concurrent::Promises.future { search_for dataset, search, on_event, logger }
       end
 
-      def search_for_all_datasets_async search, on_event
+      def search_for_all_datasets_async search, on_event, logger
         Sources.datasets.map.with_index 1 do |dataset, number|
           dataset = dataset.merge(number: number)
-          Concurrent::Promises.future { search_for dataset, search, on_event }
+          Concurrent::Promises.future { search_for dataset, search, on_event, logger }
         end
       end
 
-      def search_for dataset, search, on_event
+      def search_for dataset, search, on_event, logger
         executor = OneByOneExecutor.new dataset,
                                         search.query,
                                         search.search_id,
+                                        logger: logger,
                                         debug: false
+
         # Bind events to save events
         executor.on(*EVENTS_TO_SAVE) { |event, data| on_event.call event, data }
         executor.perform
