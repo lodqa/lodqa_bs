@@ -91,6 +91,8 @@ class EnjuAccess::CGIAccessor
     else
       raise EnjuAccess::EnjuError, 'Enju CGI server dose not respond.'
     end
+  rescue RestClient::ServiceUnavailable => e
+    raise EnjuAccess::EnjuError, "#Enju CGI server is unavailable! response_message: #{e.message}, url: #{@enju.url}"
   end
 
   # It finds base noun chunks from the category pattern.
