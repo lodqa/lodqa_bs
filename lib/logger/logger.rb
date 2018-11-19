@@ -7,10 +7,17 @@ class Logger::Logger
 
   $stdout.sync = true
 
-  def initialize query_id, log_level
+  def initialize query_id, logger, log_level
     @query_id = query_id
-    @log = ::Logger.new STDOUT
-    @log.level = log_level
+
+    # When used with Rails, you can specify a logger from outside.
+    @log = if logger
+             logger
+           else
+             stdout = ::Logger.new STDOUT
+             stdout.level = log_level
+             stdout
+           end
   end
 
   def info message, id = nil, **rest

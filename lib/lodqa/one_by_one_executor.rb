@@ -23,7 +23,7 @@ module Lodqa
                    read_timeout: 5,
                    sparql_limit: nil,
                    answer_limit: nil,
-                   debug: false
+                   logger: nil, debug: false
 
       @target_dataset = dataset
       @query = query
@@ -33,7 +33,7 @@ module Lodqa
       @sparql_limit = sparql_limit
       @answer_limit = answer_limit
 
-      self.logger = Logger::Logger.new query_id, debug ? Logger::DEBUG : Logger::INFO
+      self.logger = Logger::Logger.new query_id, logger, debug ? Logger::DEBUG : Logger::INFO
 
       # Flag to stop search
       @cancel_flag = false
