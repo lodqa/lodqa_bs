@@ -60,6 +60,7 @@ module Lodqa
     end
 
     def perform
+      start = Time.now
       dataset = {
         name: @target_dataset[:name],
         number: @target_dataset[:number]
@@ -80,7 +81,6 @@ module Lodqa
                                                    read_timeout: @read_timeout
       endpoint.logger = logger
 
-      start = Time.now
       count = 0
       queue = Queue.new # Wait finishing serach of all SPARQLs.
       known_sparql = Set.new # Skip serach when SPARQL is duplicated.
@@ -137,31 +137,51 @@ module Lodqa
         success += 1 if s
       end
 
+      stats = {
+        dataset: dataset,
+        duration: Time.now - start
+      }
       if (error + success).positive?
-        stats = {
-          parallel: parallel,
-          duration: Time.now - start,
-          dataset: dataset,
-          sparqls: error + success,
-          error: error,
-          success: success,
-          error_rate: error / (error + success).to_f
-        }
-
-        logger.info "Finish stats: #{JSON.pretty_generate stats}"
+        stats = stats.merge parallel: parallel,
+                            sparqls: error + success,
+                            error: error,
+                            success: success,
+                            error_rate: error / (error + success).to_f
       end
+      logger.info "Finish stats: #{JSON.generate stats}"
+      stats
     rescue EnjuAccess::EnjuError => e
       logger.debug e.message
-      emit :gateway_error,
-           error_message: 'enju access error'
+      state = {
+        dataset: dataset,
+        duration: Time.now - start,
+        state: 'The parser server is not available.'
+      }
+      emit :gateway_error, state
+      state
     rescue Term::FindError => e
       logger.debug e.message
-      emit :gateway_error,
-           error_message: 'dictionary lookup error'
+      state = {
+        dataset: dataset,
+        duration: Time.now - start,
+        state: 'Terms were not found.'
+      }
+      emit :gateway_error, state
+      state
     rescue SparqlClient::EndpointError => e
       logger.debug "The SPARQL Endpoint #{e.endpoint_name} has a persistent error, continue to the next Endpoint", error_message: e.message
+      {
+        dataset: dataset,
+        duration: Time.now - start,
+        state: 'The Sparql endpoint is not available.'
+      }
     rescue StandardError => e
       logger.error e
+      {
+        dataset: dataset,
+        duration: Time.now - start,
+        state: 'Something is wrong.'
+      }
     end
 
     private

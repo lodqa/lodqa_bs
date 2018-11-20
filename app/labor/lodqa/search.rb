@@ -17,7 +17,10 @@ module Lodqa
 
         on_start.call
 
-        wait_for_completion_of_all tasks
+        states = wait_for_completion_of_all tasks
+        on_event.call :finish, states: states
+        message = "Search finished. search_id: #{search.search_id}, states: #{JSON.generate states}"
+        logger.info message
       end
 
       private
