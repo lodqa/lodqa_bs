@@ -112,19 +112,7 @@ module Lodqa
           next if known_sparql.member? sparql_query
           known_sparql << sparql_query
 
-          @sparql_count += 1
-          sparql = {
-            query: sparql_query,
-            number: @sparql_count
-          }
-
-          emit :sparql, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql
-
-          # Get solutions of SPARQL
-          get_solutions_of_sparql_async endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql, queue
-
-          # Emit an event to notify starting of querying the SPARQL.
-          emit :query_sparql, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql
+          invoke_sparql endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql_query, queue
           count += 1
         end
       end
@@ -185,6 +173,22 @@ module Lodqa
     end
 
     private
+
+    def invoke_sparql endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql_query, queue
+      @sparql_count += 1
+      sparql = {
+        query: sparql_query,
+        number: @sparql_count
+      }
+
+      emit :sparql, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql
+
+      # Get solutions of SPARQL
+      get_solutions_of_sparql_async endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql, queue
+
+      # Emit an event to notify starting of querying the SPARQL.
+      emit :query_sparql, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql
+    end
 
     def get_solutions_of_sparql_async endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql, queue
       # Get solutions of SPARQL
