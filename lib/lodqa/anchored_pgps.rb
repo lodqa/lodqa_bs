@@ -47,12 +47,14 @@ module Lodqa
       nodes_to_delete = []
       pgp[:nodes].each_key do |n|
         next unless mappings[pgp[:nodes][n][:text]].nil? || mappings[pgp[:nodes][n][:text]].empty?
+
         connected_nodes = []
         pgp[:edges].each { |e| connected_nodes << e[:object] if e[:subject] == n }
         pgp[:edges].each { |e| connected_nodes << e[:subject] if e[:object] == n }
 
         # if it is a passing node
         next unless connected_nodes.length == 2
+
         nodes_to_delete << n
         pgp[:edges].each do |e|
           e[:object]  = connected_nodes[1] if e[:subject] == connected_nodes[0] && e[:object] == n

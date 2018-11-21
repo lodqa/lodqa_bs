@@ -36,6 +36,7 @@ module JSONResource
       res = @semaphore.synchronize { @http.request req }
 
       return nil if res.is_a? Net::HTTPSuccess
+
       res
     end
   end

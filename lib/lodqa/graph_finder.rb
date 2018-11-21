@@ -40,6 +40,7 @@ module Lodqa
         )
           .each_with_index do |bgp, idx|
             break if idx > @sparql_limit
+
             y << bgp
           end
       end
@@ -156,6 +157,7 @@ module Lodqa
       pgp[:nodes].each do
         err, id, iid = queue.pop
         raise err if err
+
         iids[id] = iid unless iid.nil?
       end
 

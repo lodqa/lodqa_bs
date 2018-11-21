@@ -23,6 +23,7 @@ class Channel
   # Transmit a event of the search to subscribers.
   def transmit data
     return if self.class.unreachable_url.member? @url
+
     conn = self.class.connections[@url]
 
     # It may take time to open a connection.

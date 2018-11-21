@@ -14,6 +14,7 @@ module Term
 
     def initialize dictionary_url
       raise ArgumentError, 'dictionary_url should be given.' if dictionary_url.nil? || dictionary_url.empty?
+
       @dictionary = RestClient::Resource.new dictionary_url, headers: { content_type: :json, accept: :json }, timeout: 10
     end
 
@@ -23,11 +24,13 @@ module Term
 
       terms = [terms] if terms.class == String
       return nil unless terms.class == Array
+
       mappings = _lookup(terms)
 
       # interpolation
       mappings.each_key do |k|
         next unless mappings[k].empty?
+
         ngram = k.to_s.split
         length = ngram.length
         (1...length).reverse_each do |m|

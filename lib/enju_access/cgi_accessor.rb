@@ -52,6 +52,7 @@ class EnjuAccess::CGIAccessor
   # It populates the instance variables, tokens and root
   def get_parse sentence
     return [[], nil] if sentence.nil? || sentence.strip.empty?
+
     sentence = sentence.strip
 
     response = @enju.get params: { sentence: sentence, format: 'conll' }
@@ -105,6 +106,7 @@ class EnjuAccess::CGIAccessor
       beg  = t[:idx] if beg.negative? && NC_CAT.include?(t[:cat])
       head = t[:idx] if beg >= 0 && NC_HEAD_CAT.include?(t[:cat]) && t[:args].nil?
       next unless beg >= 0 && !NC_CAT.include?(t[:cat])
+
       head = t[:idx] if head.negative?
       base_noun_chunks << { head: head, beg: beg, end: tokens[i - 1][:idx] }
       beg = -1
@@ -113,6 +115,7 @@ class EnjuAccess::CGIAccessor
 
     if beg >= 0
       raise 'Strange parse!' if head.negative?
+
       base_noun_chunks << { head: head, beg: beg, end: tokens.last[:idx] }
     end
 
@@ -124,6 +127,7 @@ class EnjuAccess::CGIAccessor
     graph = Graph.new
     tokens.each do |t|
       next unless t[:args]
+
       t[:args].each do |_type, arg|
         graph.add_edge(t[:idx], arg, 1) if arg >= 0
       end

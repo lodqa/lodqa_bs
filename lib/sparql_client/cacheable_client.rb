@@ -13,11 +13,11 @@ module SparqlClient
     include Logger::Loggable
 
     DEFAULT_EXECUTOR_OPTIONS = {
-      min_threads:     0,
-      max_threads:     20,
-      auto_terminate:  true,
-      idletime:        60, # 1 minute
-      max_queue:       0, # unlimited
+      min_threads: 0,
+      max_threads: 20,
+      auto_terminate: true,
+      idletime: 60, # 1 minute
+      max_queue: 0, # unlimited
       fallback_policy: :caller_runs # shouldn't matter -- 0 max queue
     }.freeze
 

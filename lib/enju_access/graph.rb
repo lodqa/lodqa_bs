@@ -52,6 +52,7 @@ class Graph
         u = min if !u || (@d[min] && (@d[min] < @d[u]))
       end
       break if @d[u] == @INFINITY
+
       q -= [u]
       @g[u].keys.each do |v|
         alt = @d[u] + @g[u][v]
