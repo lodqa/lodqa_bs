@@ -52,6 +52,9 @@ module Lodqa
         executor = OneByOneExecutor.new dataset,
                                         search.query,
                                         search.search_id,
+                                        read_timeout: search.read_timeout,
+                                        sparql_limit: search.sparql_limit,
+                                        answer_limit: search.answer_limit,
                                         logger: logger,
                                         debug: false
 

@@ -18,7 +18,6 @@ module Lodqa
     def initialize dataset,
                    query,
                    query_id,
-                   parser_url: 'http://enju-gtrec.dbcls.jp',
                    urilinks_url: 'http://urilinks.lodqa.org',
                    read_timeout: 5,
                    sparql_limit: nil,
@@ -27,7 +26,7 @@ module Lodqa
 
       @target_dataset = dataset
       @query = query
-      @default_parser_url = parser_url
+      @parser_url = dataset[:parser_url] || 'http://enju-gtrec.dbcls.jp'
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
       @sparql_limit = sparql_limit
@@ -43,11 +42,14 @@ module Lodqa
       @event_data = {}
 
       @sparql_count = 0
+
+      logger.debug "Initialize OneByOneExecutor with #{self} "
     end
 
     # Bind event handler to events
     def on *events, &block
       return unless events.is_a? Array
+
       events.each do |e|
         @event_hadlers[e] = [] unless @event_hadlers[e]
         @event_hadlers[e].push block
@@ -110,6 +112,7 @@ module Lodqa
 
           # Skip querying duplicated SPARQL.
           next if known_sparql.member? sparql_query
+
           known_sparql << sparql_query
 
           invoke_sparql endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql_query, queue
@@ -170,6 +173,10 @@ module Lodqa
         duration: Time.now - start,
         state: 'Something is wrong.'
       }
+    end
+
+    def to_s
+      "dataset: query: #{@query}, #{@target_dataset[:name]}, parser_url: #{@parser_url}, read_timeout: #{@read_timeout}, sparql_limit: #{@sparql_limit}, answer_limit: #{@answer_limit}"
     end
 
     private
@@ -236,8 +243,7 @@ module Lodqa
     end
 
     def pgp
-      @pgp ||= PGPFactory.create (@target_dataset[:parser_url] || @default_parser_url),
-                                 @query
+      @pgp ||= PGPFactory.create @parser_url, @query
     end
 
     def mappings dictionary_url, pgp
