@@ -34,9 +34,9 @@
           <td><%= search.target %></td>
           <td><%= search.private? %></td>
           <td><%= search.state %></td>
-          <td><%= search.created_at.in_time_zone.strftime('%H:%M') %></td>
-          <td><%= search.started_at&.in_time_zone&.strftime('%H:%M') %></td>
-          <td><%= search.finished_at&.in_time_zone&.strftime('%H:%M') %></td>
+          <td><%= search.created_at.in_time_zone.strftime('%m/%d %H:%M') %></td>
+          <td><%= search.started_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
+          <td><%= search.finished_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
           <td><%= number_with_precision(search.elapsed_time, precision: 1) %></td>
           <td><%= search.answers.size %></td>
         </tr>

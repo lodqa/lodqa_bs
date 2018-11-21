@@ -14,22 +14,25 @@ class Search < ApplicationRecord
 
   before_create { self.created_at = Time.now }
 
-  scope :at_today, lambda {
-    where(created_at: Date.today.all_day)
-      .or(where(finished_at: Date.today.all_day))
+  scope :is_valid, lambda {
+    from = Date.today.ago 7.day
+    to = Date.today.since 1.day
+
+    where(created_at: (from..to))
+      .or(where(finished_at: (from..to)))
   }
   scope :alive?, -> { where aborted_at: nil }
 
   class << self
     def queued_searches
-      Search.at_today
+      Search.is_valid
             .includes(:all_answers)
             .order created_at: :desc
     end
 
     # Check does a same condition search exists?
     def equals_in other
-      Search.at_today
+      Search.is_valid
             .alive?
             .where(query: other.query)
             .where(read_timeout: other.read_timeout)
@@ -121,6 +124,7 @@ class Search < ApplicationRecord
     return :aborted if aborted_at.present?
     return :finished if finished_at.present?
     return :running if started_at.present?
+
     :queued
   end
 
