@@ -52,6 +52,5 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # lodqa
 gem 'rest-client'
 gem 'sparql-client'
-gem 'concurrent-ruby-edge'
 gem 'rails_pretty_json_rednerer'
 gem 'sucker_punch', '~> 2.0'

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'concurrent/edge/promises'
+require 'concurrent/promises'
 require 'lodqa/sources'
 require 'lodqa/one_by_one_executor'
 
