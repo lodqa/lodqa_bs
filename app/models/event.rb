@@ -10,6 +10,7 @@ class Event < ApplicationRecord
     # Events that occurred while searching for queries.
     def occurred_for search
       where(search_id: search.search_id)
+        .order(:id)
         .pluck :data
     end
   end
