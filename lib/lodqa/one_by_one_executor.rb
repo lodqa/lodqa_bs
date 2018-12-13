@@ -13,8 +13,6 @@ module Lodqa
   class OneByOneExecutor
     include Logger::Loggable
 
-    attr_accessor :cancel_flag
-
     def initialize dataset,
                    query,
                    query_id,
@@ -33,9 +31,6 @@ module Lodqa
       @answer_limit = answer_limit
 
       self.logger = Logger::Logger.new query_id, logger, debug ? Logger::DEBUG : Logger::INFO
-
-      # Flag to stop search
-      @cancel_flag = false
 
       # For event emitting
       @event_hadlers = {}
@@ -90,11 +85,6 @@ module Lodqa
       anchored_pgps = AnchoredPgps.new pgp, mappings
       anchored_pgps.logger = logger
       anchored_pgps.each do |anchored_pgp|
-        if @cancel_flag
-          logger.debug "Stop during processing an anchored_pgp: #{anchored_pgp}"
-          return
-        end
-
         # GraphFinder(bgb)
         graph_finder_options = {
           max_hop: @target_dataset[:max_hop],
@@ -105,11 +95,6 @@ module Lodqa
         }
         graph_finder = GraphFinder.new endpoint, nil, graph_finder_options
         graph_finder.sparqls_of anchored_pgp do |bgp, sparql_query|
-          if @cancel_flag
-            logger.debug "Stop during processing an bgp: #{bgp}"
-            return
-          end
-
           # Skip querying duplicated SPARQL.
           next if known_sparql.member? sparql_query
 
