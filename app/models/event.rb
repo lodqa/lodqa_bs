@@ -8,10 +8,26 @@ class Event < ApplicationRecord
 
   class << self
     # Events that occurred while searching for queries.
-    def occurred_for search
-      where(search_id: search.search_id)
-        .order(:id)
-        .pluck :data
+    # When the number of events is large,
+    # the reading time from the DB is about several seconds to about 10 seconds.
+    # In order to send the first event fast, read events from the DB piece by piece.
+    def occurred_for search, offset_size
+      Enumerator.new do |enum|
+        i = 0
+        loop do
+          events = DbConnection.using do
+            where(search_id: search.search_id)
+              .order(:id)
+              .limit(offset_size)
+              .offset(i)
+              .pluck :data
+          end
+          break if events.empty?
+
+          enum.yield events
+          i += offset_size
+        end
+      end
     end
   end
 

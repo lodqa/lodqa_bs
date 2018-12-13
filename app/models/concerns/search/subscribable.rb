@@ -4,6 +4,8 @@ class Search < ApplicationRecord
   # Subscribe search
   module Subscribable
     TRANSMIT_DATA_SIZE_UPPER_LIMIT = 500_000
+    OFFSET_SIZE = 100
+
     extend ActiveSupport::Concern
 
     def subscribe url
@@ -23,8 +25,7 @@ class Search < ApplicationRecord
     end
 
     def notify_existing_events_to url, search
-      events = DbConnection.using { Event.occurred_for search }
-      JSONResource.append_all url, *(split events)
+      Event.occurred_for(search, OFFSET_SIZE).each { |e| JSONResource.append_all url, *(split e) }
     end
 
     # Split events
