@@ -13,8 +13,10 @@ module Lodqa
   class OneByOneExecutor
     include Logger::Loggable
 
+    attr_reader :pgp
+
     def initialize dataset,
-                   query,
+                   pgp,
                    query_id,
                    urilinks_url: 'http://urilinks.lodqa.org',
                    read_timeout: 5,
@@ -23,7 +25,7 @@ module Lodqa
                    logger: nil, debug: false
 
       @target_dataset = dataset
-      @query = query
+      @pgp = pgp
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
       @sparql_limit = sparql_limit
@@ -64,7 +66,7 @@ module Lodqa
       emit :datasets, dataset: dataset
 
       # pgp
-      pgp = Graphicator.produce_pseudo_graph_pattern @query
+      pgp = @pgp
       emit :pgp, dataset: dataset, pgp: pgp
 
       # mappings
@@ -160,7 +162,7 @@ module Lodqa
     end
 
     def to_s
-      "dataset: query: #{@query}, #{@target_dataset[:name]}, read_timeout: #{@read_timeout}, sparql_limit: #{@sparql_limit}, answer_limit: #{@answer_limit}"
+      "dataset: pgp: #{@pgp}, #{@target_dataset[:name]}, read_timeout: #{@read_timeout}, sparql_limit: #{@sparql_limit}, answer_limit: #{@answer_limit}"
     end
 
     private

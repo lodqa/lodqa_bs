@@ -6,15 +6,7 @@ require 'securerandom'
 class Search < ApplicationRecord
   include Subscribable
 
-  has_many :all_answers, -> { where(event: 'answer') },
-           primary_key: :search_id,
-           class_name: :Event
-  has_many :events, primary_key: :search_id, dependent: :destroy
-
-  validates :read_timeout,
-            :sparql_limit,
-            :answer_limit,
-            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  belongs_to :pseudo_graph_pattern
 
   before_create { self.created_at = Time.now }
 
@@ -22,15 +14,19 @@ class Search < ApplicationRecord
     from = Time.now.ago 7.day
     to = Time.now.since 1.day
 
-    where(created_at: (from..to))
-      .or(where(finished_at: (from..to)))
+    joins(:pseudo_graph_pattern)
+      .where(pseudo_graph_patterns: { created_at: (from..to) })
+      .or(joins(:pseudo_graph_pattern).where(pseudo_graph_patterns: { finished_at: (from..to) }))
   }
-  scope :alive?, -> { where aborted_at: nil }
+  scope :alive?, lambda {
+    joins(:pseudo_graph_pattern)
+      .where pseudo_graph_patterns: { aborted_at: nil }
+  }
 
   class << self
     def queued_searches
       Search.is_valid
-            .includes(:all_answers)
+            .includes(pseudo_graph_pattern: [:all_answers])
             .order created_at: :desc
     end
 
@@ -39,31 +35,21 @@ class Search < ApplicationRecord
       Search.is_valid
             .alive?
             .where(query: other.query)
-            .where(read_timeout: other.read_timeout)
-            .where(sparql_limit: other.sparql_limit)
-            .where(answer_limit: other.answer_limit)
-            .where(target: other.target)
-            .where(private: false)
+            .joins(:pseudo_graph_pattern)
+            .where(pseudo_graph_patterns: { read_timeout: other.read_timeout })
+            .where(pseudo_graph_patterns: { sparql_limit: other.sparql_limit })
+            .where(pseudo_graph_patterns: { answer_limit: other.answer_limit })
+            .where(pseudo_graph_patterns: { target: other.target })
+            .where(pseudo_graph_patterns: { private: false })
             .order(created_at: :desc)
             .first
     end
 
     # Start to search and save the start time.
     def start! search_id
-      search = find_by search_id: search_id
-      search.started_at = Time.now.utc
-      search.save!
+      search = preload(:pseudo_graph_pattern).find_by! search_id: search_id
+      search.pseudo_graph_pattern.update(started_at: Time.now.utc)
       search
-    end
-
-    # Abort unfinished searches
-    def abort_unfinished_searches!
-      transaction do
-        Search.where(finished_at: nil)
-              .alive?
-              .each(&:abort!)
-              .any?
-      end
     end
   end
 
@@ -90,13 +76,13 @@ class Search < ApplicationRecord
     # If you subscribe to a finished search, the subscription will remain permanently in memory.
     # Use transactions to prevent the search from being terminated just before subscribing to it.
     transaction do
-      yield unless reload.finished_at.present?
+      yield unless pseudo_graph_pattern.reload.finished_at.present?
     end
   end
 
   # Finish to search and save the finish time.
   def finish!
-    update finished_at: Time.now.utc
+    pseudo_graph_pattern.update finished_at: Time.now.utc
   end
 
   # Abort to search and save the abort time.
@@ -106,29 +92,24 @@ class Search < ApplicationRecord
 
   # Data to sent at the start event
   def data_for_start_event
-    { event: :start,
+    {
+      event: :start,
       query: query,
-      read_timeout: read_timeout,
-      sparql_limit: sparql_limit,
-      answer_limit: answer_limit,
-      cache: private ? :no : :yes,
       search_id: search_id,
-      start_at: started_at,
-      expiration_date: created_at + 1.days }
+      expiration_date: pseudo_graph_pattern.created_at + 1.days
+    }.merge pseudo_graph_pattern.data_for_start_event
   end
 
   # Data to sent at the finish event
   def dafa_for_finish_event
-    data_for_start_event.merge event: :finish,
-                               expiration_date: finished_at + 1.days,
-                               finish_at: finished_at,
-                               elapsed_time: elapsed_time,
-                               answers: answers.as_json
+    data_for_start_event.merge(event: :finish,
+                               expiration_date: pseudo_graph_pattern.finished_at + 1.days)
+                        .merge pseudo_graph_pattern.data_for_finish_event
   end
 
   # Return answers of the search.
   def answers
-    all_answers.map(&:to_answer).uniq
+    pseudo_graph_pattern.all_answers.map(&:to_answer).uniq
   end
 
   # Return elapsed time of the finished search.
@@ -136,15 +117,6 @@ class Search < ApplicationRecord
     return nil if !started_at.present? || aborted_at.present?
 
     (finished_at.present? ? finished_at : Time.now) - started_at
-  end
-
-  # Return state of search to use in the index page of queries.
-  def state
-    return :aborted if aborted_at.present?
-    return :finished if finished_at.present?
-    return :running if started_at.present?
-
-    :queued
   end
 
   def as_json option = nil
@@ -156,6 +128,6 @@ class Search < ApplicationRecord
   # the reading time from the DB is about several seconds to about 10 seconds.
   # In order to send the first event fast, read events from the DB piece by piece.
   def occurred_events offset_size
-    Event.reader_by offset_size, search_id: self.search_id
+    Event.reader_by offset_size, pseudo_graph_pattern: pseudo_graph_pattern
   end
 end

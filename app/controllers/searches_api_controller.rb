@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'lodqa/sources'
-
 # A controller to register a new search.
 class SearchesApiController < ActionController::API
   include UrlValidator
@@ -17,10 +15,10 @@ class SearchesApiController < ActionController::API
 
   # Register a new search and run a new job to search the search.
   def create
-    search = Search.new search_attributes
-    return render json: search.errors, status: :bad_request if search.invalid?
+    search_params = SearchParameter.new search_attributes
+    return render json: search_params.errors, status: :bad_request if search_params.invalid?
 
-    search_id = ReigsterSearchService.register search, params[:callback_url]
+    search_id = ReigsterSearchService.register search_params
     render pretty_json: to_hash(search_id)
   end
 
@@ -38,21 +36,15 @@ class SearchesApiController < ActionController::API
 
   def search_attributes
     params.require(%i[query callback_url])
-    params.tap do |p|
-      p[:private] = p[:cache] == 'no'
-      p[:target] = p[:target] || acquire_targets
-    end.permit %i[
+    params.permit %i[
       query
       read_timeout
       sparql_limit
       answer_limit
       target
       private
+      callback_url
     ]
-  end
-
-  def acquire_targets
-    Lodqa::Sources.all_datasets.map { |d| d[:name] }.join(', ')
   end
 
   def to_hash search_id

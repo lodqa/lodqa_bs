@@ -15,7 +15,7 @@ class CallbackEventsJob < ApplicationJob
 
   # Call back events about an exiting search.
   def call_back_events_about search, callback_url
-    case search.state
+    case search.pseudo_graph_pattern.state
     # when :aborted Aborted seraches do not match new queries.
     when :queued
       # Callbacks will be called after the job start.

@@ -3,7 +3,8 @@
 # Events of searching the query.
 # This instances are saved to the database and sent the data attribute to the LODQA WS.
 class Event < ApplicationRecord
-  belongs_to :search, primary_key: :search_id
+  belongs_to :pseudo_graph_pattern
+
   serialize :data, JSON
 
   class << self

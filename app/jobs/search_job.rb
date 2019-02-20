@@ -22,7 +22,7 @@ class SearchJob < ApplicationJob
   private
 
   def run search
-    Lodqa::Search.start search,
+    Lodqa::Search.start search.pseudo_graph_pattern,
                         on_start(search),
                         on_event(search),
                         logger
@@ -46,7 +46,7 @@ class SearchJob < ApplicationJob
 
   def save_event! search, event_type, data
     DbConnection.using do
-      Event.create search: search,
+      Event.create pseudo_graph_pattern: search.pseudo_graph_pattern,
                    event: event_type,
                    data: { event: event_type }.merge(data)
     end

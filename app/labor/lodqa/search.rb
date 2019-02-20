@@ -8,14 +8,16 @@ module Lodqa
   # Search the query by the LODQA
   module Search
     class << self
-      def start search, on_start, on_event, logger
-        tasks = search_for_datasets_async search, on_event, logger
+      def start pseudo_graph_pattern, on_start, on_event, logger
+        tasks = search_for_datasets_async pseudo_graph_pattern, on_event, logger
 
         on_start.call
 
         states = wait_for_completion_of_all tasks
         on_event.call :finish, states: states
-        message = "Search finished. search_id: #{search.search_id}, states: #{JSON.generate states}"
+
+        message = "Search finished. pgp id: #{pseudo_graph_pattern.id}," \
+                  " states: #{JSON.generate states}"
         logger.info message
       end
 
@@ -32,22 +34,22 @@ module Lodqa
         gateway_error
       ].freeze
 
-      def search_for_datasets_async search, on_event, logger
-        search.target.split(',')
-              .map { |target| Sources.dataset_of_target target }
-              .map.with_index(1) { |dataset, number| dataset.merge(number: number) }
-              .map do |dataset|
-                Concurrent::Promises.future { search_for dataset, search, on_event, logger }
-              end
+      def search_for_datasets_async pseudo_graph_pattern, on_event, logger
+        pseudo_graph_pattern.target.split(',')
+                            .map { |target| Sources.dataset_of_target target }
+                            .map.with_index(1) { |dataset, number| dataset.merge(number: number) }
+                            .map do |dataset|
+          Concurrent::Promises.future { search_for dataset, pseudo_graph_pattern, on_event, logger }
+        end
       end
 
-      def search_for dataset, search, on_event, logger
+      def search_for dataset, pseudo_graph_pattern, on_event, logger
         executor = OneByOneExecutor.new dataset,
-                                        search.query,
-                                        search.search_id,
-                                        read_timeout: search.read_timeout,
-                                        sparql_limit: search.sparql_limit,
-                                        answer_limit: search.answer_limit,
+                                        pseudo_graph_pattern.pgp,
+                                        pseudo_graph_pattern.id,
+                                        read_timeout: pseudo_graph_pattern.read_timeout,
+                                        sparql_limit: pseudo_graph_pattern.sparql_limit,
+                                        answer_limit: pseudo_graph_pattern.answer_limit,
                                         logger: logger,
                                         debug: false
 
