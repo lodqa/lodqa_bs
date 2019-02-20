@@ -5,7 +5,7 @@ require 'logger/loggable'
 require 'term/finder'
 require 'lodqa/anchored_pgps'
 require 'lodqa/graph_finder'
-require 'lodqa/pgp_factory'
+require 'lodqa/graphicator'
 require 'enju_access/cgi_accessor'
 require 'sparql_client/cacheable_client'
 
@@ -228,7 +228,7 @@ module Lodqa
     end
 
     def pgp
-      @pgp ||= PGPFactory.create @parser_url, @query
+      @pgp ||= Graphicator.produce_pseudo_graph_pattern @query, @parser_url
     end
 
     def mappings dictionary_url, pgp
