@@ -15,8 +15,8 @@ class Search < ApplicationRecord
   before_create { self.created_at = Time.now }
 
   scope :is_valid, lambda {
-    from = Date.today.ago 7.day
-    to = Date.today.since 1.day
+    from = Time.now.ago 7.day
+    to = Time.now.since 1.day
 
     where(created_at: (from..to))
       .or(where(finished_at: (from..to)))
