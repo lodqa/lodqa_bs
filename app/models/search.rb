@@ -7,6 +7,8 @@ class Search < ApplicationRecord
   has_many :all_answers, -> { where(event: 'answer') },
            primary_key: :search_id,
            class_name: :Event
+  has_many :events, primary_key: :search_id, dependent: :destroy
+
   validates :read_timeout,
             :sparql_limit,
             :answer_limit,
