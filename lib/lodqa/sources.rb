@@ -8,7 +8,7 @@ module Lodqa
     TARGETS_URL = 'http://targets.lodqa.org/targets'
 
     class << self
-      def datasets
+      def all_datasets
         get "#{TARGETS_URL}.json"
       end
 

@@ -42,7 +42,7 @@ module Lodqa
       end
 
       def search_for_all_datasets_async search, on_event, logger
-        Sources.datasets.map.with_index 1 do |dataset, number|
+        Sources.all_datasets.map.with_index 1 do |dataset, number|
           dataset = dataset.merge(number: number)
           Concurrent::Promises.future { search_for dataset, search, on_event, logger }
         end
