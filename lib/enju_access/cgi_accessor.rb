@@ -25,6 +25,8 @@ class EnjuAccess::CGIAccessor
 
   # It initializes an instance of RestClient::Resource to connect to an Enju cgi server
   def initialize enju_url
+    raise ArgumentError, 'enju_url should be given.' if enju_url.nil? || enju_url.empty?
+
     @enju = RestClient::Resource.new enju_url
     raise EnjuAccess::EnjuError, 'The URL of a web service of enju has to be passed as the first argument.' unless @enju.instance_of? RestClient::Resource
   end
