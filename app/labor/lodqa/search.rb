@@ -9,11 +9,7 @@ module Lodqa
   module Search
     class << self
       def start search, on_start, on_event, logger
-        tasks = if search.target.present?
-                  search_for_dataset_async search, on_event, logger
-                else
-                  search_for_all_datasets_async search, on_event, logger
-                end
+        tasks = search_for_datasets_async search, on_event, logger
 
         on_start.call
 
@@ -36,16 +32,24 @@ module Lodqa
         gateway_error
       ].freeze
 
-      def search_for_dataset_async search, on_event, logger
+      def search_for_datasets_async search, on_event, logger
+        if search.target.present?
+          search_for_a_dataset_async search, on_event, logger
+        else
+          search_for_all_datasets_async search, on_event, logger
+        end
+      end
+
+      def search_for_a_dataset_async search, on_event, logger
         dataset = Sources.dataset_of_target search.target
-        Concurrent::Promises.future { search_for dataset, search, on_event, logger }
+        dataset = dataset.merge(number: 1)
+        [Concurrent::Promises.future { search_for dataset, search, on_event, logger }]
       end
 
       def search_for_all_datasets_async search, on_event, logger
-        Sources.all_datasets.map.with_index 1 do |dataset, number|
-          dataset = dataset.merge(number: number)
-          Concurrent::Promises.future { search_for dataset, search, on_event, logger }
-        end
+        Sources.all_datasets
+               .map.with_index(1) { |dataset, number| dataset.merge(number: number) }
+               .map { |dataset| Concurrent::Promises.future { search_for dataset, search, on_event, logger } }
       end
 
       def search_for dataset, search, on_event, logger
