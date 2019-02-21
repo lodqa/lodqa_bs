@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'lodqa/sources'
+
 # A controller to register a new search.
 class SearchesApiController < ActionController::API
   include UrlValidator
@@ -38,6 +40,7 @@ class SearchesApiController < ActionController::API
     params.require(%i[query callback_url])
     params.tap do |p|
       p[:private] = p[:cache] == 'no'
+      p[:target] = p[:target] || acquire_targets
     end.permit %i[
       query
       start_search_callback_url
@@ -48,6 +51,10 @@ class SearchesApiController < ActionController::API
       target
       private
     ]
+  end
+
+  def acquire_targets
+    Lodqa::Sources.all_datasets.map { |d| d[:name] }.join(', ')
   end
 
   def to_hash search_id

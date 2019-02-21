@@ -13,7 +13,7 @@ module Lodqa
       end
 
       def dataset_of_target target
-        dataset = get "#{TARGETS_URL}/#{target}.json"
+        dataset = get "#{TARGETS_URL}/#{target.strip}.json"
         dataset.delete_if { |_k, v| v.nil? }
         dataset
       end

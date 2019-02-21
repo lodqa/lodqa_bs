@@ -33,23 +33,12 @@ module Lodqa
       ].freeze
 
       def search_for_datasets_async search, on_event, logger
-        if search.target.present?
-          search_for_a_dataset_async search, on_event, logger
-        else
-          search_for_all_datasets_async search, on_event, logger
-        end
-      end
-
-      def search_for_a_dataset_async search, on_event, logger
-        dataset = Sources.dataset_of_target search.target
-        dataset = dataset.merge(number: 1)
-        [Concurrent::Promises.future { search_for dataset, search, on_event, logger }]
-      end
-
-      def search_for_all_datasets_async search, on_event, logger
-        Sources.all_datasets
-               .map.with_index(1) { |dataset, number| dataset.merge(number: number) }
-               .map { |dataset| Concurrent::Promises.future { search_for dataset, search, on_event, logger } }
+        search.target.split(',')
+              .map { |target| Sources.dataset_of_target target }
+              .map.with_index(1) { |dataset, number| dataset.merge(number: number) }
+              .map do |dataset|
+                Concurrent::Promises.future { search_for dataset, search, on_event, logger }
+              end
       end
 
       def search_for dataset, search, on_event, logger
