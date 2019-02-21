@@ -24,7 +24,6 @@ module Lodqa
 
       @target_dataset = dataset
       @query = query
-      @parser_url = dataset[:parser_url] || 'http://enju-gtrec.dbcls.jp'
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
       @sparql_limit = sparql_limit
@@ -65,6 +64,7 @@ module Lodqa
       emit :datasets, dataset: dataset
 
       # pgp
+      pgp = Graphicator.produce_pseudo_graph_pattern @query
       emit :pgp, dataset: dataset, pgp: pgp
 
       # mappings
@@ -161,7 +161,7 @@ module Lodqa
     end
 
     def to_s
-      "dataset: query: #{@query}, #{@target_dataset[:name]}, parser_url: #{@parser_url}, read_timeout: #{@read_timeout}, sparql_limit: #{@sparql_limit}, answer_limit: #{@answer_limit}"
+      "dataset: query: #{@query}, #{@target_dataset[:name]}, read_timeout: #{@read_timeout}, sparql_limit: #{@sparql_limit}, answer_limit: #{@answer_limit}"
     end
 
     private
@@ -225,10 +225,6 @@ module Lodqa
            dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql, solutions: solutions,
            solution: solution,
            answer: { uri: uri, label: label, urls: urls&.select { |u| u[:forwarding][:url].length < 10_000 }, first_rendering: first_rendering }
-    end
-
-    def pgp
-      @pgp ||= Graphicator.produce_pseudo_graph_pattern @query, @parser_url
     end
 
     def mappings dictionary_url, pgp

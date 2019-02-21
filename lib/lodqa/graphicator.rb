@@ -10,22 +10,17 @@ module Lodqa; end unless defined? Lodqa
 
 module Lodqa::Graphicator
   class << self
-    def produce_pseudo_graph_pattern query, parser_url
+    def produce_pseudo_graph_pattern query
       raise ArgumentError, 'query should be given.' if query.nil? || query.empty?
-      raise ArgumentError, 'parser_url should be given.' if parser_url.nil? || parser_url.empty?
 
-      produce_pgp_from query, parser_url
+      produce_pgp_from query
     end
 
     private
 
-    def produce_pgp_from query, parser_url
-      parsed_query = parse parser_url, query
+    def produce_pgp_from query
+      parsed_query = EnjuAccess::CGIAccessor.parse query
       graphicate parsed_query
-    end
-
-    def parse parser_url, query
-      EnjuAccess::CGIAccessor.new(parser_url).parse(query)
     end
 
     def graphicate parsed_query
