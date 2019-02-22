@@ -57,7 +57,7 @@ module Term
           raise FindError, "Term find error to #{request.uri}"
         end
       end
-    rescue RestClient::Exceptions::ReadTimeout
+    rescue RestClient::Exceptions::ReadTimeout, RestClient::Exceptions::OpenTimeout
       logger.info 'A request to the dictionary was timeout', url: @dictionary.url, requet_body: terms.to_json
       raise FindError, "Term find timeout error to #{@dictionary.url}"
     end
