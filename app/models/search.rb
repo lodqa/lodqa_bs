@@ -150,4 +150,12 @@ class Search < ApplicationRecord
   def as_json option = nil
     super.merge answers: answers
   end
+
+  # Events that occurred while searching for queries.
+  # When the number of events is large,
+  # the reading time from the DB is about several seconds to about 10 seconds.
+  # In order to send the first event fast, read events from the DB piece by piece.
+  def occurred_events offset_size
+    Event.reader_by offset_size, search_id: self.search_id
+  end
 end

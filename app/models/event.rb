@@ -7,16 +7,12 @@ class Event < ApplicationRecord
   serialize :data, JSON
 
   class << self
-    # Events that occurred while searching for queries.
-    # When the number of events is large,
-    # the reading time from the DB is about several seconds to about 10 seconds.
-    # In order to send the first event fast, read events from the DB piece by piece.
-    def occurred_for search, offset_size
+    def reader_by offset_size, conditions
       Enumerator.new do |enum|
         i = 0
         loop do
           events = DbConnection.using do
-            where(search_id: search.search_id)
+            where(conditions)
               .order(:id)
               .limit(offset_size)
               .offset(i)
