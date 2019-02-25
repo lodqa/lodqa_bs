@@ -43,8 +43,6 @@ class SearchesApiController < ActionController::API
       p[:target] = p[:target] || acquire_targets
     end.permit %i[
       query
-      start_search_callback_url
-      finish_search_callback_url
       read_timeout
       sparql_limit
       answer_limit
