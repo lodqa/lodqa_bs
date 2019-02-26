@@ -47,6 +47,10 @@ class PseudoGraphPattern < ApplicationRecord
           .any?
       end
     end
+
+    def prune
+      PseudoGraphPattern.where.not(id: Search.is_valid.pluck(:pseudo_graph_pattern_id)).destroy_all
+    end
   end
 
   # Abort to search and save the abort time.

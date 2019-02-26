@@ -3,3 +3,11 @@
 # We will manually abort them when starting the Rails server.
 # Because it is easy to implement, We chose to do this at startup, not at server exit.
 DbConnection.using { puts 'Abort unfinished searches' if PseudoGraphPattern.abort_unfinished_searches! }
+
+# Delete old data periodically
+Thread.new do
+  loop do
+    DbConnection.using { PseudoGraphPattern.prune }
+    sleep 1.day
+  end
+end
