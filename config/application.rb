@@ -29,5 +29,7 @@ module Myapp
 
     config.time_zone = 'Tokyo'
     config.active_job.queue_adapter = :sucker_punch
+
+    config.lodqa_bs = config_for :lodqa_bs
   end
 end

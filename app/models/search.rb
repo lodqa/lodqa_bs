@@ -11,7 +11,7 @@ class Search < ApplicationRecord
   before_create { self.created_at = Time.now }
 
   scope :expired?, lambda {
-    deadline = Time.now.ago 7.day
+    deadline = Time.now.ago Rails.configuration.lodqa_bs['cache_duration'].days
 
     where('referred_at <= ?', deadline)
   }
@@ -95,20 +95,23 @@ class Search < ApplicationRecord
       event: :start,
       query: query,
       search_id: search_id,
-      expiration_date: referred_at + 1.days
+      expiration_date: expiration_date
     }.merge pseudo_graph_pattern.data_for_start_event
   end
 
   # Data to sent at the finish event
   def dafa_for_finish_event
-    data_for_start_event.merge(event: :finish,
-                               expiration_date: referred_at + 1.days)
+    data_for_start_event.merge(event: :finish)
                         .merge pseudo_graph_pattern.data_for_finish_event
   end
 
   # Return answers of the search.
   def answers
     pseudo_graph_pattern.all_answers.map(&:to_answer).uniq
+  end
+
+  def expiration_date
+    referred_at.since(Rails.configuration.lodqa_bs['cache_duration'].days).end_of_day
   end
 
   # Return elapsed time of the finished search.
