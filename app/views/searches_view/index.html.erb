@@ -1,8 +1,28 @@
 <head>
   <title>Queued Searches</title>
   <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+  <style>
+    .flash {
+      background-color: #dff0d8;
+      border-radius: 2px;
+      color: #155724;
+      left: 50%;
+      margin-left: -125px;
+      min-width: 250px;
+      padding: 16px;
+      position: fixed;
+      text-align: center;
+      top: 15px;
+    }
+    </style>
+  <%= csrf_meta_tags %>
+  <script src="https://cdn.jsdelivr.net/npm/rails-ujs@5.2.2/lib/assets/compiled/rails-ujs.min.js"></script>
 <body>
   <h1>Searches</h1>
+
+  <% flash.each do |name, msg| -%>
+    <%= content_tag :div, msg, class: [name, :flash] %>
+  <% end -%>
 
   <table class="striped">
     <thead>
@@ -20,6 +40,7 @@
         <th>Finished at</th>
         <th>Elapsed Time(s)</th>
         <th>Number of answers</th>
+        <th></th>
       </tr>
     </thead>
 
@@ -39,6 +60,7 @@
           <td><%= search.pseudo_graph_pattern.finished_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
           <td><%= number_with_precision(search.pseudo_graph_pattern.elapsed_time, precision: 1) %></td>
           <td><%= search.pseudo_graph_pattern.answers.size %></td>
+          <td><%= link_to 'Delete', search_path(search), method: :delete %> </td>
         </tr>
       <% end %>
     </tbody>

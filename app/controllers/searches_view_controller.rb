@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # A controller to show registered searches.
-class SearchesIndexController < ActionController::Base
+class SearchesViewController < ActionController::Base
   # Show registered searches
   def index
     DbConnection.using { @searches = Search.queued_searches }
@@ -9,5 +9,10 @@ class SearchesIndexController < ActionController::Base
       format.html
       format.json { render json: @searches }
     end
+  end
+
+  def destroy
+    Search.find_by(id: params[:id]).pseudo_graph_pattern.destroy
+    redirect_to searches_path, notice: 'Delete success'
   end
 end

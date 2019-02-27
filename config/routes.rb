@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :searches,
-            only: :index,
-            controller: :searches_index
+            only: [:index, :destroy],
+            controller: :searches_view
   resources :searches,
             only: [:show, :create],
             controller: :searches_api,
