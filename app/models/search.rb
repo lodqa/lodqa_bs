@@ -10,11 +10,10 @@ class Search < ApplicationRecord
 
   before_create { self.created_at = Time.now }
 
-  scope :is_valid, lambda {
-    from = Time.now.ago 7.day
-    to = Time.now.since 1.day
+  scope :expired?, lambda {
+    deadline = Time.now.ago 7.day
 
-    where(referred_at: (from..to))
+    where('referred_at <= ?', deadline)
   }
   scope :alive?, lambda {
     joins(:pseudo_graph_pattern)

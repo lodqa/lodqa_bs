@@ -41,7 +41,7 @@ class PseudoGraphPattern < ApplicationRecord
     end
 
     def prune
-      PseudoGraphPattern.where.not(id: Search.is_valid.pluck(:pseudo_graph_pattern_id)).destroy_all
+      PseudoGraphPattern.where(id: Search.expired?.pluck(:pseudo_graph_pattern_id)).destroy_all
     end
   end
 
