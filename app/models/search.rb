@@ -14,9 +14,7 @@ class Search < ApplicationRecord
     from = Time.now.ago 7.day
     to = Time.now.since 1.day
 
-    joins(:pseudo_graph_pattern)
-      .where(pseudo_graph_patterns: { created_at: (from..to) })
-      .or(joins(:pseudo_graph_pattern).where(pseudo_graph_patterns: { finished_at: (from..to) }))
+    where(referred_at: (from..to))
   }
   scope :alive?, lambda {
     joins(:pseudo_graph_pattern)
@@ -80,6 +78,10 @@ class Search < ApplicationRecord
     end
   end
 
+  def be_referred!
+    update referred_at: Time.now.utc
+  end
+
   # Finish to search and save the finish time.
   def finish!
     pseudo_graph_pattern.update finished_at: Time.now.utc
@@ -96,14 +98,14 @@ class Search < ApplicationRecord
       event: :start,
       query: query,
       search_id: search_id,
-      expiration_date: pseudo_graph_pattern.created_at + 1.days
+      expiration_date: referred_at + 1.days
     }.merge pseudo_graph_pattern.data_for_start_event
   end
 
   # Data to sent at the finish event
   def dafa_for_finish_event
     data_for_start_event.merge(event: :finish,
-                               expiration_date: pseudo_graph_pattern.finished_at + 1.days)
+                               expiration_date: referred_at + 1.days)
                         .merge pseudo_graph_pattern.data_for_finish_event
   end
 

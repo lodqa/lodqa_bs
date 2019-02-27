@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_25_124307) do
+ActiveRecord::Schema.define(version: 2019_02_27_071437) do
 
   create_table "events", force: :cascade do |t|
     t.string "event", null: false
@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 2019_02_25_124307) do
     t.datetime "finished_at"
     t.datetime "aborted_at"
     t.integer "pseudo_graph_pattern_id"
+    t.datetime "referred_at"
     t.index ["pseudo_graph_pattern_id"], name: "index_searches_on_pseudo_graph_pattern_id"
     t.index ["search_id"], name: "index_searches_on_search_id", unique: true
   end

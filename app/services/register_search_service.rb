@@ -57,6 +57,7 @@ module ReigsterSearchService
       search = Search.new query: query,
                           pseudo_graph_pattern: pseudo_graph_pattern
       search.assign_id!
+      search.be_referred!
       search
     end
   end
