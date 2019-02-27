@@ -11,8 +11,7 @@ class SubscriptionsController < ApplicationController
     callback_url = params[:callback_url]
 
     search_id = params[:search_id]
-    search = Search.is_valid
-                   .alive?
+    search = Search.alive?
                    .find_by search_id: search_id
     search.be_referred!
     return render json: { search_id: search_id }, status: :not_found unless search

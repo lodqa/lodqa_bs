@@ -15,19 +15,11 @@ class PseudoGraphPattern < ApplicationRecord
   has_many :all_answers, -> { where(event: 'answer') },
            class_name: :Event
 
-  scope :is_valid, lambda {
-    from = Time.now.ago 7.day
-    to = Time.now.since 1.day
-
-    where(created_at: (from..to))
-      .or(where(finished_at: (from..to)))
-  }
   scope :alive?, -> { where aborted_at: nil }
 
   class << self
     def equals_in pgp, other
-      PseudoGraphPattern.is_valid
-                        .alive?
+      PseudoGraphPattern.alive?
                         .where(pgp: pgp)
                         .where(read_timeout: other.read_timeout)
                         .where(sparql_limit: other.sparql_limit)

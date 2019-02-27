@@ -23,15 +23,13 @@ class Search < ApplicationRecord
 
   class << self
     def queued_searches
-      Search.is_valid
-            .includes(pseudo_graph_pattern: [:all_answers])
+      Search.includes(pseudo_graph_pattern: [:all_answers])
             .order created_at: :desc
     end
 
     # Check does a same condition search exists?
     def equals_in other
-      Search.is_valid
-            .alive?
+      Search.alive?
             .where(query: other.query)
             .joins(:pseudo_graph_pattern)
             .where(pseudo_graph_patterns: { read_timeout: other.read_timeout })
