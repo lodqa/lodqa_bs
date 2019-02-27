@@ -21,11 +21,11 @@ module EnjuAccess
         token            = Token.new(response, english_sentence.strip)
 
         {
-          'tokens' => token.tokens,
-          'root' => token.root,
-          'focus' => token.focus,
-          'base_noun_chunks' => token.base_noun_chunks,
-          'relations' => token.relations
+          tokens: token.tokens,
+          root: token.root,
+          focus: token.focus,
+          base_noun_chunks: token.base_noun_chunks,
+          relations: token.relations
         }
       end
     end

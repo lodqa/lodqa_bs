@@ -45,7 +45,7 @@ module Lodqa
 
       def search_for dataset, pseudo_graph_pattern, on_event, logger
         executor = OneByOneExecutor.new dataset,
-                                        pseudo_graph_pattern.pgp,
+                                        pseudo_graph_pattern.pgp.deep_symbolize_keys,
                                         pseudo_graph_pattern.id,
                                         read_timeout: pseudo_graph_pattern.read_timeout,
                                         sparql_limit: pseudo_graph_pattern.sparql_limit,
