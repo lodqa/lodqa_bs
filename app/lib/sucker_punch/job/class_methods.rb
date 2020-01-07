@@ -17,9 +17,9 @@ module SuckerPunch
         result = yield
         SuckerPunch::Counter::Processed.new(to_s).increment
         result
-      rescue StandardError => ex
+      rescue StandardError => e
         SuckerPunch::Counter::Failed.new(to_s).increment
-        SuckerPunch.exception_handler.call ex, self, args
+        SuckerPunch.exception_handler.call e, self, args
       ensure
         SuckerPunch::Counter::Busy.new(to_s).decrement
       end

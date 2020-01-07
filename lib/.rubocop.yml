@@ -1,6 +1,9 @@
 inherit_from:
   - ../.rubocop.yml
 
+Layout/LineLength:
+  Max: 200
+
 Lint/NonLocalExitFromIterator:
   Enabled: false
 
@@ -16,9 +19,6 @@ Metrics/ClassLength:
 Metrics/CyclomaticComplexity:
   Max: 14
 
-Metrics/LineLength:
-  Max: 200
-
 Metrics/MethodLength:
   Max: 89
 
@@ -31,7 +31,7 @@ Metrics/PerceivedComplexity:
 Naming/MethodName:
   Enabled: false
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   MinNameLength: 1
 
 Naming/VariableName:

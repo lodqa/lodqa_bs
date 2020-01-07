@@ -8,11 +8,11 @@ class SearchJob < ApplicationJob
     search = DbConnection.using { Search.start! search_id }
     run search
     clean_up search
-  rescue StandardError => error
+  rescue StandardError => e
     logger.error message: 'Execution of SearchJob failed.',
-                 error: { message: error.message,
-                          class: error.class.to_s,
-                          trace: error.backtrace }
+                 error: { message: e.message,
+                          class: e.class.to_s,
+                          trace: e.backtrace }
 
     search&.abort!
   ensure

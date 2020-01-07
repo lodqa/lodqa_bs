@@ -69,7 +69,7 @@ GEM
       domain_name (~> 0.5)
     i18n (1.1.1)
       concurrent-ruby (~> 1.0)
-    jaro_winkler (1.5.1)
+    jaro_winkler (1.5.4)
     link_header (0.0.8)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
@@ -97,10 +97,9 @@ GEM
     nio4r (2.3.1)
     nokogiri (1.10.7)
       mini_portile2 (~> 2.4.0)
-    parallel (1.12.1)
-    parser (2.5.3.0)
+    parallel (1.19.1)
+    parser (2.7.0.1)
       ast (~> 2.4.0)
-    powerpack (0.1.2)
     public_suffix (3.0.3)
     puma (3.12.2)
     rack (2.0.8)
@@ -163,15 +162,14 @@ GEM
     rspec-support (3.8.0)
     rspec_junit_formatter (0.4.1)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.60.0)
+    rubocop (0.79.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
-      parser (>= 2.5, != 2.5.1.1)
-      powerpack (~> 0.1)
+      parser (>= 2.7.0.1)
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
-      unicode-display_width (~> 1.4.0)
-    ruby-progressbar (1.10.0)
+      unicode-display_width (>= 1.4.0, < 1.7)
+    ruby-progressbar (1.10.1)
     ruby_dep (1.5.0)
     safe_yaml (1.0.4)
     sparql-client (3.0.0)
@@ -201,7 +199,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.5)
-    unicode-display_width (1.4.0)
+    unicode-display_width (1.6.0)
     webmock (3.4.2)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -234,7 +232,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 2.5.1p57
+   ruby 2.5.3p105
 
 BUNDLED WITH
    1.17.1
