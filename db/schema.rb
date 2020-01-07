@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(version: 2020_01_07_074146) do
 
   create_table "term_mappings", force: :cascade do |t|
     t.integer "pseudo_graph_pattern_id", null: false
+    t.string "dataset_name", null: false
     t.text "mapping", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
