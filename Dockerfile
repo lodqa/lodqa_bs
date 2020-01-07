@@ -1,4 +1,4 @@
-FROM ruby:2.5.3-alpine
+FROM ruby:2.6.5-alpine
 
 ENV BUILD_PACKAGES="curl-dev ruby-dev build-base" \
     DEV_PACKAGES="zlib-dev libxml2-dev libxslt-dev tzdata yaml-dev sqlite-dev" \
@@ -23,7 +23,7 @@ COPY Gemfile.lock ./
 
 RUN gem install bundler
 RUN bundle config build.nokogiri --use-system-libraries && \
-    bundle install --jobs=4 --retry=10 --clean
+    bundle install --jobs=4 --retry=10
 
 # Copy the source files. If the application is referenced with git url, it can run without volume mount.
 COPY . ./
