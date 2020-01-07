@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Term mapping
 class TermMapping < ApplicationRecord
   serialize :mapping, JSON
 
