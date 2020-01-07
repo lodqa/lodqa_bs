@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_27_071437) do
+ActiveRecord::Schema.define(version: 2020_01_07_074146) do
 
   create_table "events", force: :cascade do |t|
     t.string "event", null: false
@@ -47,6 +47,15 @@ ActiveRecord::Schema.define(version: 2019_02_27_071437) do
     t.datetime "referred_at"
     t.index ["pseudo_graph_pattern_id"], name: "index_searches_on_pseudo_graph_pattern_id"
     t.index ["search_id"], name: "index_searches_on_search_id", unique: true
+  end
+
+  create_table "term_mappings", force: :cascade do |t|
+    t.integer "pseudo_graph_pattern_id", null: false
+    t.string "dataset_name", null: false
+    t.text "mapping", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pseudo_graph_pattern_id"], name: "index_term_mappings_on_pseudo_graph_pattern_id"
   end
 
 end
