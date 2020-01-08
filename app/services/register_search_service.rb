@@ -3,7 +3,7 @@
 require 'lodqa/graphicator'
 
 # Bussiness logic about registering a serach
-module ReigsterSearchService
+module RegisterSearchService
   class << self
     # Register a search.
     # Start a new search job unless same search and pgp exists.
