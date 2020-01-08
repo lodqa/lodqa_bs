@@ -24,7 +24,7 @@ class Search < ApplicationRecord
     end
 
     def notify_existing_events_to url, search
-      search.occurred_events(OFFSET_SIZE).each { |e| JSONResource.append_all url, events: e }
+      search.occurred_events(OFFSET_SIZE).each { |e| JsonResource.append_all url, events: e }
     end
   end
 end

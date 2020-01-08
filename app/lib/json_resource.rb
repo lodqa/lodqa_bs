@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Send JSON message by HTTP POST mesthod.
-module JSONResource
+module JsonResource
   class << self
     def append_all url, *data
       start url do |resource|
@@ -29,7 +29,7 @@ module JSONResource
     private
 
     def start url, &block
-      JSONResource::Connection.new(url).start block
+      JsonResource::Connection.new(url).start block
     end
   end
 end

@@ -14,7 +14,7 @@ class Channel
 
   def initialize url
     @url = url
-    self.class.connections[url] = JSONResource::Connection.new(url)
+    self.class.connections[url] = JsonResource::Connection.new(url)
 
     # Remove re-registered url from the deny list.
     self.class.unreachable_url.delete url

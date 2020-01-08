@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module JSONResource
+module JsonResource
   # HTTP Connction
   class Connection
     def initialize url
