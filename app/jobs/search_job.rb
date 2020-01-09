@@ -42,7 +42,7 @@ class SearchJob < ApplicationJob
       event = save_event! search, event_type, data
       SubscriptionContainer.publish_for search, event.data
 
-      save_term_mapping! search, data if event_type.eql?(:mappings)
+      save_term_mapping! search, data if event_type == :mappings
     end
   end
 
@@ -55,7 +55,7 @@ class SearchJob < ApplicationJob
   end
 
   def save_term_mapping! search, data
-    dataset_name = [:dataset].present? ? data.dig(:dataset, :name) : ''
+    dataset_name = data[:dataset].present? ? data.dig(:dataset, :name) : ''
 
     DbConnection.using do
       TermMapping.create pseudo_graph_pattern: search.pseudo_graph_pattern,
