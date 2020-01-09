@@ -41,6 +41,8 @@ class SearchJob < ApplicationJob
     lambda do |event_type, data|
       event = save_event! search, event_type, data
       SubscriptionContainer.publish_for search, event.data
+
+      save_term_mapping! search, data if event_type == :mappings
     end
   end
 
@@ -49,6 +51,14 @@ class SearchJob < ApplicationJob
       Event.create pseudo_graph_pattern: search.pseudo_graph_pattern,
                    event: event_type,
                    data: { event: event_type }.merge(data)
+    end
+  end
+
+  def save_term_mapping! search, data
+    DbConnection.using do
+      TermMapping.create pseudo_graph_pattern: search.pseudo_graph_pattern,
+                         dataset_name: data.dig(:dataset, :name),
+                         mapping: data[:mappings]
     end
   end
 
