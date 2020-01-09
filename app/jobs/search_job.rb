@@ -55,11 +55,9 @@ class SearchJob < ApplicationJob
   end
 
   def save_term_mapping! search, data
-    dataset_name = data[:dataset].present? ? data.dig(:dataset, :name) : ''
-
     DbConnection.using do
       TermMapping.create pseudo_graph_pattern: search.pseudo_graph_pattern,
-                         dataset_name: dataset_name,
+                         dataset_name: data.dig(:dataset, :name),
                          mapping: data[:mappings]
     end
   end
