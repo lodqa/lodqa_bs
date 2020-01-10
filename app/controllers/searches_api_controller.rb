@@ -40,6 +40,8 @@ class SearchesApiController < ActionController::API
     params.require(%i[query callback_url])
     params.permit %i[
       query
+      pgp
+      mappings
       read_timeout
       sparql_limit
       answer_limit
