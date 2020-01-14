@@ -6,7 +6,7 @@ require 'lodqa/sources'
 class SearchParameter
   include ActiveModel::Model
 
-  attr_accessor :query, \
+  attr_accessor :query, :pgp, :mappings, \
                 :read_timeout, :sparql_limit, :answer_limit, :target, :private, \
                 :callback_url
 
@@ -17,6 +17,8 @@ class SearchParameter
 
   def initialize params
     self.query = params[:query]
+    self.pgp = params[:pgp]
+    self.mappings = params[:mappings]
     self.read_timeout = params[:read_timeout] || 5
     self.sparql_limit = params[:sparql_limit] || 100
     self.answer_limit = params[:answer_limit] || 10
