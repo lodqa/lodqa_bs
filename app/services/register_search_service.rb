@@ -47,8 +47,8 @@ module RegisterSearchService
                                                        private: search_param.private
 
       TermMapping.create pseudo_graph_pattern: pseudo_graph_pattern,
-                        dataset_name: search_param.target,
-                        mapping: search_param.mappings
+                         dataset_name: search_param.target,
+                         mapping: search_param.mappings
 
       search = create_search search_param.query, pseudo_graph_pattern
 

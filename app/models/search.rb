@@ -27,6 +27,7 @@ class Search < ApplicationRecord
     end
 
     # Check does a same condition search exists?
+    # rubocop:disable Metrics/AbcSize
     def equals_in other
       Search.alive?
             .where(query: other.query)
@@ -41,6 +42,7 @@ class Search < ApplicationRecord
             .order(created_at: :desc)
             .first
     end
+    # rubocop:enable Metrics/AbcSize
 
     # Start to search and save the start time.
     def start! search_id
