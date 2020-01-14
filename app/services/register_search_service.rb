@@ -45,6 +45,11 @@ module RegisterSearchService
                                                        sparql_limit: search_param.sparql_limit,
                                                        answer_limit: search_param.answer_limit,
                                                        private: search_param.private
+
+      TermMapping.create pseudo_graph_pattern: pseudo_graph_pattern,
+                        dataset_name: search_param.target,
+                        mapping: search_param.mappings
+
       search = create_search search_param.query, pseudo_graph_pattern
 
       SearchJob.perform_later search.search_id
