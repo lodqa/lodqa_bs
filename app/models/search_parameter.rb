@@ -35,7 +35,7 @@ class SearchParameter
   private
 
   def convert_param_to_json param
-    param.blank? ? '' : JSON.parse(param)
+    param.blank? ? nil : JSON.parse(param)
   end
 
   def acquire_targets

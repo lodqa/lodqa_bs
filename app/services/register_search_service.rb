@@ -57,7 +57,7 @@ module RegisterSearchService
                                                        sparql_limit: search_param.sparql_limit,
                                                        answer_limit: search_param.answer_limit,
                                                        private: search_param.private
-      create_term_mapping pseudo_graph_pattern, search_param unless search_param.query.present?
+      create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
 
       search = create_search search_param.query, pseudo_graph_pattern
 
