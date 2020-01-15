@@ -12,15 +12,20 @@ module RegisterSearchService
       dup_search = Search.equals_in search_param
       return start_callback_job_with_search dup_search, search_param.callback_url if dup_search
 
-      pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
-      dup_pgp = PseudoGraphPattern.equals_in pgp, search_param
-      if dup_pgp
-        return start_callback_job_with_pgp search_param.query,
-                                           dup_pgp,
-                                           search_param.callback_url
+      if search_param.query.present?
+        # simpleモード
+        pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
+        dup_pgp = PseudoGraphPattern.equals_in pgp, search_param
+        if dup_pgp
+          return start_callback_job_with_pgp search_param.query,
+                                             dup_pgp,
+                                             search_param.callback_url
+        end
+        start_search_job search_param, pgp, search_param.callback_url
+      else
+        # expertモード
+        start_search_job search_param, eval(search_param.pgp), search_param.callback_url
       end
-
-      start_search_job search_param, pgp, search_param.callback_url
     end
 
     private
@@ -45,6 +50,12 @@ module RegisterSearchService
                                                        sparql_limit: search_param.sparql_limit,
                                                        answer_limit: search_param.answer_limit,
                                                        private: search_param.private
+      unless search_param.query.present?
+        TermMapping.create pseudo_graph_pattern: pseudo_graph_pattern,
+                           dataset_name: search_param.target,
+                           mapping: search_param.mappings
+      end
+
       search = create_search search_param.query, pseudo_graph_pattern
 
       SearchJob.perform_later search.search_id
@@ -54,7 +65,7 @@ module RegisterSearchService
     end
 
     def create_search query, pseudo_graph_pattern
-      search = Search.new query: query,
+      search = Search.new query: query.presence || '',
                           pseudo_graph_pattern: pseudo_graph_pattern
       search.assign_id!
       search.be_referred!

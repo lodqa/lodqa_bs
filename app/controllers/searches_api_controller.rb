@@ -37,7 +37,7 @@ class SearchesApiController < ActionController::API
   end
 
   def search_attributes
-    params.require(%i[query callback_url])
+    params.require(%i[callback_url])
     params.permit %i[
       query
       pgp
