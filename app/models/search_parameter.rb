@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lodqa/sources'
+require 'json'
 
 # Parameter class to validate parameters independently from Search and PseudoGraphPattern
 class SearchParameter
@@ -17,8 +18,8 @@ class SearchParameter
 
   def initialize params
     self.query = params[:query]
-    self.pgp = params[:pgp]
-    self.mappings = params[:mappings]
+    self.pgp = convert_param_to_json(params[:pgp])
+    self.mappings = convert_param_to_json(params[:mappings])
     self.read_timeout = params[:read_timeout] || 5
     self.sparql_limit = params[:sparql_limit] || 100
     self.answer_limit = params[:answer_limit] || 10
@@ -27,7 +28,15 @@ class SearchParameter
     self.callback_url = params[:callback_url]
   end
 
+  def simple_mode?
+    query.present?
+  end
+
   private
+
+  def convert_param_to_json param
+    param.blank? ? nil : JSON.parse(param)
+  end
 
   def acquire_targets
     Lodqa::Sources.all_datasets.map { |d| d[:name] }.join(', ')
