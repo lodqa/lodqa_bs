@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lodqa/graphicator'
+require 'json'
 
 # Bussiness logic about registering a serach
 module RegisterSearchService
@@ -12,23 +13,31 @@ module RegisterSearchService
       dup_search = Search.equals_in search_param
       return start_callback_job_with_search dup_search, search_param.callback_url if dup_search
 
+      # Register in expert mode or simple mode
       if search_param.query.present?
-        # simpleモード
-        pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
-        dup_pgp = PseudoGraphPattern.equals_in pgp, search_param
-        if dup_pgp
-          return start_callback_job_with_pgp search_param.query,
-                                             dup_pgp,
-                                             search_param.callback_url
-        end
-        start_search_job search_param, pgp, search_param.callback_url
+        simple_mode search_param
       else
-        # expertモード
-        start_search_job search_param, eval(search_param.pgp), search_param.callback_url
+        expert_mode search_param
       end
     end
 
     private
+
+    def simple_mode search_param
+      pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
+      dup_pgp = PseudoGraphPattern.equals_in pgp, search_param
+      if dup_pgp
+        return start_callback_job_with_pgp search_param.query,
+                                           dup_pgp,
+                                           search_param.callback_url
+      end
+      start_search_job search_param, pgp, search_param.callback_url
+    end
+
+    def expert_mode search_param
+      start_search_job search_param, JSON.parse(search_param.pgp),
+                       search_param.callback_url
+    end
 
     # Call back events about an exiting search.
     def start_callback_job_with_search search, callback_url
@@ -50,11 +59,7 @@ module RegisterSearchService
                                                        sparql_limit: search_param.sparql_limit,
                                                        answer_limit: search_param.answer_limit,
                                                        private: search_param.private
-      unless search_param.query.present?
-        TermMapping.create pseudo_graph_pattern: pseudo_graph_pattern,
-                           dataset_name: search_param.target,
-                           mapping: search_param.mappings
-      end
+      create_term_mapping pseudo_graph_pattern, search_param unless search_param.query.present?
 
       search = create_search search_param.query, pseudo_graph_pattern
 
@@ -62,6 +67,12 @@ module RegisterSearchService
       LateCallbacks.add_for search, callback_url
 
       search.search_id
+    end
+
+    def create_term_mapping pseudo_graph_pattern, search_param
+      TermMapping.create pseudo_graph_pattern: pseudo_graph_pattern,
+                         dataset_name: search_param.target,
+                         mapping: search_param.mappings
     end
 
     def create_search query, pseudo_graph_pattern
