@@ -18,8 +18,8 @@ class SearchParameter
 
   def initialize params
     self.query = params[:query]
-    self.pgp = params[:pgp].present? ? JSON.parse(params[:pgp]) : ''
-    self.mappings = params[:mappings].present? ? JSON.parse(params[:mappings]) : ''
+    self.pgp = convert_param_to_json(params[:pgp])
+    self.mappings = convert_param_to_json(params[:mappings])
     self.read_timeout = params[:read_timeout] || 5
     self.sparql_limit = params[:sparql_limit] || 100
     self.answer_limit = params[:answer_limit] || 10
@@ -33,6 +33,10 @@ class SearchParameter
   end
 
   private
+
+  def convert_param_to_json param
+    param.blank? ? '' : JSON.parse(param)
+  end
 
   def acquire_targets
     Lodqa::Sources.all_datasets.map { |d| d[:name] }.join(', ')
