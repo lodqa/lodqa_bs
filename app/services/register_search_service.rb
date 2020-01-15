@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'lodqa/graphicator'
-require 'json'
 
 # Bussiness logic about registering a serach
 module RegisterSearchService
@@ -14,7 +13,7 @@ module RegisterSearchService
       return start_callback_job_with_search dup_search, search_param.callback_url if dup_search
 
       # Register in expert mode or simple mode
-      if search_param.query.present?
+      if search_param.simple_mode?
         simple_mode search_param
       else
         expert_mode search_param
@@ -35,8 +34,7 @@ module RegisterSearchService
     end
 
     def expert_mode search_param
-      start_search_job search_param, JSON.parse(search_param.pgp),
-                       search_param.callback_url
+      start_search_job search_param, search_param.pgp, search_param.callback_url
     end
 
     # Call back events about an exiting search.
