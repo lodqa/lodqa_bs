@@ -72,7 +72,7 @@ module Lodqa
       emit :pgp, dataset: dataset, pgp: pgp
 
       # mappings
-      mappings = @mappings.present? ? @mappings : mappings(@target_dataset[:dictionary_url], pgp)
+      mappings = @mappings.presence || mappings(@target_dataset[:dictionary_url], pgp)
       emit :mappings, dataset: dataset, pgp: pgp, mappings: mappings
 
       parallel = 16

@@ -65,7 +65,7 @@ module Lodqa
       end
 
       def term_mappings pgp
-        pgp.term_mappings.present? ? pgp.term_mappings[0].mapping : nil
+        pgp.term_mappings.present? ? pgp.term_mappings[0].mapping.deep_symbolize_keys : nil
       end
     end
   end
