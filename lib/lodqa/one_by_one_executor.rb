@@ -18,6 +18,7 @@ module Lodqa
     def initialize dataset,
                    pgp,
                    query_id,
+                   mappings,
                    urilinks_url: 'http://urilinks.lodqa.org',
                    read_timeout: 5,
                    sparql_limit: nil,
@@ -26,6 +27,7 @@ module Lodqa
 
       @target_dataset = dataset
       @pgp = pgp
+      @mappings = mappings
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
       @sparql_limit = sparql_limit
@@ -70,7 +72,7 @@ module Lodqa
       emit :pgp, dataset: dataset, pgp: pgp
 
       # mappings
-      mappings = mappings @target_dataset[:dictionary_url], pgp
+      mappings = @mappings.presence || mappings(@target_dataset[:dictionary_url], pgp)
       emit :mappings, dataset: dataset, pgp: pgp, mappings: mappings
 
       parallel = 16
