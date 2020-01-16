@@ -47,6 +47,7 @@ module Lodqa
         executor = OneByOneExecutor.new dataset,
                                         pseudo_graph_pattern.pgp.deep_symbolize_keys,
                                         pseudo_graph_pattern.id,
+                                        pseudo_graph_pattern.term_mappings,
                                         read_timeout: pseudo_graph_pattern.read_timeout,
                                         sparql_limit: pseudo_graph_pattern.sparql_limit,
                                         answer_limit: pseudo_graph_pattern.answer_limit,
