@@ -47,7 +47,7 @@ module Lodqa
         executor = OneByOneExecutor.new dataset,
                                         pseudo_graph_pattern.pgp.deep_symbolize_keys,
                                         pseudo_graph_pattern.id,
-                                        pseudo_graph_pattern.term_mappings,
+                                        term_mappings(pseudo_graph_pattern),
                                         read_timeout: pseudo_graph_pattern.read_timeout,
                                         sparql_limit: pseudo_graph_pattern.sparql_limit,
                                         answer_limit: pseudo_graph_pattern.answer_limit,
@@ -62,6 +62,10 @@ module Lodqa
       def wait_for_completion_of_all tasks
         # Call value! method to catch errors in sub threads.
         Concurrent::Promises.zip(*tasks).value!
+      end
+
+      def term_mappings pgp
+        pgp.term_mappings.present? ? pgp.term_mappings[0].mapping : nil
       end
     end
   end
