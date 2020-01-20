@@ -28,6 +28,7 @@ module Lodqa
         pgp
         mappings
         sparql
+        anchored_pgp
         query_sparql
         solutions
         answer

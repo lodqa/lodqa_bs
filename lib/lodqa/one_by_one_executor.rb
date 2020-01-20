@@ -176,6 +176,8 @@ module Lodqa
         number: @sparql_count
       }
 
+      emit :anchored_pgp, anchored_pgp
+
       emit :sparql, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql
 
       # Get solutions of SPARQL
