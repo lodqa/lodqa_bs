@@ -30,6 +30,7 @@ class Search < ApplicationRecord
     def simple_equals_in other
       Search.alive?
             .where(query: other.query)
+            .joins(:pseudo_graph_pattern)
             .where(pseudo_graph_patterns: { read_timeout: other.read_timeout })
             .where(pseudo_graph_patterns: { sparql_limit: other.sparql_limit })
             .where(pseudo_graph_patterns: { answer_limit: other.answer_limit })
