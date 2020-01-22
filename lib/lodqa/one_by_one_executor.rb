@@ -89,6 +89,8 @@ module Lodqa
       anchored_pgps = AnchoredPgps.new pgp, mappings
       anchored_pgps.logger = logger
       anchored_pgps.each do |anchored_pgp|
+        emit :anchored_pgp, anchored_pgp
+
         graph_finder_options = {
           max_hop: @target_dataset[:max_hop],
           ignore_predicates: @target_dataset[:ignore_predicates],
@@ -175,8 +177,6 @@ module Lodqa
         query: sparql_query,
         number: @sparql_count
       }
-
-      emit :anchored_pgp, anchored_pgp
 
       emit :sparql, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql
 
