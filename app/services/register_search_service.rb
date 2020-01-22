@@ -9,7 +9,11 @@ module RegisterSearchService
     # Start a new search job unless same search and pgp exists.
     # Call back only if same search or pgp exists.
     def register search_param
-      dup_search = Search.equals_in search_param
+      dup_search = if search_param.simple_mode?
+                     Search.simple_equals_in(search_param)
+                   else
+                     Search.expert_equals_in(search_param)
+                   end
       return start_callback_job_with_search dup_search, search_param.callback_url if dup_search
 
       # Register in expert mode or simple mode
