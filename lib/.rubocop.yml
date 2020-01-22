@@ -20,7 +20,7 @@ Metrics/CyclomaticComplexity:
   Max: 14
 
 Metrics/MethodLength:
-  Max: 89
+  Max: 90
 
 Metrics/ParameterLists:
   Max: 25
