@@ -43,15 +43,15 @@ class Search < ApplicationRecord
     # Expert mode check does a same condition search exists?
     # rubocop:disable Metrics/AbcSize
     def expert_equals_in other
-      Search.alive?
-            .joins(pseudo_graph_pattern: :term_mappings)
+      Search.joins(pseudo_graph_pattern: :term_mappings)
+            .where(pseudo_graph_patterns: { aborted_at: nil })
             .where(pseudo_graph_patterns: { read_timeout: other.read_timeout })
             .where(pseudo_graph_patterns: { sparql_limit: other.sparql_limit })
             .where(pseudo_graph_patterns: { answer_limit: other.answer_limit })
             .where(pseudo_graph_patterns: { target: other.target })
             .where(pseudo_graph_patterns: { private: false })
-            .where(term_mappings: { dataset_name: other.target })
-            .where(term_mappings: { mapping: other.mappings.to_s })
+            .where(pseudo_graph_patterns: { term_mappings: { dataset_name: other.target }})
+            .where(pseudo_graph_patterns: { term_mappings: { mapping: other.mappings }})
             .order(created_at: :desc)
             .first
     end
