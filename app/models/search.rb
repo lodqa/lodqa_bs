@@ -50,8 +50,8 @@ class Search < ApplicationRecord
             .where(pseudo_graph_patterns: { answer_limit: other.answer_limit })
             .where(pseudo_graph_patterns: { target: other.target })
             .where(pseudo_graph_patterns: { private: false })
-            .where(pseudo_graph_patterns: { term_mappings: { dataset_name: other.target }})
-            .where(pseudo_graph_patterns: { term_mappings: { mapping: other.mappings }})
+            .where(pseudo_graph_patterns: { term_mappings: { dataset_name: other.target } })
+            .where(pseudo_graph_patterns: { term_mappings: { mapping: other.mappings } })
             .order(created_at: :desc)
             .first
     end
