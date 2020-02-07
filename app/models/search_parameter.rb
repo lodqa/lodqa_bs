@@ -8,8 +8,8 @@ class SearchParameter
   include ActiveModel::Model
 
   attr_accessor :query, :pgp, :mappings, \
-                :read_timeout, :sparql_limit, :answer_limit, :target, :private, \
-                :callback_url
+                :read_timeout, :sparql_limit, :answer_limit, :target, :user_id, \
+                :private, :callback_url
 
   validates :read_timeout,
             :sparql_limit,
@@ -24,6 +24,7 @@ class SearchParameter
     self.sparql_limit = params[:sparql_limit] || 100
     self.answer_limit = params[:answer_limit] || 10
     self.target = params[:target] || acquire_targets
+    self.user_id = params[:user_id]
     self.private = params[:cache] == 'no'
     self.callback_url = params[:callback_url]
   end
