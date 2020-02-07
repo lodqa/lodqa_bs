@@ -14,7 +14,7 @@ ActiveRecord::Schema.define(version: 2020_02_07_064024) do
 
   create_table "dialogs", force: :cascade do |t|
     t.string "user_id", null: false
-    t.integer "search_id", limit: 36, null: false
+    t.integer "search_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["search_id"], name: "index_dialogs_on_search_id"
