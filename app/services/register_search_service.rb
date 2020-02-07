@@ -54,6 +54,7 @@ module RegisterSearchService
     end
 
     # Start new job for new search.
+    # rubocop:disable Metrics/AbcSize
     def start_search_job search_param, pgp, callback_url
       pseudo_graph_pattern = PseudoGraphPattern.create pgp: pgp,
                                                        target: search_param.target,
@@ -64,13 +65,16 @@ module RegisterSearchService
       create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
 
       search = create_search search_param.query, pseudo_graph_pattern
-      create_dialog search_param.user_id , search if search_param.simple_mode? && search_param.user_id.present?
+      if search_param.simple_mode? && search_param.user_id.present?
+        create_dialog search_param.user_id, search
+      end
 
       SearchJob.perform_later search.search_id
       LateCallbacks.add_for search, callback_url
 
       search.search_id
     end
+    # rubocop:enable Metrics/AbcSize
 
     def create_term_mapping pseudo_graph_pattern, search_param
       TermMapping.create pseudo_graph_pattern: pseudo_graph_pattern,

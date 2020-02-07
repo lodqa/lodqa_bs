@@ -16,6 +16,7 @@ class SearchParameter
             :answer_limit,
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
+  # rubocop:disable Metrics/AbcSize
   def initialize params
     self.query = params[:query]
     self.pgp = convert_param_to_json(params[:pgp])
@@ -28,6 +29,7 @@ class SearchParameter
     self.private = params[:cache] == 'no'
     self.callback_url = params[:callback_url]
   end
+  # rubocop:enable Metrics/AbcSize
 
   def simple_mode?
     query.present?
