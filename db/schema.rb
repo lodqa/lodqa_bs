@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_07_060057) do
+ActiveRecord::Schema.define(version: 2020_02_07_064024) do
+
+  create_table "dialogs", force: :cascade do |t|
+    t.string "user_id", null: false
+    t.integer "search_id", limit: 36, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["search_id"], name: "index_dialogs_on_search_id"
+  end
 
   create_table "events", force: :cascade do |t|
     t.string "event", null: false
@@ -58,16 +66,8 @@ ActiveRecord::Schema.define(version: 2020_02_07_060057) do
     t.index ["pseudo_graph_pattern_id"], name: "index_term_mappings_on_pseudo_graph_pattern_id"
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string "user_id", null: false
-    t.integer "search_id", limit: 36, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["search_id"], name: "index_users_on_search_id"
-  end
-
+  add_foreign_key "dialogs", "searches"
   add_foreign_key "events", "pseudo_graph_patterns"
   add_foreign_key "searches", "pseudo_graph_patterns"
   add_foreign_key "term_mappings", "pseudo_graph_patterns"
-  add_foreign_key "users", "searches"
 end
