@@ -6,8 +6,8 @@ require 'securerandom'
 class Search < ApplicationRecord
   include Subscribable
 
-  belongs_to :pseudo_graph_pattern
   has_many :dialogs, dependent: :destroy
+  belongs_to :pseudo_graph_pattern
 
   before_create { self.created_at = Time.now }
 
