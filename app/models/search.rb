@@ -7,6 +7,7 @@ class Search < ApplicationRecord
   include Subscribable
 
   belongs_to :pseudo_graph_pattern
+  has_many :users, dependent: :destroy
 
   before_create { self.created_at = Time.now }
 
