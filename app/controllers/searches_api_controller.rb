@@ -46,6 +46,7 @@ class SearchesApiController < ActionController::API
       sparql_limit
       answer_limit
       target
+      user_id
       private
       callback_url
     ]

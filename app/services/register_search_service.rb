@@ -64,6 +64,9 @@ module RegisterSearchService
       create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
 
       search = create_search search_param.query, pseudo_graph_pattern
+      if search_param.simple_mode? && search_param.user_id.present?
+        create_dialog search_param.user_id, search
+      end
 
       SearchJob.perform_later search.search_id
       LateCallbacks.add_for search, callback_url
@@ -75,6 +78,15 @@ module RegisterSearchService
       TermMapping.create pseudo_graph_pattern: pseudo_graph_pattern,
                          dataset_name: search_param.target,
                          mapping: search_param.mappings
+    end
+
+    def create_dialog user_id, search
+      dialog = search.dialogs.where(user_id: user_id)
+      if dialog.present?
+        dialog.update(updated_at: Time.now.utc)
+      else
+        search.dialogs.create(user_id: user_id)
+      end
     end
 
     def create_search query, pseudo_graph_pattern

@@ -42,7 +42,6 @@ class Search < ApplicationRecord
     end
 
     # Expert mode check does a same condition search exists?
-    # rubocop:disable Metrics/AbcSize
     def expert_equals_in other
       Search.alive?
             .joins(pseudo_graph_pattern: :term_mappings)
@@ -56,7 +55,6 @@ class Search < ApplicationRecord
             .order(created_at: :desc)
             .first
     end
-    # rubocop:enable Metrics/AbcSize
 
     # Start to search and save the start time.
     def start! search_id
