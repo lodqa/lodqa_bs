@@ -8,12 +8,15 @@ module RegisterSearchService
     # Register a search.
     # Start a new search job unless same search and pgp exists.
     # Call back only if same search or pgp exists.
+    # rubocop:disable Metrics/PerceivedComplexity
     def register search_param
       dup_search = if search_param.simple_mode?
                      Search.simple_equals_in(search_param)
                    else
                      Search.expert_equals_in(search_param)
                    end
+
+      create_dialog search_param.user_id, dup_search if dup_search && search_param.user_id.present?
       return start_callback_job_with_search dup_search, search_param.callback_url if dup_search
 
       # Register in expert mode or simple mode
@@ -23,6 +26,7 @@ module RegisterSearchService
         expert_mode search_param
       end
     end
+    # rubocop:enable Metrics/PerceivedComplexity
 
     private
 
@@ -79,12 +83,7 @@ module RegisterSearchService
     end
 
     def create_dialog user_id, search
-      dialog = search.dialogs.where(user_id: user_id)
-      if dialog.present?
-        dialog.update(updated_at: Time.now.utc)
-      else
-        search.dialogs.create(user_id: user_id)
-      end
+      search.dialogs.create(user_id: user_id)
     end
 
     def create_search query, pseudo_graph_pattern
