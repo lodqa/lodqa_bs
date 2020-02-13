@@ -8,7 +8,6 @@ module RegisterSearchService
     # Register a search.
     # Start a new search job unless same search and pgp exists.
     # Call back only if same search or pgp exists.
-    # rubocop:disable Metrics/PerceivedComplexity
     def register search_param
       dup_search = if search_param.simple_mode?
                      Search.simple_equals_in(search_param)
@@ -16,8 +15,10 @@ module RegisterSearchService
                      Search.expert_equals_in(search_param)
                    end
 
-      create_dialog search_param.user_id, dup_search if dup_search && search_param.user_id.present?
-      return start_callback_job_with_search dup_search, search_param.callback_url if dup_search
+      if dup_search
+        dup_search.create_dialog search_param.user_id if search_param.user_id.present?
+        return start_callback_job_with_search dup_search, search_param.callback_url
+      end
 
       # Register in expert mode or simple mode
       if search_param.simple_mode?
@@ -26,7 +27,6 @@ module RegisterSearchService
         expert_mode search_param
       end
     end
-    # rubocop:enable Metrics/PerceivedComplexity
 
     private
 
@@ -68,7 +68,7 @@ module RegisterSearchService
       create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
 
       search = create_search search_param.query, pseudo_graph_pattern
-      create_dialog search_param.user_id, search if search_param.user_id.present?
+      search.create_dialog search_param.user_id if search_param.user_id.present?
 
       SearchJob.perform_later search.search_id
       LateCallbacks.add_for search, callback_url
@@ -80,10 +80,6 @@ module RegisterSearchService
       TermMapping.create pseudo_graph_pattern: pseudo_graph_pattern,
                          dataset_name: search_param.target,
                          mapping: search_param.mappings
-    end
-
-    def create_dialog user_id, search
-      search.dialogs.create(user_id: user_id)
     end
 
     def create_search query, pseudo_graph_pattern
