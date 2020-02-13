@@ -64,9 +64,7 @@ module RegisterSearchService
       create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
 
       search = create_search search_param.query, pseudo_graph_pattern
-      if search_param.simple_mode? && search_param.user_id.present?
-        create_dialog search_param.user_id, search
-      end
+      create_dialog search_param.user_id, search if search_param.user_id.present?
 
       SearchJob.perform_later search.search_id
       LateCallbacks.add_for search, callback_url
