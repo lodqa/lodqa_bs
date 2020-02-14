@@ -64,6 +64,10 @@ class Search < ApplicationRecord
     end
   end
 
+  def append_dialog user_id
+    dialogs.create(user_id: user_id)
+  end
+
   def assign_id!
     # Now I will generate search_id myself.
     # Previously, in order to use the id of the job as the search_id of the search,

@@ -18,7 +18,6 @@ ActiveRecord::Schema.define(version: 2020_02_07_064024) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["search_id"], name: "index_dialogs_on_search_id"
-    t.index ["user_id", "search_id"], name: "index_dialogs_searches_on_user_id_and_search_id", unique: true
   end
 
   create_table "events", force: :cascade do |t|
