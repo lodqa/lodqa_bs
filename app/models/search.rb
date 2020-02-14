@@ -64,7 +64,7 @@ class Search < ApplicationRecord
     end
   end
 
-  def create_dialog user_id
+  def append_dialog user_id
     dialogs.create(user_id: user_id)
   end
 

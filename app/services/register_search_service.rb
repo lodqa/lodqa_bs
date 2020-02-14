@@ -16,7 +16,7 @@ module RegisterSearchService
                    end
 
       if dup_search
-        dup_search.create_dialog search_param.user_id if search_param.user_id.present?
+        dup_search.append_dialog search_param.user_id if search_param.user_id.present?
         return start_callback_job_with_search dup_search, search_param.callback_url
       end
 
@@ -68,7 +68,7 @@ module RegisterSearchService
       create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
 
       search = create_search search_param.query, pseudo_graph_pattern
-      search.create_dialog search_param.user_id if search_param.user_id.present?
+      search.append_dialog search_param.user_id if search_param.user_id.present?
 
       SearchJob.perform_later search.search_id
       LateCallbacks.add_for search, callback_url
