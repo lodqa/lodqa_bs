@@ -7,12 +7,7 @@ module Lodqa
       @user_ids = user_ids
     end
 
-    def user_ids
-      @user_ids
-    end
-
-    def anchored_pgp
-      @anchored_pgp
-    end
+    attr_reader :user_ids
+    attr_reader :anchored_pgp
   end
 end
