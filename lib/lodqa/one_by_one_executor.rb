@@ -6,6 +6,7 @@ require 'term/finder'
 require 'lodqa/anchored_pgps'
 require 'lodqa/graph_finder'
 require 'lodqa/graphicator'
+require 'lodqa/contextualizer'
 require 'enju_access/cgi_accessor'
 require 'sparql_client/cacheable_client'
 
@@ -18,6 +19,7 @@ module Lodqa
     def initialize dataset,
                    pgp,
                    query_id,
+                   user_ids,
                    mappings,
                    urilinks_url: 'http://urilinks.lodqa.org',
                    read_timeout: 5,
@@ -27,6 +29,7 @@ module Lodqa
 
       @target_dataset = dataset
       @pgp = pgp
+      @user_ids = user_ids
       @mappings = mappings
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
@@ -91,6 +94,11 @@ module Lodqa
       anchored_pgps.each do |anchored_pgp|
         emit :anchored_pgp, anchored_pgp
 
+        contextualizer = Contextualizer.new anchored_pgp, @user_ids
+        contextualizer.user_ids.each do |user_id|
+          emit :contextualizer, anchored_pgp: contextualizer.anchored_pgp, user_id: user_id
+        end
+
         graph_finder_options = {
           max_hop: @target_dataset[:max_hop],
           ignore_predicates: @target_dataset[:ignore_predicates],
@@ -105,7 +113,7 @@ module Lodqa
 
           known_sparql << sparql_query
 
-          invoke_sparql endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql_query, queue
+          invoke_sparql endpoint, dataset, pgp, mappings, contextualizer.anchored_pgp, bgp, sparql_query, queue
           count += 1
         end
       end

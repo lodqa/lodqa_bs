@@ -23,6 +23,7 @@ class SearchJob < ApplicationJob
 
   def run search
     Lodqa::Search.start search.pseudo_graph_pattern,
+                        search.dialogs.pluck(:user_id),
                         on_start(search),
                         on_event(search),
                         logger
