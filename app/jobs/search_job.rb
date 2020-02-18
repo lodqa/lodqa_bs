@@ -22,12 +22,8 @@ class SearchJob < ApplicationJob
   private
 
   def run search, user_id
-    searches = if user_id.present?
-                 Search.includes(:dialogs).where(dialogs: { user_id: user_id })
-               else []
-               end
     Lodqa::Search.start search.pseudo_graph_pattern,
-                        searches,
+                        Search.dialog_history(user_id),
                         on_start(search),
                         on_event(search),
                         logger

@@ -2,12 +2,17 @@
 
 module Lodqa
   class Contextualizer
-    attr_reader :anchored_pgp
-    attr_reader :searches
-
-    def initialize anchored_pgp, searches
+    def initialize anchored_pgp, dialogs
       @anchored_pgp = anchored_pgp
-      @searches = searches
+      @dialogs = dialogs
+    end
+
+    def anchored_pgp
+      @anchored_pgp
+    end
+
+    def dialogs
+      @dialogs
     end
   end
 end

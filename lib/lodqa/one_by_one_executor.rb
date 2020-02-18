@@ -20,7 +20,7 @@ module Lodqa
     def initialize dataset,
                    pgp,
                    query_id,
-                   searches,
+                   dialogs,
                    mappings,
                    urilinks_url: 'http://urilinks.lodqa.org',
                    read_timeout: 5,
@@ -30,7 +30,7 @@ module Lodqa
 
       @target_dataset = dataset
       @pgp = pgp
-      @searches = searches
+      @dialogs = dialogs
       @mappings = mappings
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
@@ -96,9 +96,9 @@ module Lodqa
       anchored_pgps.each do |anchored_pgp|
         emit :anchored_pgp, anchored_pgp
 
-        if @searches.present?
-          contextualizer = Contextualizer.new anchored_pgp, @searches
-          emit :contextualizer, anchored_pgp: contextualizer.anchored_pgp, searches: contextualizer.searches
+        if @dialogs.present?
+          contextualizer = Contextualizer.new anchored_pgp, @dialogs
+          emit :contextualizer, anchored_pgp: contextualizer.anchored_pgp, dialogs: contextualizer.dialogs
         end
 
         graph_finder_options = {
@@ -114,7 +114,8 @@ module Lodqa
           next if known_sparql.member? sparql_query
 
           known_sparql << sparql_query
-          apgp = @searches.present? ? contextualizer.anchored_pgp : anchored_pgp
+
+          apgp = @dialogs.present? ? contextualizer.anchored_pgp : anchored_pgp
           invoke_sparql endpoint, dataset, pgp, mappings, apgp, bgp, sparql_query, queue
           count += 1
         end

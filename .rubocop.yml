@@ -23,6 +23,11 @@ Style/HashSyntax:
 Style/MethodDefParentheses:
   EnforcedStyle: require_no_parentheses
 
+Style/TrivialAccessors:
+  AllowedMethods:
+    - anchored_pgp
+    - dialogs
+
 AllCops:
   Exclude:
     - config.ru
