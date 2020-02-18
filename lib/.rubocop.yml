@@ -49,4 +49,3 @@ Style/Semicolon:
 Style/TrivialAccessors:
   AllowedMethods:
     - anchored_pgp
-    - dialogs

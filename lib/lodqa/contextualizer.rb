@@ -4,15 +4,11 @@ module Lodqa
   class Contextualizer
     def initialize anchored_pgp, dialogs
       @anchored_pgp = anchored_pgp
-      @dialogs = dialogs
+      @dialogs = dialogs.present? ? dialogs : []
     end
 
     def anchored_pgp
       @anchored_pgp
-    end
-
-    def dialogs
-      @dialogs
     end
   end
 end
