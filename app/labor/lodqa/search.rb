@@ -8,8 +8,8 @@ module Lodqa
   # Search the query by the LODQA
   module Search
     class << self
-      def start pseudo_graph_pattern, user_ids, on_start, on_event, logger
-        tasks = search_for_datasets_async pseudo_graph_pattern, user_ids, on_event, logger
+      def start pseudo_graph_pattern, searches, on_start, on_event, logger
+        tasks = search_for_datasets_async pseudo_graph_pattern, searches, on_event, logger
 
         on_start.call
 
@@ -36,20 +36,22 @@ module Lodqa
         gateway_error
       ].freeze
 
-      def search_for_datasets_async pseudo_graph_pattern, user_ids, on_event, logger
+      def search_for_datasets_async pseudo_graph_pattern, searches, on_event, logger
         pseudo_graph_pattern.target.split(',')
                             .map { |target| Sources.dataset_of_target target }
                             .map.with_index(1) { |dataset, number| dataset.merge(number: number) }
                             .map do |dataset|
-          Concurrent::Promises.future { search_for dataset, pseudo_graph_pattern, user_ids, on_event, logger }
+          Concurrent::Promises.future do
+            search_for dataset, pseudo_graph_pattern, searches, on_event, logger
+          end
         end
       end
 
-      def search_for dataset, pseudo_graph_pattern, user_ids, on_event, logger
+      def search_for dataset, pseudo_graph_pattern, searches, on_event, logger
         executor = OneByOneExecutor.new dataset,
                                         pseudo_graph_pattern.pgp.deep_symbolize_keys,
                                         pseudo_graph_pattern.id,
-                                        user_ids,
+                                        searches,
                                         term_mappings(pseudo_graph_pattern),
                                         read_timeout: pseudo_graph_pattern.read_timeout,
                                         sparql_limit: pseudo_graph_pattern.sparql_limit,

@@ -11,6 +11,7 @@ require 'enju_access/cgi_accessor'
 require 'sparql_client/cacheable_client'
 
 module Lodqa
+  # rubocop:disable Metrics/ClassLength
   class OneByOneExecutor
     include Logger::Loggable
 
@@ -19,7 +20,7 @@ module Lodqa
     def initialize dataset,
                    pgp,
                    query_id,
-                   user_ids,
+                   searches,
                    mappings,
                    urilinks_url: 'http://urilinks.lodqa.org',
                    read_timeout: 5,
@@ -29,7 +30,7 @@ module Lodqa
 
       @target_dataset = dataset
       @pgp = pgp
-      @user_ids = user_ids
+      @searches = searches
       @mappings = mappings
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
@@ -62,6 +63,7 @@ module Lodqa
       @event_hadlers[event]&.each { |h| h.call event, data }
     end
 
+    # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     def perform
       start = Time.now
       dataset = {
@@ -94,9 +96,9 @@ module Lodqa
       anchored_pgps.each do |anchored_pgp|
         emit :anchored_pgp, anchored_pgp
 
-        contextualizer = Contextualizer.new anchored_pgp, @user_ids
-        contextualizer.user_ids.each do |user_id|
-          emit :contextualizer, anchored_pgp: contextualizer.anchored_pgp, user_id: user_id
+        if @searches.present?
+          contextualizer = Contextualizer.new anchored_pgp, @searches
+          emit :contextualizer, anchored_pgp: contextualizer.anchored_pgp, searches: contextualizer.searches
         end
 
         graph_finder_options = {
@@ -112,8 +114,8 @@ module Lodqa
           next if known_sparql.member? sparql_query
 
           known_sparql << sparql_query
-
-          invoke_sparql endpoint, dataset, pgp, mappings, contextualizer.anchored_pgp, bgp, sparql_query, queue
+          apgp = @searches.present? ? contextualizer.anchored_pgp : anchored_pgp
+          invoke_sparql endpoint, dataset, pgp, mappings, apgp, bgp, sparql_query, queue
           count += 1
         end
       end
@@ -172,6 +174,7 @@ module Lodqa
         state: 'Something is wrong.'
       }
     end
+    # rubocop:enable Metrics/AbcSize,Metrics/MethodLength
 
     def to_s
       "dataset: pgp: #{@pgp}, #{@target_dataset[:name]}, read_timeout: #{@read_timeout}, sparql_limit: #{@sparql_limit}, answer_limit: #{@answer_limit}"
@@ -268,4 +271,5 @@ module Lodqa
       nil
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
