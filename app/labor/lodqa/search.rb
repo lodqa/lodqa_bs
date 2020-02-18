@@ -29,7 +29,6 @@ module Lodqa
         mappings
         sparql
         anchored_pgp
-        contextualizer
         query_sparql
         solutions
         answer
