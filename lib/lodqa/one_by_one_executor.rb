@@ -6,6 +6,7 @@ require 'term/finder'
 require 'lodqa/anchored_pgps'
 require 'lodqa/graph_finder'
 require 'lodqa/graphicator'
+require 'lodqa/contextualizer'
 require 'enju_access/cgi_accessor'
 require 'sparql_client/cacheable_client'
 
@@ -18,6 +19,7 @@ module Lodqa
     def initialize dataset,
                    pgp,
                    query_id,
+                   dialogs,
                    mappings,
                    urilinks_url: 'http://urilinks.lodqa.org',
                    read_timeout: 5,
@@ -27,6 +29,7 @@ module Lodqa
 
       @target_dataset = dataset
       @pgp = pgp
+      @dialogs = dialogs
       @mappings = mappings
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
@@ -59,6 +62,7 @@ module Lodqa
       @event_hadlers[event]&.each { |h| h.call event, data }
     end
 
+    # rubocop:disable Metrics/MethodLength
     def perform
       start = Time.now
       dataset = {
@@ -89,7 +93,8 @@ module Lodqa
       anchored_pgps = AnchoredPgps.new pgp, mappings
       anchored_pgps.logger = logger
       anchored_pgps.each do |anchored_pgp|
-        emit :anchored_pgp, anchored_pgp
+        contextualizer = Contextualizer.new anchored_pgp, @dialogs
+        emit :anchored_pgp, contextualizer.anchored_pgp
 
         graph_finder_options = {
           max_hop: @target_dataset[:max_hop],
@@ -105,7 +110,7 @@ module Lodqa
 
           known_sparql << sparql_query
 
-          invoke_sparql endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql_query, queue
+          invoke_sparql endpoint, dataset, pgp, mappings, contextualizer.anchored_pgp, bgp, sparql_query, queue
           count += 1
         end
       end
@@ -164,6 +169,7 @@ module Lodqa
         state: 'Something is wrong.'
       }
     end
+    # rubocop:enable Metrics/MethodLength
 
     def to_s
       "dataset: pgp: #{@pgp}, #{@target_dataset[:name]}, read_timeout: #{@read_timeout}, sparql_limit: #{@sparql_limit}, answer_limit: #{@answer_limit}"

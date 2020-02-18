@@ -3,6 +3,7 @@
 require 'securerandom'
 
 # The search accepted.
+# rubocop:disable Metrics/ClassLength
 class Search < ApplicationRecord
   include Subscribable
 
@@ -61,6 +62,13 @@ class Search < ApplicationRecord
       search = preload(:pseudo_graph_pattern).find_by! search_id: search_id
       search.pseudo_graph_pattern.update(started_at: Time.now.utc)
       search
+    end
+
+    # Get user dialog history
+    def dialog_history user_id
+      return [] unless user_id.present?
+
+      Search.includes(:dialogs).where(dialogs: { user_id: user_id })
     end
   end
 
@@ -153,3 +161,4 @@ class Search < ApplicationRecord
     Event.reader_by offset_size, pseudo_graph_pattern: pseudo_graph_pattern
   end
 end
+# rubocop:enable Metrics/ClassLength

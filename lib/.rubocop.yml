@@ -45,3 +45,7 @@ Style/Documentation:
 
 Style/Semicolon:
   Enabled: false
+
+Style/TrivialAccessors:
+  AllowedMethods:
+    - anchored_pgp
