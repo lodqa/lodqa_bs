@@ -63,13 +63,6 @@ class Search < ApplicationRecord
       search.pseudo_graph_pattern.update(started_at: Time.now.utc)
       search
     end
-
-    # Get user dialog history
-    def dialog_history user_id
-      return [] unless user_id.present?
-
-      Search.includes(:dialogs).where(dialogs: { user_id: user_id })
-    end
   end
 
   def append_dialog user_id
