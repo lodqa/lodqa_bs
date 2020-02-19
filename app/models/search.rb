@@ -3,7 +3,6 @@
 require 'securerandom'
 
 # The search accepted.
-# rubocop:disable Metrics/ClassLength
 class Search < ApplicationRecord
   include Subscribable
 
@@ -154,4 +153,3 @@ class Search < ApplicationRecord
     Event.reader_by offset_size, pseudo_graph_pattern: pseudo_graph_pattern
   end
 end
-# rubocop:enable Metrics/ClassLength
