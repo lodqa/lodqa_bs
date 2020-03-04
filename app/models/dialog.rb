@@ -14,7 +14,8 @@ class Dialog < ApplicationRecord
 
     def queued_dialogs
       Dialog.group(:user_id).group(:search_id)
-            .select('search_id, user_id, max(dialogs.created_at) as latest_created_at, count(dialogs.id) as dialog_count')
+            .select('search_id, user_id, max(dialogs.created_at) as latest_created_at,
+              count(dialogs.id) as dialog_count')
             .order(latest_created_at: :desc)
             .includes(search: :pseudo_graph_pattern)
     end
