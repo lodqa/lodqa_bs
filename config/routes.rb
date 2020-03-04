@@ -10,5 +10,5 @@ Rails.application.routes.draw do
   end
   resources :dialogs,
             only: [:index],
-            controller: :dialogs_view
+            controller: :dialogs
 end

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 # A controller to show registered dialogs.
-class DialogsViewController < ActionController::Base
-  PER = 10
+class DialogsController < ActionController::Base
+  ITEMS_PER_PAGE = 10
 
   # Show registered dialogs
   def index
     @query = Dialog.ransack(search_params)
-    @dialogs = @query.result.queued_dialogs.page(params[:page]).per(PER)
+    @dialogs = @query.result.queued_dialogs.page(params[:page]).per(ITEMS_PER_PAGE)
   end
 
   private
