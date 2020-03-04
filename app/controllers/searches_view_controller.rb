@@ -15,4 +15,8 @@ class SearchesViewController < ActionController::Base
     Search.find_by(id: params[:id]).pseudo_graph_pattern.destroy
     redirect_to searches_path, notice: 'Delete success'
   end
+
+  def show
+    @search = Search.find(params[:id])
+  end
 end
