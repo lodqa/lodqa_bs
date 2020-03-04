@@ -1,0 +1,77 @@
+<head>
+  <title>Queued Dialogs</title>
+  <style>
+    table{
+      width: 100%;
+      border-collapse:separate;
+      border-spacing: 0;
+      font-size: 10pt;
+    }
+
+    table th:first-child{
+      border-radius: 5px 0 0 0;
+    }
+
+    table th:last-child{
+      border-radius: 0 5px 0 0;
+      border-right: 1px solid #3c6690;
+    }
+
+    table th{
+      text-align: center;
+      background: #cccccc;
+      border: 1px solid #718598;
+      box-shadow: 0px 1px 1px rgba(255,255,255,0.3);
+      width: auto;
+      padding: 10px 0;
+    }
+
+    table td{
+      text-align: left;
+      border: 1px solid #718598;
+      box-shadow: 0px -3px 5px 1px #eee inset;
+    }
+
+    </style>
+</head>
+<body>
+  <h1>Dialogs</h1>
+  <%= search_form_for @query do |f| %>
+    <div class="row">
+      <div class="col-sm-6">
+          <%= f.label :user_id_start, "User id" %>
+          <%= f.text_field :user_id_start, placeholder: "user id start" %>
+          <%= f.submit "検索" %>
+      </div>
+    </div>
+  <% end %>
+
+  <table>
+    <tr>
+      <th>User id</th>
+      <th>Search id</th>
+      <th>Query</th>
+      <th>Target</th>
+      <th>Latest Created at</th>
+      <th>Read timeout</th>
+      <th>SPARQL limit</th>
+      <th>Answer limit</th>
+      <th>Total</th>
+    </tr>
+
+    <% @dialogs.each do |dialog| %>
+      <tr>
+        <td><%= dialog.user_id %></td>
+        <td><%= link_to dialog.search.search_id, search_path(dialog.search_id), method: :get %> </td>
+        <td><%= dialog.search.query %></td>
+        <td><%= dialog.search.pseudo_graph_pattern.target %></td>
+        <td><%= dialog.latest_created_at.in_time_zone.strftime('%m/%d %H:%M') %></td>
+        <td><%= dialog.search.pseudo_graph_pattern.read_timeout %></td>
+        <td><%= dialog.search.pseudo_graph_pattern.sparql_limit %></td>
+        <td><%= dialog.search.pseudo_graph_pattern.answer_limit %></td>
+        <td><%= dialog.dialog_count %></td>
+      </tr>
+    <% end %>
+  </table>
+  <span style="float:right;"><%= paginate @dialogs %></span>
+</body>

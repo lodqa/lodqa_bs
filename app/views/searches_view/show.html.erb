@@ -1,0 +1,91 @@
+<head>
+  <title>Queued Search</title>
+  <style>
+    table{
+      width: 50%;
+      border-collapse:separate;
+      border-spacing: 0;
+      font-size: 10pt;
+    }
+
+    table th{
+      text-align: left;
+      background: #cccccc;
+      border: 1px solid #718598;
+      box-shadow: 0px 1px 1px rgba(255,255,255,0.3);
+      width: 20%;
+      padding: 10px 0;
+    }
+
+    table td{
+      text-align: left;
+      border: 1px solid #718598;
+      box-shadow: 0px -3px 5px 1px #eee inset;
+    }
+  </style>
+</head>
+<body>
+  <h1>Search detail</h1>
+  <tr>
+    <td><%= link_to 'Back to Dialogs', dialogs_path, method: :get %> </td>
+  </tr>
+
+  <table>
+    <tr>
+      <th>Search id</th>
+      <td><%= @search.search_id %></td>
+    </tr>
+    <tr>
+      <th>Query</th>
+      <td><%= @search.query %></td>
+    </tr>
+    <tr>
+      <th>Read timeout</th>
+      <td><%= @search.pseudo_graph_pattern.read_timeout %></td>
+    </tr>
+    <tr>
+      <th>SPARQL limit</th>
+      <td><%= @search.pseudo_graph_pattern.sparql_limit %></td>
+    </tr>
+    <tr>
+      <th>Answer limit</th>
+      <td><%= @search.pseudo_graph_pattern.answer_limit %></td>
+    </tr>
+    <tr>
+      <th>Target</th>
+      <td><%= @search.pseudo_graph_pattern.target %></td>
+    </tr>
+    <tr>
+      <th>Private</th>
+      <td><%= @search.pseudo_graph_pattern.private? %></td>
+    </tr>
+    <tr>
+      <th>State</th>
+      <td><%= @search.pseudo_graph_pattern.state %></td>
+    </tr>
+    <tr>
+      <th>Created at</th>
+      <td><%= @search.pseudo_graph_pattern.created_at.in_time_zone.strftime('%m/%d %H:%M') %></td>
+    </tr>
+    <tr>
+      <th>Started at</th>
+      <td><%= @search.pseudo_graph_pattern.started_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
+    </tr>
+    <tr>
+      <th>Finished at</th>
+      <td><%= @search.pseudo_graph_pattern.finished_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
+    </tr>
+    <tr>
+      <th>Referred at</th>
+      <td><%= @search.referred_at&.in_time_zone&.strftime('%m/%d %H:%M') %></td>
+    </tr>
+    <tr>
+      <th>Elapsed Time(s)</th>
+      <td><%= number_with_precision(@search.pseudo_graph_pattern.elapsed_time, precision: 1) %></td>
+    </tr>
+    <tr>
+      <th>Number of answers</th>
+      <td><%= @search.pseudo_graph_pattern.answers.size %></td>
+    </tr>
+  </table>
+</body>
