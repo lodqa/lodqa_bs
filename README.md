@@ -1,8 +1,15 @@
-# What's this ?
+# LODQA Bot Server
 
-This is the LODQA Bot Server.
+It works as the engine of the LODQA system.
+LODQA BS provides an API for several bot agent services to register queries for [LODQA](http://lodqa.org/) and to subscribe progress of the query.
 
-This provide APIs for several bot agent servers to register queries for [LODQA](http://lodqa.org/) and to subscribe progress of the query.
+LODQA (Linked Open Data Question-Answering) is a system to search SPARQL endpoints, using natural langauge queries, from which it generates SPARQL queries, submits them to SPARQL endpoints, collects answers, and present them to the users.
+
+## Dependency
+
+LODQA system is dependent on this external service for parsing the query:
+
+- [Enju](http://kmcs.nii.ac.jp/enju/) CGI server at [http://enju-gtrec.dbcls.jp](http://enju-gtrec.dbcls.jp).
 
 ## Responsibility
 
