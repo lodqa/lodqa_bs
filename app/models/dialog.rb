@@ -19,5 +19,21 @@ class Dialog < ApplicationRecord
             .order(latest_created_at: :desc)
             .includes(search: :pseudo_graph_pattern)
     end
+
+    def user_dialogs user_id
+      dialogs = Dialog.group(:user_id).group(:search_id)
+                      .where(user_id: user_id)
+                      .select('search_id, user_id, max(dialogs.created_at) as latest_created_at,
+                        count(dialogs.id) as total_count')
+                      .order(latest_created_at: :desc)
+                      .includes(:search)
+      dialogs.map do |dialog|
+        {
+          latest_created_at: dialog.latest_created_at,
+          query: dialog.search.query,
+          total_count: dialog.total_count
+        }
+      end
+    end
   end
 end

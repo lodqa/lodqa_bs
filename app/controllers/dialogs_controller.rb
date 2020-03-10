@@ -10,6 +10,12 @@ class DialogsController < ActionController::Base
     @dialogs = @query.result.queued_dialogs.page(params[:page]).per(ITEMS_PER_PAGE)
   end
 
+  # Get dialogs for user_id
+  def user_history
+    dialogs = Dialog.user_dialogs(params[:user_id])
+    render pretty_json: dialogs
+  end
+
   private
 
   def search_params

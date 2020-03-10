@@ -16,4 +16,5 @@ Rails.application.routes.draw do
   resources :dialogs,
             only: [:index],
             controller: :dialogs
+  get 'dialogs/:user_id', to: 'dialogs#user_history', constraints: { user_id: /.+@.+\..*/ }, as: :user_history
 end
