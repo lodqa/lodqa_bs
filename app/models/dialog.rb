@@ -36,6 +36,7 @@ class Dialog < ApplicationRecord
 
     def user_dialog dialog
       {
+        search_id: dialog.search.search_id,
         latest_created_at: dialog.latest_created_at,
         query: dialog.search.query,
         total_count: dialog.total_count
