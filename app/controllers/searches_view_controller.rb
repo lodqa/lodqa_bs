@@ -18,8 +18,5 @@ class SearchesViewController < ActionController::Base
 
   def show
     @search = Search.find(params[:id])
-    respond_to do |format|
-      format.html
-    end
   end
 end
