@@ -4,7 +4,7 @@ Rails.application.routes.draw do
             controller: :searches_api,
             constraints: {id: /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/, format: :json }
   resources :searches,
-            only: [:index, :destroy],
+            only: [:index, :show, :destroy],
             controller: :searches_view
   resources :searches,
             only: [:create],
@@ -12,9 +12,10 @@ Rails.application.routes.draw do
             constraints: {id: /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/} do
     resources :subscriptions, only: :create
   end
-  get 'searches/:id', to: 'searches_view#show', as: :search_show
   resources :dialogs,
             only: [:index],
             controller: :dialogs
-  get 'dialogs/:user_id', to: 'dialogs#user_history', constraints: { user_id: /.+@.+\..*/ }, as: :user_history
+  resources :user_histories,
+            only: [:show],
+            constraints: { id: /.+@.+\..*/ }
 end
