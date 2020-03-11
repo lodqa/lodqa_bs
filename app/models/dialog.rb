@@ -21,9 +21,9 @@ class Dialog < ApplicationRecord
     end
 
     def user_dialogs user_id
-      dialogs = Dialog.group(:user_id).group(:search_id)
+      dialogs = Dialog.group(:search_id)
                       .where(user_id: user_id)
-                      .select('search_id, user_id, max(dialogs.created_at) as latest_created_at,
+                      .select('search_id, max(dialogs.created_at) as latest_created_at,
                         count(dialogs.id) as total_count')
                       .order(latest_created_at: :desc)
                       .includes(:search)
