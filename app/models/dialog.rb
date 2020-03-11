@@ -28,12 +28,18 @@ class Dialog < ApplicationRecord
                       .order(latest_created_at: :desc)
                       .includes(:search)
       dialogs.map do |dialog|
-        {
-          latest_created_at: dialog.latest_created_at,
-          query: dialog.search.query,
-          total_count: dialog.total_count
-        }
+        user_dialog dialog
       end
+    end
+
+    private
+
+    def user_dialog dialog
+      {
+        latest_created_at: dialog.latest_created_at,
+        query: dialog.search.query,
+        total_count: dialog.total_count
+      }
     end
   end
 end
