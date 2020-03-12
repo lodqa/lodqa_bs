@@ -76,7 +76,7 @@ class Search < ApplicationRecord
     {
       search_id: search_id,
       query: query,
-      referred_at: to_strftime(referred_at)
+      referred_at: referred_at.in_time_zone.strftime('%m/%d %H:%M')
     }.merge pseudo_graph_pattern.data_for_search_detail
   end
 
@@ -167,14 +167,6 @@ class Search < ApplicationRecord
   # In order to send the first event fast, read events from the DB piece by piece.
   def occurred_events offset_size
     Event.reader_by offset_size, pseudo_graph_pattern: pseudo_graph_pattern
-  end
-
-  private
-
-  def to_strftime date
-    return nil unless date
-
-    date.in_time_zone.strftime('%m/%d %H:%M')
   end
 end
 # rubocop:enable Metrics/ClassLength
