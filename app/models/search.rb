@@ -32,7 +32,7 @@ class Search < ApplicationRecord
       search = Search.includes(pseudo_graph_pattern: [:all_answers])
                      .find_by(search_id: search_id)
       search.be_referred!
-      search.of_search
+      search.to_hash_with_pgp
     end
 
     # Simple mode check does a same condition search exists?
@@ -72,18 +72,12 @@ class Search < ApplicationRecord
     end
   end
 
-  def of_search
+  def to_hash_with_pgp
     {
       search_id: search_id,
       query: query,
       referred_at: to_strftime(referred_at)
     }.merge pseudo_graph_pattern.data_for_search_detail
-  end
-
-  def to_strftime date
-    return nil unless date
-
-    date.in_time_zone.strftime('%m/%d %H:%M')
   end
 
   def append_dialog user_id
@@ -173,6 +167,14 @@ class Search < ApplicationRecord
   # In order to send the first event fast, read events from the DB piece by piece.
   def occurred_events offset_size
     Event.reader_by offset_size, pseudo_graph_pattern: pseudo_graph_pattern
+  end
+
+  private
+
+  def to_strftime date
+    return nil unless date
+
+    date.in_time_zone.strftime('%m/%d %H:%M')
   end
 end
 # rubocop:enable Metrics/ClassLength

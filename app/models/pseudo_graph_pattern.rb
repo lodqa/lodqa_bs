@@ -18,28 +18,6 @@ class PseudoGraphPattern < ApplicationRecord
 
   scope :alive?, -> { where aborted_at: nil }
 
-  def data_for_search_detail
-    {
-      read_timeout: read_timeout,
-      sparql_limit: sparql_limit,
-      answer_limit: answer_limit,
-      target: target,
-      private: private,
-      state: state,
-      created_at: to_strftime(created_at),
-      started_at: to_strftime(started_at),
-      finished_at: to_strftime(finished_at),
-      elapsed_time: elapsed_time&.to_f&.ceil(1),
-      number_with_precision: answers.size
-    }
-  end
-
-  def to_strftime date
-    return nil unless date
-
-    date.in_time_zone.strftime('%m/%d %H:%M')
-  end
-
   class << self
     def equals_in pgp, other
       PseudoGraphPattern.alive?
@@ -104,11 +82,35 @@ class PseudoGraphPattern < ApplicationRecord
     }
   end
 
+  def data_for_search_detail
+    {
+      read_timeout: read_timeout,
+      sparql_limit: sparql_limit,
+      answer_limit: answer_limit,
+      target: target,
+      private: private,
+      state: state,
+      created_at: to_strftime(created_at),
+      started_at: to_strftime(started_at),
+      finished_at: to_strftime(finished_at),
+      elapsed_time: elapsed_time&.to_f&.ceil(1),
+      number_with_precision: answers.size
+    }
+  end
+
   def data_for_finish_event
     {
       finish_at: finished_at,
       elapsed_time: elapsed_time,
       answers: answers.as_json
     }
+  end
+
+  private
+
+  def to_strftime date
+    return nil unless date
+
+    date.in_time_zone.strftime('%m/%d %H:%M')
   end
 end
