@@ -31,7 +31,7 @@ class Search < ApplicationRecord
     def dialog_search search_id
       search = Search.includes(pseudo_graph_pattern: [:all_answers])
                      .find_by(search_id: search_id)
-
+      search.be_referred!
       hash_dialog_search search
     end
 
