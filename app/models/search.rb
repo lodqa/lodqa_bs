@@ -27,6 +27,13 @@ class Search < ApplicationRecord
             .order created_at: :desc
     end
 
+    def dialog_search search_id
+      search = Search.includes(pseudo_graph_pattern: [:all_answers])
+                     .find_by(search_id: search_id)
+
+      hash_dialog_search search
+    end
+
     # Simple mode check does a same condition search exists?
     def simple_equals_in other
       Search.alive?
@@ -61,6 +68,27 @@ class Search < ApplicationRecord
       search = preload(:pseudo_graph_pattern).find_by! search_id: search_id
       search.pseudo_graph_pattern.update(started_at: Time.now.utc)
       search
+    end
+
+    private
+
+    def hash_dialog_search search
+      {
+        search_id: search.search_id,
+        query: search.query,
+        read_timeout: search.pseudo_graph_pattern.read_timeout,
+        sparql_limit: search.pseudo_graph_pattern.sparql_limit,
+        answer_limit: search.pseudo_graph_pattern.answer_limit,
+        target: search.pseudo_graph_pattern.target,
+        private: search.pseudo_graph_pattern.private,
+        state: search.pseudo_graph_pattern.state,
+        created_at: search.pseudo_graph_pattern.created_at.in_time_zone.strftime('%m/%d %H:%M'),
+        started_at: search.pseudo_graph_pattern.started_at&.in_time_zone&.strftime('%m/%d %H:%M'),
+        finished_at: search.pseudo_graph_pattern.finished_at&.in_time_zone&.strftime('%m/%d %H:%M'),
+        referred_at: search.referred_at&.in_time_zone&.strftime('%m/%d %H:%M'),
+        elapsed_time: search.pseudo_graph_pattern.elapsed_time&.to_f.ceil(1),
+        number_with_precision: search.pseudo_graph_pattern.answers.size
+      }
     end
   end
 
