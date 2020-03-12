@@ -24,6 +24,11 @@ class SearchesApiController < ActionController::API
     render pretty_json: to_hash(search_id)
   end
 
+  def dialog_search
+    search = Search.dialog_search(params[:id])
+    render pretty_json: search
+  end
+
   private
 
   def require_callback
