@@ -10,7 +10,7 @@ class SearchesApiController < ActionController::API
 
   # Show information about a registered search.
   def show
-    render pretty_json: Search.dialog_search(params[:id])
+    render pretty_json: Search.user_search(params[:id])
   end
 
   # Register a new search and run a new job to search the search.

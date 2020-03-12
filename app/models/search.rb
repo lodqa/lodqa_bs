@@ -28,11 +28,11 @@ class Search < ApplicationRecord
             .order created_at: :desc
     end
 
-    def dialog_search search_id
+    def user_search search_id
       search = Search.includes(pseudo_graph_pattern: [:all_answers])
                      .find_by(search_id: search_id)
       search.be_referred!
-      hash_dialog_search search
+      hash_user_search search
     end
 
     # Simple mode check does a same condition search exists?
@@ -73,24 +73,31 @@ class Search < ApplicationRecord
 
     private
 
-    # rubocop:disable Metrics/AbcSize
-    def hash_dialog_search search
+    # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def hash_user_search search
+      pgp = search.pseudo_graph_pattern
       {
-        search_id: search.search_id, query: search.query,
-        read_timeout: search.pseudo_graph_pattern.read_timeout,
-        sparql_limit: search.pseudo_graph_pattern.sparql_limit,
-        answer_limit: search.pseudo_graph_pattern.answer_limit,
-        target: search.pseudo_graph_pattern.target, private: search.pseudo_graph_pattern.private,
-        state: search.pseudo_graph_pattern.state,
-        created_at: search.pseudo_graph_pattern.created_at.in_time_zone.strftime('%m/%d %H:%M'),
-        started_at: search.pseudo_graph_pattern.started_at&.in_time_zone&.strftime('%m/%d %H:%M'),
-        finished_at: search.pseudo_graph_pattern.finished_at&.in_time_zone&.strftime('%m/%d %H:%M'),
-        referred_at: search.referred_at&.in_time_zone&.strftime('%m/%d %H:%M'),
-        elapsed_time: search.pseudo_graph_pattern.elapsed_time&.to_f&.ceil(1),
-        number_with_precision: search.pseudo_graph_pattern.answers.size
+        search_id: search.search_id,
+        query: search.query,
+        read_timeout: pgp.read_timeout,
+        sparql_limit: pgp.sparql_limit,
+        answer_limit: pgp.answer_limit,
+        target: pgp.target,
+        private: pgp.private,
+        state: pgp.state,
+        created_at: to_strftime(pgp.created_at&.in_time_zone),
+        started_at: to_strftime(pgp.started_at&.in_time_zone),
+        finished_at: to_strftime(pgp.finished_at&.in_time_zone),
+        referred_at: to_strftime(search.referred_at&.in_time_zone),
+        elapsed_time: pgp.elapsed_time&.to_f&.ceil(1),
+        number_with_precision: pgp.answers.size
       }
     end
-    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/AbcSize,Metrics/MethodLength
+
+    def to_strftime date
+      date.strftime('%m/%d %H:%M')
+    end
   end
 
   def append_dialog user_id
