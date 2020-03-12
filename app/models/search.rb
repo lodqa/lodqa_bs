@@ -3,6 +3,7 @@
 require 'securerandom'
 
 # The search accepted.
+# rubocop:disable Metrics/ClassLength
 class Search < ApplicationRecord
   include Subscribable
 
@@ -72,24 +73,24 @@ class Search < ApplicationRecord
 
     private
 
+    # rubocop:disable Metrics/AbcSize
     def hash_dialog_search search
       {
-        search_id: search.search_id,
-        query: search.query,
+        search_id: search.search_id, query: search.query,
         read_timeout: search.pseudo_graph_pattern.read_timeout,
         sparql_limit: search.pseudo_graph_pattern.sparql_limit,
         answer_limit: search.pseudo_graph_pattern.answer_limit,
-        target: search.pseudo_graph_pattern.target,
-        private: search.pseudo_graph_pattern.private,
+        target: search.pseudo_graph_pattern.target, private: search.pseudo_graph_pattern.private,
         state: search.pseudo_graph_pattern.state,
         created_at: search.pseudo_graph_pattern.created_at.in_time_zone.strftime('%m/%d %H:%M'),
         started_at: search.pseudo_graph_pattern.started_at&.in_time_zone&.strftime('%m/%d %H:%M'),
         finished_at: search.pseudo_graph_pattern.finished_at&.in_time_zone&.strftime('%m/%d %H:%M'),
         referred_at: search.referred_at&.in_time_zone&.strftime('%m/%d %H:%M'),
-        elapsed_time: search.pseudo_graph_pattern.elapsed_time&.to_f.ceil(1),
+        elapsed_time: search.pseudo_graph_pattern.elapsed_time&.to_f&.ceil(1),
         number_with_precision: search.pseudo_graph_pattern.answers.size
       }
     end
+    # rubocop:enable Metrics/AbcSize
   end
 
   def append_dialog user_id
@@ -181,3 +182,4 @@ class Search < ApplicationRecord
     Event.reader_by offset_size, pseudo_graph_pattern: pseudo_graph_pattern
   end
 end
+# rubocop:enable Metrics/ClassLength
