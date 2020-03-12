@@ -3,6 +3,7 @@
 require 'securerandom'
 
 # The search accepted.
+# rubocop:disable Metrics/ClassLength
 class Search < ApplicationRecord
   include Subscribable
 
@@ -25,6 +26,13 @@ class Search < ApplicationRecord
     def queued_searches
       Search.includes(pseudo_graph_pattern: [:all_answers])
             .order created_at: :desc
+    end
+
+    def of search_id
+      search = Search.includes(pseudo_graph_pattern: [:all_answers])
+                     .find_by(search_id: search_id)
+      search.be_referred!
+      search.to_hash_with_pgp
     end
 
     # Simple mode check does a same condition search exists?
@@ -62,6 +70,14 @@ class Search < ApplicationRecord
       search.pseudo_graph_pattern.update(started_at: Time.now.utc)
       search
     end
+  end
+
+  def to_hash_with_pgp
+    {
+      search_id: search_id,
+      query: query,
+      referred_at: referred_at.in_time_zone.strftime('%m/%d %H:%M')
+    }.merge pseudo_graph_pattern.data_for_search_detail
   end
 
   def append_dialog user_id
@@ -153,3 +169,4 @@ class Search < ApplicationRecord
     Event.reader_by offset_size, pseudo_graph_pattern: pseudo_graph_pattern
   end
 end
+# rubocop:enable Metrics/ClassLength
