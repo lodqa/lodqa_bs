@@ -10,9 +10,10 @@ class SearchesApiController < ActionController::API
 
   # Show information about a registered search.
   def show
-    search = Search.find_by!(search_id: params[:id])
-    search.be_referred!
-    render pretty_json: search, except: :id
+    Search.find_by!(search_id: params[:id]).be_referred!
+
+    search = Search.dialog_search(params[:id])
+    render pretty_json: search
   end
 
   # Register a new search and run a new job to search the search.
@@ -22,11 +23,6 @@ class SearchesApiController < ActionController::API
 
     search_id = RegisterSearchService.register search_params
     render pretty_json: to_hash(search_id)
-  end
-
-  def dialog_search
-    search = Search.dialog_search(params[:id])
-    render pretty_json: search
   end
 
   private

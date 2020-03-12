@@ -12,7 +12,6 @@ Rails.application.routes.draw do
             constraints: {id: /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/} do
     resources :subscriptions, only: :create
   end
-  get 'dialog_searches/:id', to: 'searches_api#dialog_search', constraints: {id: /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/, format: :json }
   resources :dialogs,
             only: [:index],
             controller: :dialogs
