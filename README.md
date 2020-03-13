@@ -139,26 +139,26 @@ at finish:
 
 GET /searches/:search_id
 
-    curl http://localhost/searches/f47bb3d7-f1c9-4720-a824-2baf4a78c757
+    curl http://localhost/searches/f2d34d58-a138-4798-8f5c-54872eeda21a
 
 #### Return value example:
 
 ```json
 {
-  "search_id": "f47bb3d7-f1c9-4720-a824-2baf4a78c757",
-  "query": "Which genes are associated with Endothelin receptor type G?",
-  "created_at": "2018-09-06 16:55:05 +0900",
-  "started_at": "2018-09-06 16:55:05 +0900",
-  "finished_at": null,
-  "aborted_at": "2018-09-06 17:06:53 +0900",
+  "search_id": "f2d34d58-a138-4798-8f5c-54872eeda21a",
+  "query": "Which chemical compound is associated with liver hypertrophy?",
+  "referred_at": "03/13 11:56",
   "read_timeout": 5,
   "sparql_limit": 100,
   "answer_limit": 10,
-  "start_search_callback_url": "https://webhook.site/460584f3-e880-4647-913d-d5abf89821b8",
-  "finish_search_callback_url": "https://webhook.site/460584f3-e880-4647-913d-d5abf89821b8",
-  "answers": [
-
-  ]
+  "target": "QALD-BioMed, bio2rdf-mashup, AgroLD, DisGeNET, NBDC-RDF-Portal, ncats-experimental, colil",
+  "private": false,
+  "state": "finished",
+  "created_at": "03/11 12:21",
+  "started_at": "03/11 12:21",
+  "finished_at": "03/11 12:21",
+  "elapsed_time": 4.9,
+  "number_with_precision": 0
 }
 ```
 
