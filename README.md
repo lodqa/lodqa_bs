@@ -206,6 +206,13 @@ Example event:
 Open /searches.
 List enqueued queries and their state.
 
+## Deployment
+
+### Added environment variable setting of lodqa-bs.（docker-compose.yml）
+```
+LODQA=http://lodqa:9292
+```
+
 ## To Develop
 
 ### Start the server

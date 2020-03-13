@@ -65,6 +65,7 @@
           <td><%= search.pseudo_graph_pattern.answers.size %></td>
           <td><%= link_to 'Detail', search_path(search), method: :get %> </td>
           <td><%= link_to 'Delete', search_path(search), method: :delete %> </td>
+          <td><a href="<%= ENV['LODQA'] %>/answer?search_id=<%= search.search_id %>" target='_blank'>Result</a></td>
         </tr>
       <% end %>
     </tbody>

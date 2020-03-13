@@ -6,3 +6,5 @@ services:
       - 80:3000
     volumes:
       - .:/usr/src/myapp
+    environment:
+      - LODQA=http://lodqa:9292
