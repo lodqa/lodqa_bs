@@ -7,7 +7,7 @@ class SparqlsParameter
   include ActiveModel::Model
 
   attr_accessor :pgp, :mappings, :endpoint_url, :endpoint_options, \
-                :graph_uri, :graph_finder_options, :callback_url
+                :graph_uri, :graph_finder_options
 
   def initialize params
     self.pgp = convert_param_to_json(params[:pgp])
@@ -16,7 +16,6 @@ class SparqlsParameter
     self.endpoint_options = convert_param_to_json(params[:endpoint_options])
     self.graph_uri = params[:graph_uri]
     self.graph_finder_options = convert_param_to_json(params[:graph_finder_options])
-    self.callback_url = params[:callback_url]
   end
 
   private
