@@ -12,7 +12,6 @@ module Lodqa
     end
 
     def each &block
-      logger.debug "start #{self.class.name}##{__method__}"
       anchored_pgps(@pgp, @mappings).each(&block)
     end
 
@@ -25,8 +24,6 @@ module Lodqa
         terms = pgp[:nodes].values.map { |n| mappings[n[:text].to_sym] }
 
         terms.map! { |t| t.nil? ? [] : t }
-
-        logger.debug "terms: #{terms.first.product(*terms.drop(1))}"
 
         terms.first
              .product(*terms.drop(1))
@@ -42,8 +39,6 @@ module Lodqa
     end
 
     def nodes_to_delete pgp, mappings
-      logger.debug "start #{self.class.name}##{__method__}"
-
       nodes_to_delete = []
       pgp[:nodes].each_key do |n|
         next unless mappings[pgp[:nodes][n][:text]].nil? || mappings[pgp[:nodes][n][:text]].empty?
