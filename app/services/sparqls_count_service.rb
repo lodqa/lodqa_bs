@@ -9,12 +9,14 @@ module SparqlsCountService
     # Handle sparqls count.
     def sparqls_count param
       parallel = 16
-      sparql_client = SparqlClient::CacheableClient.new(param.endpoint_url, parallel, param.endpoint_options)
-      finder = Lodqa::GraphFinder.new(sparql_client, param.graph_uri, param.graph_finder_options)
+      sparql_client = SparqlClient::CacheableClient.new(param.endpoint_url,
+                                                        parallel, param.endpoint_options)
+      graph_finder = Lodqa::GraphFinder.new(sparql_client,
+                                            param.graph_uri, param.graph_finder_options)
 
       sparqls = []
       anchored_pgps(param.pgp, param.mappings).each do |anchored_pgp|
-        to_sparql(anchored_pgp, finder) { |sparql| sparqls << sparql }
+        to_sparql(anchored_pgp, graph_finder) { |sparql| sparqls << sparql }
       end
 
       sparqls.count
