@@ -8,7 +8,8 @@ module SparqlsCountService
   class << self
     # Handle sparqls count.
     def sparqls_count param
-      sparql_client = SparqlClient::CacheableClient.new(param.endpoint_url, param.endpoint_options)
+      parallel = 16
+      sparql_client = SparqlClient::CacheableClient.new(param.endpoint_url, parallel, param.endpoint_options)
       finder = Lodqa::GraphFinder.new(sparql_client, param.graph_uri, param.graph_finder_options)
 
       sparqls = []

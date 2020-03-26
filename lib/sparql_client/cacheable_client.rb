@@ -6,7 +6,6 @@ require 'sparql_client/endpoint_error'
 require 'sparql_client/endpoint_temporary_error'
 require 'sparql_client/endpoint_timeout_error'
 require 'concurrent/executor/thread_pool_executor'
-require 'logger/async'
 
 # Cache results of sparql to speed up SPARQL queries.
 module SparqlClient
@@ -22,7 +21,7 @@ module SparqlClient
       fallback_policy: :caller_runs # shouldn't matter -- 0 max queue
     }.freeze
 
-    def initialize endpoint_url, _parallel = 16, endpoint_options = {}
+    def initialize endpoint_url, parallel = 16, endpoint_options = {}
       @endpoint_url = endpoint_url
 
       endpoint_options[:read_timeout] ||= 60
@@ -33,6 +32,7 @@ module SparqlClient
       endpoint_options[:method] ||= :get
       @client = SPARQL::Client.new endpoint_url, endpoint_options
       @cache = {}
+      @executor = Concurrent::ThreadPoolExecutor.new DEFAULT_EXECUTOR_OPTIONS.merge max_threads: parallel
     end
 
     # Query a SPARQL asynchronously.
@@ -46,7 +46,7 @@ module SparqlClient
     #   end
     # end
     def query_async sparql
-      Logger::Async.defer do
+      @executor.post do
         yield [nil, query(sparql)]
       rescue StandardError => e
         yield [e, nil]
