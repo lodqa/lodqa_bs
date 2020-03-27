@@ -8,6 +8,8 @@ require 'sparql_client/cacheable_client'
 # returns the count of sparqls
 module SparqlsCountService
   class << self
+    include Logger::Loggable
+
     # Handle sparqls count.
     def sparqls_count param
       parallel = 16
@@ -18,10 +20,7 @@ module SparqlsCountService
 
       sparqls_count = 0
       anchored_pgps = Lodqa::AnchoredPgps.new param.pgp, param.mappings
-      # rubocop:disable Lint/LiteralAsCondition
-      anchored_pgps.logger =
-        Logger::Logger.new 'sparqls_count', nil, false ? Logger::DEBUG : Logger::INFO
-      # rubocop:enable Lint/LiteralAsCondition
+      anchored_pgps.logger = Logger::Logger.new 'sparqls_count', logger, Logger::INFO
       anchored_pgps.each do |anchored_pgp|
         graph_finder.sparqls_of(anchored_pgp) do |_bgp, _sparql|
           sparqls_count += 1
