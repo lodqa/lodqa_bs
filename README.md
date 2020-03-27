@@ -24,6 +24,7 @@ Then after performing queries, callback API to send answer of queries.
 POST /searches with below parameters:
 
 -   query
+-   user_id(Logged in user ID of lodqa)
 -   callback_url
 
 #### Curl exapmle:
