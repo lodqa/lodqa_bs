@@ -2,6 +2,7 @@
 
 require 'lodqa/anchored_pgps'
 require 'lodqa/graph_finder'
+require 'logger/logger'
 require 'sparql_client/cacheable_client'
 
 # returns the count of sparqls
@@ -17,19 +18,14 @@ module SparqlsCountService
 
       sparqls = []
       anchored_pgps = Lodqa::AnchoredPgps.new param.pgp, param.mappings
+      anchored_pgps.logger = Logger::Logger.new 'sparqls_count', nil, false ? Logger::DEBUG : Logger::INFO
       anchored_pgps.each do |anchored_pgp|
-        to_sparql(anchored_pgp, graph_finder) { |sparql| sparqls << sparql }
+        graph_finder.sparqls_of(anchored_pgp) do |_bgp, sparql|
+            sparqls << sparql
+        end
       end
 
       sparqls.count
-    end
-
-    private
-
-    def to_sparql anchored_pgp, graph_finder
-      graph_finder.sparqls_of(anchored_pgp) do |_bgp, sparql|
-        yield sparql
-      end
     end
   end
 end

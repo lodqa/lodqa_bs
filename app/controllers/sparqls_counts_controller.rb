@@ -2,15 +2,9 @@
 
 # A controller to count of sparqls.
 class SparqlsCountsController < ActionController::API
-  include UrlValidator
-  rescue_from ActionController::ParameterMissing do
-    render nothing: true, status: :bad_request
-  end
-
   # Register a new search and run a new job to search the search.
   def show
     sparqls_params = SparqlsParameter.new sparql_attributes
-    return render json: sparqls_params.errors, status: :bad_request if sparqls_params.invalid?
 
     sparqls_count = SparqlsCountService.sparqls_count sparqls_params
     render pretty_json: to_hash(sparqls_count)
