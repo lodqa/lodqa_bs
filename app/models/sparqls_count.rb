@@ -6,7 +6,7 @@ require 'logger/logger'
 require 'sparql_client/cacheable_client'
 
 # returns the count of sparqls
-module SparqlsCount
+class SparqlsCount
   class << self
     include Logger::Loggable
 
