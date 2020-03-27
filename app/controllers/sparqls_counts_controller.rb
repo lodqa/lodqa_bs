@@ -6,7 +6,7 @@ class SparqlsCountsController < ActionController::API
   def show
     sparqls_params = SparqlsParameter.new sparql_attributes
 
-    sparqls_count = SparqlsCountService.sparqls_count sparqls_params
+    sparqls_count = SparqlsCount.sparqls_count sparqls_params
     render pretty_json: to_hash(sparqls_count)
   end
 
