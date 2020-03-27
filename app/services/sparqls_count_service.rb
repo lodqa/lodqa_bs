@@ -23,7 +23,7 @@ module SparqlsCountService
         Logger::Logger.new 'sparqls_count', nil, false ? Logger::DEBUG : Logger::INFO
       # rubocop:enable Lint/LiteralAsCondition
       anchored_pgps.each do |anchored_pgp|
-        graph_finder.sparqls_of(anchored_pgp) do |_bgp, sparql|
+        graph_finder.sparqls_of(anchored_pgp) do |_bgp, _sparql|
           sparqls_count += 1
         end
       end
