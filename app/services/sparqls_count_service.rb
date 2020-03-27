@@ -16,7 +16,7 @@ module SparqlsCountService
       graph_finder = Lodqa::GraphFinder.new(sparql_client,
                                             param.graph_uri, param.graph_finder_options)
 
-      sparqls = []
+      sparqls_count = 0
       anchored_pgps = Lodqa::AnchoredPgps.new param.pgp, param.mappings
       # rubocop:disable Lint/LiteralAsCondition
       anchored_pgps.logger =
@@ -24,11 +24,11 @@ module SparqlsCountService
       # rubocop:enable Lint/LiteralAsCondition
       anchored_pgps.each do |anchored_pgp|
         graph_finder.sparqls_of(anchored_pgp) do |_bgp, sparql|
-          sparqls << sparql
+          sparqls_count += 1
         end
       end
 
-      sparqls.count
+      sparqls_count
     end
   end
 end

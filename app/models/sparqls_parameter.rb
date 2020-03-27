@@ -2,7 +2,7 @@
 
 require 'json'
 
-# Parameter class to validate parameters independently from SparqlsCount
+# Parameter class to keep parameters independently from SparqlsCount
 class SparqlsParameter
   attr_accessor :pgp, :mappings, :endpoint_url, :endpoint_options, \
                 :graph_uri, :graph_finder_options

@@ -2,7 +2,7 @@
 
 # A controller to count of sparqls.
 class SparqlsCountsController < ActionController::API
-  # Register a new search and run a new job to search the search.
+  # show count of sparqls.
   def show
     sparqls_params = SparqlsParameter.new sparql_attributes
 
