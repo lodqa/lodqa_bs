@@ -8,7 +8,7 @@ gem 'rails', '~> 6.0.4'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use Puma as the app server
-gem 'puma', '~> 3.12'
+gem 'puma'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
 # Use ActiveModel has_secure_password
@@ -21,7 +21,7 @@ gem 'puma', '~> 3.12'
 # gem 'capistrano-rails', group: :development
 
 # Reduces boot times through caching; required in config/boot.rb
-gem 'bootsnap', '>= 1.1.0', require: false
+gem 'bootsnap', require: false
 gem 'kaminari'
 gem 'ransack'
 
@@ -52,4 +52,5 @@ end
 gem 'rest-client'
 gem 'sparql-client'
 gem 'rails_pretty_json_rednerer'
-gem 'sucker_punch', '~> 2.0'
+gem 'sucker_punch'
+
