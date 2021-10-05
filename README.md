@@ -218,5 +218,5 @@ LODQA=http://lodqa:9292
 
 ### Start the server
 
-    docker-compose build
-    docker-compose up
+    docker compose build
+    docker compose up
