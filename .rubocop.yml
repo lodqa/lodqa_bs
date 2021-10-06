@@ -5,7 +5,7 @@ Lint/AmbiguousBlockAssociation:
   Enabled: false
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 26
 
 Metrics/BlockLength:
   Max: 26
