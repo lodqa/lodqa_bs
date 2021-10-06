@@ -22,8 +22,8 @@ module Term
       return nil if terms.nil?
       return {} if terms.empty?
 
-      terms = [terms] if terms.class == String
-      return nil unless terms.class == Array
+      terms = [terms] if terms.instance_of?(String)
+      return nil unless terms.instance_of?(Array)
 
       mappings = _lookup(terms)
 

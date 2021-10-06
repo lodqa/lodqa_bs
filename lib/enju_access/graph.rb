@@ -54,7 +54,7 @@ class Graph
       break if @d[u] == @INFINITY
 
       q -= [u]
-      @g[u].keys.each do |v|
+      @g[u].each_key do |v|
         alt = @d[u] + @g[u][v]
         if alt < @d[v]
           @d[v] = alt

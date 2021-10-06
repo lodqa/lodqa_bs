@@ -199,7 +199,7 @@ module Lodqa
         case e
         when nil
           # Convert to a hash object that contains only simple strings from array of RDF::Query::Solution.
-          solutions = result.map { |s| s.map { |k, v| [k, v.to_s] }.to_h }
+          solutions = result.map { |s| s.transform_values(&:to_s).to_h }
 
           emit :solutions, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql, solutions: solutions
 

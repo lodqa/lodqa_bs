@@ -53,21 +53,21 @@ module Lodqa
       variables = bgp.flatten.uniq - nodes.keys.map(&:to_s)
 
       # initialize the query
-      query  = "SELECT #{variables.map { |v| '?' + v.to_s }.join(' ')}\n"
+      query  = "SELECT #{variables.map { |v| "?#{v}" }.join(' ')}\n"
       query += "FROM <#{@graph_uri}>\n" unless @graph_uri.nil? || @graph_uri.empty?
       query += 'WHERE {'
 
       # stringify the bgp
-      query += bgp.map { |tp| tp.map { |e| nodes.key?(e.to_sym) ? "<#{nodes[e.to_sym][:term]}>" : '?' + e }.join(' ') }.join(' . ') + ' .'
+      query += bgp.map { |tp| tp.map { |e| nodes.key?(e.to_sym) ? "<#{nodes[e.to_sym][:term]}>" : "?#{e}" }.join(' ') }.join(' . ') + ' .'
 
       ## constraints on x-variables (including i-variables)
       x_variables = variables.dup.keep_if { |v| (v[0] == 'x') || (v[0] == 'i') }
 
       # x-variables to be bound to IRIs
-      query += ' FILTER (' + x_variables.map { |v| "isIRI(#{'?' + v})" }.join(' && ') + ')' unless x_variables.empty?
+      query += ' FILTER (' + x_variables.map { |v| "isIRI(#{"?#{v}"})" }.join(' && ') + ')' unless x_variables.empty?
 
       # x-variables to be bound to different IRIs
-      x_variables.combination(2) { |c| query += " FILTER (#{'?' + c[0]} != #{'?' + c[1]})" } if x_variables.length > 1
+      x_variables.combination(2) { |c| query += " FILTER (#{"?#{c[0]}"} != #{"?#{c[1]}"})" } if x_variables.length > 1
 
       ## constraintes on p-variables
       p_variables = variables.dup.keep_if { |v| v[0] == 'p' }
@@ -81,13 +81,13 @@ module Lodqa
       # filter out sotral predicates
       ex_predicates += @sortal_predicates
 
-      p_variables.each { |v| query += %| FILTER (str(?#{v}) NOT IN (#{ex_predicates.map { |s| '"' + s + '"' }.join(', ')}))| } unless ex_predicates.empty?
+      p_variables.each { |v| query += %| FILTER (str(?#{v}) NOT IN (#{ex_predicates.map { |s| "\"#{s}\"" }.join(', ')}))| } unless ex_predicates.empty?
 
       ## constraintes on s-variables
       s_variables = variables.dup.keep_if { |v| v[0] == 's' }
 
       # s-variables to be bound to sortal predicates
-      s_variables.each { |v| query += %| FILTER (str(?#{v}) IN (#{@sortal_predicates.map { |s| '"' + s + '"' }.join(', ')}))| }
+      s_variables.each { |v| query += %| FILTER (str(?#{v}) IN (#{@sortal_predicates.map { |s| "\"#{s}\"" }.join(', ')}))| }
 
       # query += "}"
       query += "} LIMIT #{@answer_limit}"
@@ -149,7 +149,7 @@ module Lodqa
       queue = Queue.new
       pgp[:nodes].each do |id, node|
         class?(node[:term]) do |err, is_class|
-          iid = is_class ? 'i' + id.to_s : nil
+          iid = is_class ? "i#{id}" : nil
           queue.push [err, id, iid]
         end
       end
@@ -177,12 +177,12 @@ module Lodqa
           next unless itids.include?(focus_id.to_sym)
 
           if bgps.empty? && !itids.empty?
-            ibgp = itids.collect { |t| [iids[t], 's' + t.to_s, t] }
+            ibgp = itids.collect { |t| [iids[t], "s#{t}", t] }
             ibgps << ibgp
           else
             bgps.each do |bgp|
               # initialize the instantiated bgp with the triple patterns for term instantiation
-              ibgp = itids.collect { |t| [iids[t].to_s, 's' + t.to_s, t.to_s] }
+              ibgp = itids.collect { |t| [iids[t].to_s, "s#{t}", t.to_s] }
 
               # add update triples
               bgp.each { |tp| ibgp << tp.map { |e| itids.include?(e) ? iids[e].to_s : e.to_s } }
@@ -209,14 +209,14 @@ module Lodqa
     def sparql_for term
       sparql  = "SELECT ?p\n"
       sparql += "FROM <#{@graph_uri}>\n" unless @graph_uri.nil? || @graph_uri.empty?
-      sparql += "WHERE {?s ?p <#{term}> FILTER (str(?p) IN (#{@sortal_predicates.map { |s| '"' + s + '"' }.join(', ')}))} LIMIT 1"
+      sparql += "WHERE {?s ?p <#{term}> FILTER (str(?p) IN (#{@sortal_predicates.map { |s| "\"#{s}\"" }.join(', ')}))} LIMIT 1"
       sparql
     end
 
     def stringify_term t
-      if t.class == RDF::URI
+      if t.instance_of?(RDF::URI)
         %(<#{t}>)
-      elsif t.class == RDF::Literal
+      elsif t.instance_of?(RDF::Literal)
         if t.datatype.to_s == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString'
           %("#{t}"@en)
         else

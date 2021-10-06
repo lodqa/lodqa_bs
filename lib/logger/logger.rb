@@ -14,7 +14,7 @@ class Logger::Logger
     @log = if logger
              logger
            else
-             stdout = ::Logger.new STDOUT
+             stdout = ::Logger.new $stdout
              stdout.level = log_level
              stdout
            end
