@@ -49,8 +49,10 @@ module Lodqa
         next unless mappings[pgp[:nodes][n][:text]].nil? || mappings[pgp[:nodes][n][:text]].empty?
 
         connected_nodes = []
-        pgp[:edges].each { |e| connected_nodes << e[:object] if e[:subject] == n }
-        pgp[:edges].each { |e| connected_nodes << e[:subject] if e[:object] == n }
+        pgp[:edges].each do |e|
+          connected_nodes << e[:object] if e[:subject] == n
+          connected_nodes << e[:subject] if e[:object] == n
+        end
 
         # if it is a passing node
         next unless connected_nodes.length == 2
