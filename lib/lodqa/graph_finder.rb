@@ -154,12 +154,15 @@ module Lodqa
         end
       end
 
+      # Separate loops to send HTTP requests in parallel.
+      # rubocop:disable Style:CombinableLoops
       pgp[:nodes].each do
         err, id, iid = queue.pop
         raise err if err
 
         iids[id] = iid unless iid.nil?
       end
+      # rubocop:enable Style:CombinableLoops
 
       iids
     end
