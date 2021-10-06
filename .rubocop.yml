@@ -1,9 +1,6 @@
 Layout/LineLength:
   Max: 100
 
-Lint/AmbiguousBlockAssociation:
-  Enabled: false
-
 Metrics/AbcSize:
   Max: 26
 
