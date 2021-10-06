@@ -64,7 +64,7 @@ module Lodqa
       x_variables = variables.dup.keep_if { |v| (v[0] == 'x') || (v[0] == 'i') }
 
       # x-variables to be bound to IRIs
-      query += ' FILTER (' + x_variables.map { |v| "isIRI(#{"?#{v}"})" }.join(' && ') + ')' unless x_variables.empty?
+      query += ' FILTER (' + x_variables.map { |v| "isIRI(?#{v})" }.join(' && ') + ')' unless x_variables.empty?
 
       # x-variables to be bound to different IRIs
       x_variables.combination(2) { |c| query += " FILTER (#{"?#{c[0]}"} != #{"?#{c[1]}"})" } if x_variables.length > 1
