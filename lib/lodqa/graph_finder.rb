@@ -99,7 +99,7 @@ module Lodqa
           sortal_tps, non_sortal_tps = bgp.partition { |tp| tp[1].start_with? 's' }
           (1..max_hop).to_a.repeated_permutation(non_sortal_tps.length) do |split_scheme|
             split_tps = generate_split_tps(non_sortal_tps, split_scheme)
-            sbgps << sortal_tps + split_tps
+            sbgps << (sortal_tps + split_tps)
           end
         end
       end
@@ -128,7 +128,7 @@ module Lodqa
           sortal_tps, non_sortal_tps = bgp.partition { |tp| tp[1].start_with? 's' }
 
           [false, true].repeated_permutation(non_sortal_tps.length) do |inverse_scheme|
-            rbgps << sortal_tps + non_sortal_tps.map.with_index { |tp, i| inverse_scheme[i] ? tp.reverse : tp }
+            rbgps << (sortal_tps + non_sortal_tps.map.with_index { |tp, i| inverse_scheme[i] ? tp.reverse : tp })
           end
         end
       end

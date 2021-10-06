@@ -9,18 +9,18 @@ class Graph
 
   # s= source, t= target, w= weight
   def add_edge s, t, w
-    if !@g.key?(s)
-      @g[s] = { t => w }
-    else
+    if @g.key?(s)
       @g[s][t] = w
+    else
+      @g[s] = { t => w }
     end
 
     # Begin code for non directed graph (inserts the other edge too)
 
-    if !@g.key?(t)
-      @g[t] = { s => w }
-    else
+    if @g.key?(t)
       @g[t][s] = w
+    else
+      @g[t] = { s => w }
     end
 
     # End code for non directed graph (ie. deleteme if you want it directed)
@@ -78,10 +78,10 @@ class Graph
     @nodes.each do |dest|
       puts "\nTarget: #{dest}"
       print_path dest
-      if @d[dest] != @INFINITY
-        puts "\nDistance: #{@d[dest]}"
-      else
+      if @d[dest] == @INFINITY
         puts "\nNO PATH"
+      else
+        puts "\nDistance: #{@d[dest]}"
       end
     end
   end

@@ -30,6 +30,7 @@ Style/MethodDefParentheses:
   EnforcedStyle: require_no_parentheses
 
 AllCops:
+  NewCops: enable
   Exclude:
     - config.ru
     - Gemfile
