@@ -10,9 +10,6 @@ Metrics/BlockLength:
 Metrics/MethodLength:
   Max: 15
 
-Metrics/PerceivedComplexity:
-  Enabled: false
-
 Style/Documentation:
   Exclude:
     - app/models/application_record.rb

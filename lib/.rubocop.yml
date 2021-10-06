@@ -25,7 +25,7 @@ Metrics/ParameterLists:
   Max: 25
 
 Metrics/PerceivedComplexity:
-  Max: 14
+  Max: 23
 
 Naming/MethodName:
   Enabled: false
