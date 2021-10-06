@@ -3,14 +3,17 @@
 require 'rails_helper'
 
 describe Container do
-  let(:data) { { message: 'messsage' } }
-  let(:search) { Search.new }
-  subject do
-    # Test target that incluede the Container
+  # rubocop:disable Lint/ConstantDefinitionInBlock
+  before(:all) do
+    # Test target that include the Container
     class Target
       include Container
     end
   end
+  # rubocop:enable Lint/ConstantDefinitionInBlock
+  let(:data) { { message: 'messsage' } }
+  let(:search) { Search.new }
+  subject { Target }
 
   describe 'add_for' do
     it 'one search multiple callback URLs' do
