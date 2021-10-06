@@ -23,9 +23,6 @@ Style/Documentation:
   Exclude:
     - app/models/application_record.rb
 
-Style/HashSyntax:
-  EnforcedStyle: 'ruby19'
-
 Style/MethodDefParentheses:
   EnforcedStyle: require_no_parentheses
 
