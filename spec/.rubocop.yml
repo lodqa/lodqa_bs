@@ -2,4 +2,4 @@ Layout/LineLength:
   Max: 85
 
 Metrics/BlockLength:
-  Max: 35
+  Max: 36
