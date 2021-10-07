@@ -30,7 +30,7 @@ module SparqlClient
       # But POST method in HTTP 1.1 may occurs conection broken error.
       # If HTTP method is GET, when HTTP connection error occurs, a request is retried by HTTP stack of Ruby standard library.
       endpoint_options[:method] ||= :get
-      @client = SPARQL::Client.new endpoint_url, endpoint_options
+      @client = SPARQL::Client.new endpoint_url, **endpoint_options
       @cache = {}
       @executor = Concurrent::ThreadPoolExecutor.new DEFAULT_EXECUTOR_OPTIONS.merge max_threads: parallel
     end
