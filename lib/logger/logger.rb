@@ -35,7 +35,6 @@ class Logger::Logger
     no_color = "\033[0m"
     message = "#{red}[DEBUG]#{no_color} query_id: #{id || query_id}, message: #{message}"
     @log.debug [message, *rest.map { |key, val| "#{key}: #{dark_gray}#{val}#{no_color}" }].join(', ')
-
   end
 
   def error error, **rest
