@@ -11,14 +11,17 @@ class SparqlsCount
     # Handle sparqls count.
     def sparqls_count param
       parallel = 16
+
+      logger = Logger::Logger.new 'sparqls_count', Rails.logger, Logger::INFO
       sparql_client = SparqlClient::CacheableClient.new(param.endpoint_url,
                                                         parallel, param.endpoint_options)
+      sparql_client.logger = logger
       graph_finder = Lodqa::GraphFinder.new(sparql_client,
                                             param.graph_uri, param.graph_finder_options)
+      anchored_pgps = Lodqa::AnchoredPgps.new param.pgp, param.mappings
+      anchored_pgps.logger = logger
 
       sparqls_count = 0
-      anchored_pgps = Lodqa::AnchoredPgps.new param.pgp, param.mappings
-      anchored_pgps.logger = Logger::Logger.new 'sparqls_count', Rails.logger, Logger::INFO
       anchored_pgps.each do |anchored_pgp|
         graph_finder.sparqls_of(anchored_pgp) do |_bgp, _sparql|
           sparqls_count += 1
