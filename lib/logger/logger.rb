@@ -30,12 +30,9 @@ class Logger::Logger
   end
 
   def debug message, id = nil, **rest
-    @log.debug({
-      query_id: id || query_id,
-      message: message
-    }
-        .merge(rest)
-        .to_json.to_s)
+    message = "[DEBUG] query_id: #{id || query_id}, message: #{message}"
+    @log.debug [message, *rest.map { |key, val| "#{key}: #{val}" }].join(', ')
+
   end
 
   def error error, **rest
