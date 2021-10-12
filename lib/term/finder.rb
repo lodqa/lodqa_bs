@@ -53,7 +53,7 @@ module Term
           JSON.parse(response, symbolize_names: true)
         else
           # request to dictionary is not success
-          logger.debug 'A requet to the dictionary failed', method: request.method, url: request.uri, requet_body: terms.to_json, status: response.code, response_body: response
+          logger.debug 'A request to the dictionary failed', method: request.method, url: request.uri, requet_body: terms.to_json, status: response.code, response_body: response
           raise FindError, "Term find error to #{request.uri}"
         end
       end
