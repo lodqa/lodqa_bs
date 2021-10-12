@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'sparql_client/endpoint_temporary_error'
 
 # A controller to count of sparqls.
