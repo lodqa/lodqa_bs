@@ -51,6 +51,9 @@ module Term
         case response.code
         when 200
           JSON.parse(response, symbolize_names: true)
+        when 302
+          logger.debug 'A request to the dictionary redirected', method: request.method, url: request.uri, requet_body: terms.to_json, status: response.code, location: response.headers[:location]
+          raise Redirect, response.headers[:location]
         else
           # request to dictionary is not success
           logger.debug 'A request to the dictionary failed', method: request.method, url: request.uri, requet_body: terms.to_json, status: response.code, response_body: response

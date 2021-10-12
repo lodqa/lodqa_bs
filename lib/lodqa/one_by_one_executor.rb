@@ -239,10 +239,17 @@ module Lodqa
     end
 
     def mappings dictionary_url, pgp
-      tf = Term::Finder.new dictionary_url
-      tf.logger = logger
       keywords = pgp[:nodes].values.map { |n| n[:text] }.concat(pgp[:edges].map { |e| e[:text] })
-      tf.find keywords
+
+      begin
+        tf = Term::Finder.new dictionary_url
+        tf.logger = logger
+        tf.find keywords
+      rescue Term::Redirect => e
+        tf = Term::Finder.new e.message
+        tf.logger = logger
+        tf.find keywords
+      end
     end
 
     # Return label as stirng
