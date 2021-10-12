@@ -63,5 +63,5 @@ Rails.application.configure do
   # config.action_cable.disable_request_forgery_protection = true
 
   # Allow host name for docker environment of LODQA.
-  config.hosts << 'lodqa_bs'
+  config.hosts << 'lodqa-bs'
 end
