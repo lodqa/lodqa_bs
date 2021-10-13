@@ -59,6 +59,8 @@ module Term
                        status: response.code,
                        location: response.headers[:location]
           raise Redirect, response.headers[:location]
+        when 404
+          {}
         else
           # request to dictionary is not success
           logger.debug 'Dictionary lookup failed',
