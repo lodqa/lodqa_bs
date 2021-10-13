@@ -3,6 +3,10 @@
 require 'logger'
 
 class Logger::Logger
+  RED = "\033[0;31m"
+  ORANGE = "\033[0;33m"
+  NO_COLOR = "\033[0m"
+
   attr_reader :query_id
 
   $stdout.sync = true
@@ -30,11 +34,8 @@ class Logger::Logger
   end
 
   def debug type, **rest
-    red = "\033[0;31m"
-    orange = "\033[0;33m"
-    no_color = "\033[0m"
-    message = "#{red}[DEBUG]#{no_color} query_id: #{query_id}, type: #{orange}#{type}#{no_color}"
-    @log.debug [message, *rest.map { |key, val| "#{orange}#{key}#{no_color}: #{val}" }].join(', ')
+    message = "#{RED}[DEBUG]#{NO_COLOR} query_id: #{query_id}, type: #{ORANGE}#{type}#{NO_COLOR}"
+    @log.debug [message, *rest.map { |key, val| "#{ORANGE}#{key}#{NO_COLOR}: #{val}" }].join(', ')
   end
 
   def error error, **rest
