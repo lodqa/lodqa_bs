@@ -155,7 +155,9 @@ module Lodqa
       emit :gateway_error, state
       state
     rescue SparqlClient::EndpointError => e
-      logger.debug "The SPARQL Endpoint #{e.endpoint_name} has a persistent error, continue to the next Endpoint", error_message: e.message
+      logger.debug 'The SPARQL Endpoint has a persistent error, continue to the next Endpoint',
+                   endpoint: e.endpoint_name,
+                   error_message: e.message
       {
         dataset: dataset,
         duration: Time.now - start,
