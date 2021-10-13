@@ -47,14 +47,18 @@ module Term
     private
 
     def _lookup terms
+      logger.debug 'Lookup Dictionary',
+                   url: @dictionary.url,
+                   method: 'POST',
+                   request_body: terms.to_json
       @dictionary.post terms.to_json do |response, request|
         case response.code
         when 200
           JSON.parse(response, symbolize_names: true)
         when 302
-          logger.debug 'Dictionary lookup redirected',
+          logger.debug 'Lookup Dictionary redirected',
+                       url: request.uri,
                        method: request.method,
-                       dictionary_url: request.uri,
                        request_body: terms.to_json,
                        status: response.code,
                        location: response.headers[:location]
@@ -63,9 +67,9 @@ module Term
           {}
         else
           # request to dictionary is not success
-          logger.debug 'Dictionary lookup failed',
+          logger.debug 'Lookup Dictionary failed',
+                       url: request.uri,
                        method: request.method,
-                       dictionary_url: request.uri,
                        request_body: terms.to_json,
                        status: response.code,
                        response_body: response
