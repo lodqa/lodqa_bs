@@ -52,11 +52,21 @@ module Term
         when 200
           JSON.parse(response, symbolize_names: true)
         when 302
-          logger.debug 'A request to the dictionary redirected', method: request.method, url: request.uri, requet_body: terms.to_json, status: response.code, location: response.headers[:location]
+          logger.debug 'Dictionary lookup redirected',
+                       method: request.method,
+                       dictionary_url: request.uri,
+                       request_body: terms.to_json,
+                       status: response.code,
+                       location: response.headers[:location]
           raise Redirect, response.headers[:location]
         else
           # request to dictionary is not success
-          logger.debug 'A request to the dictionary failed', method: request.method, url: request.uri, requet_body: terms.to_json, status: response.code, response_body: response
+          logger.debug 'Dictionary lookup failed',
+                       method: request.method,
+                       dictionary_url: request.uri,
+                       request_body: terms.to_json,
+                       status: response.code,
+                       response_body: response
           raise FindError, "Term find error to #{request.uri}"
         end
       end

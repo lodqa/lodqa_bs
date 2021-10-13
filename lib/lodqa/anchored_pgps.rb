@@ -12,7 +12,8 @@ module Lodqa
     end
 
     def each &block
-      logger.debug "start #{self.class.name}##{__method__}"
+      logger.debug 'Method start',
+                   method_name: "#{self.class.name}##{__method__}"
       anchored_pgps(@pgp, @mappings).each(&block)
     end
 
@@ -26,7 +27,7 @@ module Lodqa
 
         terms.map! { |t| t.nil? ? [] : t }
 
-        logger.debug "terms: #{terms.first.product(*terms.drop(1))}"
+        logger.debug 'Tap', terms: terms.first.product(*terms.drop(1)).to_s
 
         terms.first
              .product(*terms.drop(1))
@@ -42,7 +43,7 @@ module Lodqa
     end
 
     def nodes_to_delete pgp, mappings
-      logger.debug "start #{self.class.name}##{__method__}"
+      logger.debug 'Method start', method_name: "#{self.class.name}##{__method__}"
 
       nodes_to_delete = []
       pgp[:nodes].each_key do |n|

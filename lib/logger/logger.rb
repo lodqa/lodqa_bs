@@ -29,12 +29,12 @@ class Logger::Logger
       .to_json.to_s)
   end
 
-  def debug message, id = nil, **rest
+  def debug type, **rest
     red = "\033[0;31m"
     orange = "\033[0;33m"
     no_color = "\033[0m"
-    message = "#{red}[DEBUG]#{no_color} query_id: #{id || query_id}, message: #{message}"
-    @log.debug [message, *rest.map { |key, val| "#{orange}#{key}#{no_color}: #{val}" }].join(', ')
+    type = "#{red}[DEBUG]#{no_color} query_id: #{query_id}, type: #{orange}#{type}#{no_color}"
+    @log.debug [type, *rest.map { |key, val| "#{orange}#{key}#{no_color}: #{val}" }].join(', ')
   end
 
   def error error, **rest
