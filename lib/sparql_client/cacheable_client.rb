@@ -4,7 +4,6 @@ require 'sparql/client'
 require 'logger/loggable'
 require 'sparql_client/endpoint_error'
 require 'sparql_client/endpoint_temporary_error'
-require 'sparql_client/endpoint_timeout_error'
 require 'concurrent/executor/thread_pool_executor'
 
 # Cache results of sparql to speed up SPARQL queries.
@@ -60,17 +59,19 @@ module SparqlClient
       else
         begin
           @client.query(sparql).tap { |result| @cache[sparql] = result }
-        rescue Net::HTTP::Persistent::Error => e
-          # A timeout error was reterned from the Endpoint
-          logger.debug 'SPARQL Timeout Error', error_message: e.message, trace: e.backtrace
-          raise EndpointTimeoutError.new e, @endpoint_url, sparql
         rescue SPARQL::Client::ServerError, SocketError, Errno::ECONNREFUSED, Net::OpenTimeout => e
           # A temporary error was reterned from the Endpoint
-          logger.debug 'SPARQL Endpoint Temporary Error', error_message: e.message, trace: e.backtrace
+          logger.debug 'SPARQL Endpoint Temporary Error',
+                       endpoint: @endpoint_url,
+                       class: e.class.name,
+                       error_message: e.message
           raise EndpointTemporaryError.new e, @endpoint_url, sparql
-        rescue OpenSSL::SSL::SSLError, SPARQL::Client::ClientError => e
+        rescue Net::HTTP::Persistent::Error, OpenSSL::SSL::SSLError, SPARQL::Client::ClientError => e
           # TODO: What is the SPARQL::Client::ClientError?
-          logger.debug 'SPARQL Endpoint Persistent Error', error_message: e.message, trace: e.backtrace
+          logger.debug 'SPARQL Endpoint Persistent Error',
+                       endpoint: @endpoint_url,
+                       class: e.class.name,
+                       error_message: e.message
           raise EndpointError.new e, @endpoint_url
         rescue StandardError => e
           logger.error e, message: 'Unknown Error occurs during request SPARQL to the Endpoint'

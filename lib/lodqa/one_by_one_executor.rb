@@ -209,11 +209,6 @@ module Lodqa
               .select { |id| anchored_pgp[:focus] == id.to_s.gsub(/^i/, '') } # The answer is instance node of focus node.
               .each { |_, uri| get_label_of_url endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql, solutions, solution, uri }
           end
-        when SparqlClient::EndpointTimeoutError
-          logger.debug "The SPARQL Endpoint #{e.endpoint_name} return a timeout error for #{e.sparql}, continue to the next SPARQL", error_message: e.message
-          emit :solutions,
-               dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql, solutions: [],
-               error: 'sparql timeout error'
         when SparqlClient::EndpointTemporaryError
           logger.info "The SPARQL Endpoint #{e.endpoint_name} return a temporary error for #{e.sparql}, continue to the next SPARQL", error_message: e.message
           emit :solutions,

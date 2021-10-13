@@ -31,10 +31,10 @@ class Logger::Logger
 
   def debug message, id = nil, **rest
     red = "\033[0;31m"
-    dark_gray = "\033[0;33m"
+    orange = "\033[0;33m"
     no_color = "\033[0m"
     message = "#{red}[DEBUG]#{no_color} query_id: #{id || query_id}, message: #{message}"
-    @log.debug [message, *rest.map { |key, val| "#{key}: #{dark_gray}#{val}#{no_color}" }].join(', ')
+    @log.debug [message, *rest.map { |key, val| "#{orange}#{key}#{no_color}: #{val}" }].join(', ')
   end
 
   def error error, **rest

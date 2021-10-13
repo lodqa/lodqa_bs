@@ -4,7 +4,6 @@
 # An instance of the class searches the SPARQL endpoint for a pseudo graph pattern.
 #
 require 'json'
-require 'sparql_client/endpoint_timeout_error'
 require 'sparql_client/endpoint_temporary_error'
 
 module Lodqa
