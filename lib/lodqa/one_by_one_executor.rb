@@ -146,7 +146,6 @@ module Lodqa
       emit :gateway_error, state
       state
     rescue Term::FindError => e
-      logger.debug e.message
       state = {
         dataset: dataset,
         duration: Time.now - start,
