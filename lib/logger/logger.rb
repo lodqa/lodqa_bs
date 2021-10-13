@@ -39,11 +39,15 @@ class Logger::Logger
   end
 
   def error error, **rest
+    bc = ActiveSupport::BacktraceCleaner.new
+    bc.add_filter   { |line| line.gsub(Rails.root.to_s, '') } # strip the Rails.root prefix
+    bc.add_silencer { |line| /gems/.match?(line) } # skip any lines from puma or rubygems
+
     error_info = {
       query_id: query_id,
       error_message: error&.message,
       class: error&.class.to_s,
-      trace: error&.backtrace
+      trace: bc.clean(error&.backtrace)
     }.merge(rest)
 
     @log.error "#{RED}[ERROR]#{NO_COLOR} #{error_info.to_json}"
