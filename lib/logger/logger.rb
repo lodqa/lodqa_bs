@@ -46,6 +46,6 @@ class Logger::Logger
       trace: error&.backtrace
     }.merge(rest)
 
-    @log.error error_info.to_json.to_s
+    @log.error "#{RED}[ERROR]#{NO_COLOR} #{error_info.to_json}"
   end
 end
