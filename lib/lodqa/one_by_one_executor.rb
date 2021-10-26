@@ -145,7 +145,7 @@ module Lodqa
       }
       emit :gateway_error, state
       state
-    rescue Term::FindError => e
+    rescue Term::FindError
       state = {
         dataset: dataset,
         duration: Time.now - start,
