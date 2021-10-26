@@ -29,7 +29,10 @@ class Channel
     # It may take time to open a connection.
     # Instead of opening a connection at initialization, open a connection when using a connection.
     conn.open!
-    conn.append data
+    err = conn.append data
+
+    # debgu log for error response
+    puts err if err
   rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError
     self.class.unreachable_url << @url
     raise
