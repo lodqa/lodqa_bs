@@ -40,7 +40,7 @@ class SearchJob < ApplicationJob
   def on_event search
     lambda do |event_type, data|
       event = save_event! search, event_type, data
-      SubscriptionContainer.publish_for search, event.data
+      search.publish event.data
 
       save_term_mapping! search, data if event_type == :mappings
     end
