@@ -31,7 +31,7 @@ class Channel
     conn.open!
     err = conn.append data
 
-    # debgu log for error response
+    # debug log for error response
     puts err if err
   rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError
     self.class.unreachable_url << @url
