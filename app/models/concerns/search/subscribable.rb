@@ -19,7 +19,7 @@ class Search < ApplicationRecord
     # There is no trigger to delete subscription of finished search.
     def subsribe_serach_if_running search, url
       search.not_finished? do
-        DbConnection.using { SubscriptionContainer.add_for search, url }
+        DbConnection.using { search.subscribe_from url }
       end
     end
 
