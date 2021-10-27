@@ -168,5 +168,9 @@ class Search < ApplicationRecord
   def occurred_events offset_size
     Event.reader_by offset_size, pseudo_graph_pattern: pseudo_graph_pattern
   end
+
+  def register_callback url
+    LateCallbacks.add_for self, url
+  end
 end
 # rubocop:enable Metrics/ClassLength

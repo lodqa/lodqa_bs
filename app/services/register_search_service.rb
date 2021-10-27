@@ -71,7 +71,7 @@ module RegisterSearchService
       search.append_dialog search_param.user_id if search_param.user_id.present?
 
       SearchJob.perform_later search.search_id, search_param.user_id
-      LateCallbacks.add_for search, callback_url
+      search.register_callback callback_url
 
       search.search_id
     end
