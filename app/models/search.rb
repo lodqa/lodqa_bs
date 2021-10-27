@@ -176,13 +176,5 @@ class Search < ApplicationRecord
   def callback data
     LateCallbacks.publish_for self, data
   end
-
-  def subscribe_from url
-    SubscriptionContainer.add_for self, url
-  end
-
-  def publish data
-    SubscriptionContainer.publish_for self, data
-  end
 end
 # rubocop:enable Metrics/ClassLength

@@ -8,18 +8,22 @@ class Search < ApplicationRecord
     extend ActiveSupport::Concern
 
     def subscribe url
-      subsribe_serach_if_running self, url
+      subscribe_search_if_running url
       notify_existing_events_to url, self
     rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError => e
       logger.info "Establishing TCP connection to #{url} failed. Error: #{e.inspect}"
     end
 
+    def publish data
+      SubscriptionContainer.publish_for self, data
+    end
+
     private
 
     # There is no trigger to delete subscription of finished search.
-    def subsribe_serach_if_running search, url
-      search.not_finished? do
-        DbConnection.using { search.subscribe_from url }
+    def subscribe_search_if_running url
+      not_finished? do
+        DbConnection.using { SubscriptionContainer.add_for self, url }
       end
     end
 
