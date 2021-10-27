@@ -172,5 +172,9 @@ class Search < ApplicationRecord
   def register_callback url
     LateCallbacks.add_for self, url
   end
+
+  def callback data
+    LateCallbacks.publish_for self, data
+  end
 end
 # rubocop:enable Metrics/ClassLength

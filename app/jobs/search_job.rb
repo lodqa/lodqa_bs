@@ -32,8 +32,7 @@ class SearchJob < ApplicationJob
   # Return a proc to be called when the search will starts.
   def on_start search
     lambda do
-      LateCallbacks.publish_for(search,
-                                DbConnection.using { search.data_for_start_event })
+      search.callback(DbConnection.using { search.data_for_start_event })
     end
   end
 
@@ -65,8 +64,7 @@ class SearchJob < ApplicationJob
 
   def clean_up search
     DbConnection.using { search.finish! }
-    LateCallbacks.publish_for(search,
-                              DbConnection.using { search.dafa_for_finish_event })
+    search.callback(DbConnection.using { search.dafa_for_finish_event })
   end
 
   def dispose_notifications_for search_id
