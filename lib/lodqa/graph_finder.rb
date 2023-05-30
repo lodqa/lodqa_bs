@@ -179,12 +179,12 @@ module Lodqa
           next unless itids.include?(focus_id.to_sym)
 
           if bgps.empty? && !itids.empty?
-            ibgp = itids.collect { |t| [iids[t], "s#{t}", t] }
+            ibgp = itids.map { |t| [iids[t], "s#{t}", t] }
             ibgps << ibgp
           else
             bgps.each do |bgp|
               # initialize the instantiated bgp with the triple patterns for term instantiation
-              ibgp = itids.collect { |t| [iids[t].to_s, "s#{t}", t.to_s] }
+              ibgp = itids.map { |t| [iids[t].to_s, "s#{t}", t.to_s] }
 
               # add update triples
               bgp.each { |tp| ibgp << tp.map { |e| itids.include?(e) ? iids[e].to_s : e.to_s } }

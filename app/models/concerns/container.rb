@@ -14,7 +14,7 @@ module Container
     def add_for search, url
       @semaphore.synchronize do
         channels = @container[search.search_id] || []
-        @container[search.search_id] = channels.concat [Channel.new(url)]
+        @container[search.search_id] = channels.push Channel.new(url)
       end
     end
 

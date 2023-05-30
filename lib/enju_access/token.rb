@@ -167,7 +167,7 @@ module EnjuAccess
         path = graph.shortest_path(c[0][:head], c[1][:head])
         s = path.shift
         o = path.pop
-        rels << [s, path, o] if (path & heads).empty?
+        rels << [s, path, o] unless path.intersect?(heads)
       end
       rels
     end
