@@ -34,6 +34,7 @@ AllCops:
 
 require:
   - rubocop-rails
+  - rubocop-rspec
 
 Rails/HasManyOrHasOneDependent:
   Exclude:
@@ -42,3 +43,15 @@ Rails/HasManyOrHasOneDependent:
 Rails/InverseOf:
   Exclude:
     - app/models/pseudo_graph_pattern.rb
+
+RSpec/ExampleLength:
+  Max: 10
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Max: 2
+
+RSpec/NoExpectationExample:
+  Enabled: false
