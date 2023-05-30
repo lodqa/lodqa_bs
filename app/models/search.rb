@@ -30,7 +30,7 @@ class Search < ApplicationRecord
 
     def of search_id
       search = Search.includes(pseudo_graph_pattern: [:all_answers])
-                     .find_by(search_id: search_id)
+                     .find_by(search_id:)
       search.be_referred!
       search.to_hash_with_pgp
     end
@@ -66,7 +66,7 @@ class Search < ApplicationRecord
 
     # Start to search and save the start time.
     def start! search_id
-      search = preload(:pseudo_graph_pattern).find_by! search_id: search_id
+      search = preload(:pseudo_graph_pattern).find_by!(search_id:)
       search.pseudo_graph_pattern.update(started_at: Time.now.utc)
       search
     end
@@ -74,14 +74,14 @@ class Search < ApplicationRecord
 
   def to_hash_with_pgp
     {
-      search_id: search_id,
-      query: query,
+      search_id:,
+      query:,
       referred_at: referred_at.in_time_zone.strftime('%m/%d %H:%M')
     }.merge pseudo_graph_pattern.data_for_search_detail
   end
 
   def append_dialog user_id
-    dialogs.create(user_id: user_id)
+    dialogs.create(user_id:)
   end
 
   def assign_id!
@@ -129,9 +129,9 @@ class Search < ApplicationRecord
   def data_for_start_event
     {
       event: :start,
-      query: query,
-      search_id: search_id,
-      expiration_date: expiration_date
+      query:,
+      search_id:,
+      expiration_date:
     }.merge pseudo_graph_pattern.data_for_start_event
   end
 
@@ -158,7 +158,7 @@ class Search < ApplicationRecord
   end
 
   def as_json option = nil
-    super.merge answers: answers
+    super.merge answers:
   end
 
   # Events that occurred while searching for queries.
@@ -166,7 +166,7 @@ class Search < ApplicationRecord
   # the reading time from the DB is about several seconds to about 10 seconds.
   # In order to send the first event fast, read events from the DB piece by piece.
   def occurred_events offset_size
-    Event.reader_by offset_size, pseudo_graph_pattern: pseudo_graph_pattern
+    Event.reader_by offset_size, pseudo_graph_pattern:
   end
 
   def register_callback url

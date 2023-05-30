@@ -30,6 +30,6 @@ class SparqlsCountsController < ActionController::API
   end
 
   def to_hash sparqls_count
-    { sparqls_count: sparqls_count }
+    { sparqls_count: }
   end
 end

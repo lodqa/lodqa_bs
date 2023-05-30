@@ -69,15 +69,15 @@ module Lodqa
         name: @target_dataset[:name],
         number: @target_dataset[:number]
       }
-      emit :datasets, dataset: dataset
+      emit(:datasets, dataset:)
 
       # pgp
       pgp = @pgp
-      emit :pgp, dataset: dataset, pgp: pgp
+      emit(:pgp, dataset:, pgp:)
 
       # mappings
       mappings = @mappings.presence || mappings(@target_dataset[:dictionary_url], pgp)
-      emit :mappings, dataset: dataset, pgp: pgp, mappings: mappings
+      emit(:mappings, dataset:, pgp:, mappings:)
 
       parallel = 16
       endpoint = SparqlClient::CacheableClient.new @target_dataset[:endpoint_url],
@@ -124,14 +124,14 @@ module Lodqa
       end
 
       stats = {
-        dataset: dataset,
+        dataset:,
         duration: Time.now - start
       }
       if (error + success).positive?
-        stats = stats.merge parallel: parallel,
+        stats = stats.merge parallel:,
                             sparqls: error + success,
-                            error: error,
-                            success: success,
+                            error:,
+                            success:,
                             error_rate: error / (error + success).to_f
       end
       logger.info "Finish stats: #{JSON.generate stats}"
@@ -139,7 +139,7 @@ module Lodqa
     rescue EnjuAccess::EnjuError => e
       logger.debug e.message
       state = {
-        dataset: dataset,
+        dataset:,
         duration: Time.now - start,
         state: 'The parser server is not available.'
       }
@@ -147,7 +147,7 @@ module Lodqa
       state
     rescue Term::FindError
       state = {
-        dataset: dataset,
+        dataset:,
         duration: Time.now - start,
         state: 'Terms were not found.'
       }
@@ -158,14 +158,14 @@ module Lodqa
                    endpoint: e.endpoint_name,
                    error_message: e.message
       {
-        dataset: dataset,
+        dataset:,
         duration: Time.now - start,
         state: 'The Sparql endpoint is not available.'
       }
     rescue StandardError => e
       logger.error e
       {
-        dataset: dataset,
+        dataset:,
         duration: Time.now - start,
         state: 'Something is wrong.'
       }
@@ -185,13 +185,13 @@ module Lodqa
         number: @sparql_count
       }
 
-      emit :sparql, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql
+      emit(:sparql, dataset:, pgp:, mappings:, anchored_pgp:, bgp:, sparql:)
 
       # Get solutions of SPARQL
       get_solutions_of_sparql_async endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql, queue
 
       # Emit an event to notify starting of querying the SPARQL.
-      emit :query_sparql, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql
+      emit :query_sparql, dataset:, pgp:, mappings:, anchored_pgp:, bgp:, sparql:
     end
 
     def get_solutions_of_sparql_async endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql, queue
@@ -202,7 +202,7 @@ module Lodqa
           # Convert to a hash object that contains only simple strings from array of RDF::Query::Solution.
           solutions = result.map { |s| s.transform_values(&:to_s).to_h }
 
-          emit :solutions, dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql, solutions: solutions
+          emit(:solutions, dataset:, pgp:, mappings:, anchored_pgp:, bgp:, sparql:, solutions:)
 
           # Find the answer of the solutions.
           solutions.each do |solution|
@@ -213,7 +213,7 @@ module Lodqa
         when SparqlClient::EndpointTemporaryError
           logger.info "The SPARQL Endpoint #{e.endpoint_name} return a temporary error for #{e.sparql}, continue to the next SPARQL", error_message: e.message
           emit :solutions,
-               dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql, solutions: [],
+               dataset:, pgp:, mappings:, anchored_pgp:, bgp:, sparql:, solutions: [],
                error_message: 'endopoint temporary error'
         else
           logger.error e
@@ -229,9 +229,9 @@ module Lodqa
       urls, first_rendering = forwarded_urls uri
 
       emit :answer,
-           dataset: dataset, pgp: pgp, mappings: mappings, anchored_pgp: anchored_pgp, bgp: bgp, sparql: sparql, solutions: solutions,
-           solution: solution,
-           answer: { uri: uri, label: label, urls: urls&.select { |u| u[:forwarding][:url].length < 10_000 }, first_rendering: first_rendering }
+           dataset:, pgp:, mappings:, anchored_pgp:, bgp:, sparql:, solutions:,
+           solution:,
+           answer: { uri:, label:, urls: urls&.select { |u| u[:forwarding][:url].length < 10_000 }, first_rendering: }
     end
 
     def mappings dictionary_url, pgp

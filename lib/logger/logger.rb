@@ -27,7 +27,7 @@ class Logger::Logger
   def info message, id = nil, **rest
     @log.info({
       query_id: id || query_id,
-      message: message
+      message:
     }
       .merge(rest)
       .to_json.to_s)
@@ -44,7 +44,7 @@ class Logger::Logger
     bc.add_silencer { |line| /gems/.match?(line) } # skip any lines from puma or rubygems
 
     error_info = {
-      query_id: query_id,
+      query_id:,
       error_message: error&.message,
       class: error&.class.to_s,
       trace: bc.clean(error&.backtrace)

@@ -12,9 +12,9 @@ class SubscriptionsController < ApplicationController
 
     search_id = params[:search_id]
     search = Search.alive?
-                   .find_by search_id: search_id
+                   .find_by(search_id:)
     search.be_referred!
-    return render json: { search_id: search_id }, status: :not_found unless search
+    return render json: { search_id: }, status: :not_found unless search
 
     SubscribeJob.perform_later search, callback_url
   end

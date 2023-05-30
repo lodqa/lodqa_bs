@@ -16,7 +16,7 @@ module EnjuAccess
 
     def fetch_parsed sentence
       sentence = sentence.strip
-      response = @client.get params: { sentence: sentence, format: 'conll' }
+      response = @client.get params: { sentence:, format: 'conll' }
 
       raise EnjuAccess::EnjuError, 'Enju CGI server dose not respond.' unless response.code == 200
       raise EnjuAccess::EnjuError, 'Empty input.' if response.body =~ /^Empty line/

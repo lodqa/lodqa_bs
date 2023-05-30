@@ -59,7 +59,7 @@ module RegisterSearchService
 
     # Start new job for new search.
     def start_search_job search_param, pgp, callback_url
-      pseudo_graph_pattern = PseudoGraphPattern.create pgp: pgp,
+      pseudo_graph_pattern = PseudoGraphPattern.create pgp:,
                                                        target: search_param.target,
                                                        read_timeout: search_param.read_timeout,
                                                        sparql_limit: search_param.sparql_limit,
@@ -77,14 +77,14 @@ module RegisterSearchService
     end
 
     def create_term_mapping pseudo_graph_pattern, search_param
-      TermMapping.create pseudo_graph_pattern: pseudo_graph_pattern,
+      TermMapping.create pseudo_graph_pattern:,
                          dataset_name: search_param.target,
                          mapping: search_param.mappings
     end
 
     def create_search query, pseudo_graph_pattern
-      search = Search.new query: query.presence || '',
-                          pseudo_graph_pattern: pseudo_graph_pattern
+      search = Search.new(query: query.presence || '',
+                          pseudo_graph_pattern:)
       search.assign_id!
       search.be_referred!
       search

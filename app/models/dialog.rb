@@ -9,7 +9,7 @@ class Dialog < ApplicationRecord
     def history user_id
       return [] unless user_id.present?
 
-      where(user_id: user_id)
+      where(user_id:)
     end
 
     def queued_dialogs
@@ -22,7 +22,7 @@ class Dialog < ApplicationRecord
 
     def user_dialogs user_id
       dialogs = Dialog.group(:search_id)
-                      .where(user_id: user_id)
+                      .where(user_id:)
                       .select('search_id, max(dialogs.created_at) as latest_created_at,
                         count(dialogs.id) as total_count')
                       .order(latest_created_at: :desc)

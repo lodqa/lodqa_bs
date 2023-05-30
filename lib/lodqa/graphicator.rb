@@ -4,7 +4,6 @@
 # It parses a query and produces its parse rendering and PGP.
 #
 require 'net/http'
-require 'pp'
 require 'enju_access/cgi_accessor'
 
 module Lodqa; end unless defined? Lodqa
@@ -43,8 +42,8 @@ module Lodqa::Graphicator
       focus = focus_from node_index, parsed_query
 
       {
-        nodes: nodes,
-        edges: edges,
+        nodes:,
+        edges:,
         focus: focus.to_s
       }
     end

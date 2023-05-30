@@ -125,7 +125,7 @@ module EnjuAccess
         next unless beg >= 0 && !NC_CAT.include?(t[:cat])
 
         head = t[:idx] if head.negative?
-        base_noun_chunks << { head: head, beg: beg, end: tokens[i - 1][:idx] }
+        base_noun_chunks << { head:, beg:, end: tokens[i - 1][:idx] }
         beg = -1
         head = -1
       end
@@ -133,7 +133,7 @@ module EnjuAccess
       if beg >= 0
         raise 'Strange parse!' if head.negative?
 
-        base_noun_chunks << { head: head, beg: beg, end: tokens.last[:idx] }
+        base_noun_chunks << { head:, beg:, end: tokens.last[:idx] }
       end
 
       base_noun_chunks

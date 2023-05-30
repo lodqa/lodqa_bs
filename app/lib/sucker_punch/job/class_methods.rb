@@ -5,11 +5,11 @@ module SuckerPunch
     # This is a monkey patch.
     # Execute the block in order to start the job using ActiveJob::Base.execute method.
     module ClassMethods
-      def perform_async *_args, &block
+      def perform_async(*_args, &)
         return unless SuckerPunch::RUNNING.true?
 
         queue = SuckerPunch::Queue.find_or_create to_s, num_workers, num_jobs_max
-        queue.post { __run_perform(&block) }
+        queue.post { __run_perform(&) }
       end
 
       def __run_perform

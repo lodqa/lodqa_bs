@@ -46,7 +46,7 @@ module SparqlClient
     # end
     def query_async sparql
       @executor.post do
-        logger.debug 'SPARQL Query', endpoint: @endpoint_url, sparql: sparql
+        logger.debug('SPARQL Query', endpoint: @endpoint_url, sparql:)
         yield [nil, query(sparql)]
       rescue StandardError => e
         yield [e, nil]

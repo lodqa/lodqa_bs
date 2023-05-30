@@ -197,14 +197,14 @@ module Lodqa
     end
 
     def uri? term
-      term.start_with? 'http://'
+      term.start_with?('http://')
     end
 
     def class? term
-      yield false unless /^http:/ =~ term
+      yield(false) unless /^http:/ =~ term
 
       @endpoint.query_async(sparql_for(term)) do |err, result|
-        yield [err, result ? !result.empty? : false]
+        yield([err, result ? !result.empty? : false])
       end
     end
 

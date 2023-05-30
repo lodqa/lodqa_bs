@@ -14,10 +14,10 @@ module Lodqa
         on_start.call
 
         states = wait_for_completion_of_all tasks
-        on_event.call :finish, states: states
+        on_event.call(:finish, states:)
 
-        message = "Search finished. pgp id: #{pseudo_graph_pattern.id}," \
-                  " states: #{JSON.generate states}"
+        message = "Search finished. pgp id: #{pseudo_graph_pattern.id}, " \
+                  "states: #{JSON.generate states}"
         logger.info message
       end
 
@@ -38,7 +38,7 @@ module Lodqa
       def search_for_datasets_async pseudo_graph_pattern, dialogs, on_event, logger
         pseudo_graph_pattern.target.split(',')
                             .map { |target| Sources.dataset_of_target target }
-                            .map.with_index(1) { |dataset, number| dataset.merge(number: number) }
+                            .map.with_index(1) { |dataset, number| dataset.merge(number:) }
                             .map do |dataset|
           Concurrent::Promises.future do
             search_for dataset, pseudo_graph_pattern, dialogs, on_event, logger
@@ -55,7 +55,7 @@ module Lodqa
                                         read_timeout: pseudo_graph_pattern.read_timeout,
                                         sparql_limit: pseudo_graph_pattern.sparql_limit,
                                         answer_limit: pseudo_graph_pattern.answer_limit,
-                                        logger: logger,
+                                        logger:,
                                         debug: false
 
         # Bind events to save events

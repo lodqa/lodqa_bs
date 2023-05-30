@@ -11,10 +11,10 @@ module Lodqa
       @mappings = mappings
     end
 
-    def each &block
+    def each(&)
       logger.debug 'Method start',
                    method_name: "#{self.class.name}##{__method__}"
-      anchored_pgps(@pgp, @mappings).each(&block)
+      anchored_pgps(@pgp, @mappings).each(&)
     end
 
     private

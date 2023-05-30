@@ -41,9 +41,9 @@ module Container
       data
     end
 
-    def each_channels_of search, &block
+    def each_channels_of(search, &)
       channels = @container[search.search_id] || []
-      channels.each(&block)
+      channels.each(&)
     end
   end
 end

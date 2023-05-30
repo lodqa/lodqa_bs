@@ -21,7 +21,7 @@ class PseudoGraphPattern < ApplicationRecord
   class << self
     def equals_in pgp, other
       PseudoGraphPattern.alive?
-                        .where(pgp: pgp)
+                        .where(pgp:)
                         .where(read_timeout: other.read_timeout)
                         .where(sparql_limit: other.sparql_limit)
                         .where(answer_limit: other.answer_limit)
@@ -74,9 +74,9 @@ class PseudoGraphPattern < ApplicationRecord
 
   def data_for_start_event
     {
-      read_timeout: read_timeout,
-      sparql_limit: sparql_limit,
-      answer_limit: answer_limit,
+      read_timeout:,
+      sparql_limit:,
+      answer_limit:,
       cache: private ? :no : :yes,
       start_at: started_at
     }
@@ -84,12 +84,12 @@ class PseudoGraphPattern < ApplicationRecord
 
   def data_for_search_detail
     {
-      read_timeout: read_timeout,
-      sparql_limit: sparql_limit,
-      answer_limit: answer_limit,
-      target: target,
-      private: private,
-      state: state,
+      read_timeout:,
+      sparql_limit:,
+      answer_limit:,
+      target:,
+      private:,
+      state:,
       created_at: to_strftime(created_at),
       started_at: to_strftime(started_at),
       finished_at: to_strftime(finished_at),
@@ -101,7 +101,7 @@ class PseudoGraphPattern < ApplicationRecord
   def data_for_finish_event
     {
       finish_at: finished_at,
-      elapsed_time: elapsed_time,
+      elapsed_time:,
       answers: answers.as_json
     }
   end

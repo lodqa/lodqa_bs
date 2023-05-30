@@ -52,7 +52,7 @@ class SearchesApiController < ActionController::API
 
   def to_hash search_id
     {
-      search_id: search_id,
+      search_id:,
       resouce_url: searches_api_url(search_id),
       subscribe_url: search_subscriptions_url(search_id)
     }
