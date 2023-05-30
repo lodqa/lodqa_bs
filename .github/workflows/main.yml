@@ -1,0 +1,26 @@
+name: Ruby CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@55283cc23133118229fd3f97f9336ee23a179fcf
+        with:
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          bundle install
+
+      - name: RuboCop style check
+        run: bundle exec rubocop
+
+      - name: Run tests
+        run: |
+          bundle exec rspec
