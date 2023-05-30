@@ -47,7 +47,7 @@ module Lodqa
 
       nodes_to_delete = []
       pgp[:nodes].each_key do |n|
-        next unless mappings[pgp[:nodes][n][:text]].nil? || mappings[pgp[:nodes][n][:text]].empty?
+        next if mappings[pgp[:nodes][n][:text]].present?
 
         connected_nodes = []
         pgp[:edges].each do |e|

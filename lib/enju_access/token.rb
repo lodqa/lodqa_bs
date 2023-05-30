@@ -106,7 +106,7 @@ module EnjuAccess
             wh_token[:idx]
           end
         end
-      elsif base_noun_chunks.nil? || base_noun_chunks.empty?
+      elsif base_noun_chunks.blank?
         0
       else
         base_noun_chunks[0][:head]
@@ -122,7 +122,7 @@ module EnjuAccess
       tokens.each_with_index do |t, i|
         beg  = t[:idx] if beg.negative? && NC_CAT.include?(t[:cat])
         head = t[:idx] if beg >= 0 && NC_HEAD_CAT.include?(t[:cat]) && t[:args].nil?
-        next unless beg >= 0 && !NC_CAT.include?(t[:cat])
+        next unless beg >= 0 && NC_CAT.exclude?(t[:cat])
 
         head = t[:idx] if head.negative?
         base_noun_chunks << { head:, beg:, end: tokens[i - 1][:idx] }
@@ -162,7 +162,7 @@ module EnjuAccess
 
     def create_relations base_noun_chunks, graph
       rels = []
-      heads = base_noun_chunks.collect { |c| c[:head] }
+      heads = base_noun_chunks.pluck(:head)
       base_noun_chunks.combination(2) do |c|
         path = graph.shortest_path(c[0][:head], c[1][:head])
         s = path.shift

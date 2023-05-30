@@ -40,6 +40,6 @@ class SearchParameter
   end
 
   def acquire_targets
-    Lodqa::Sources.all_datasets.map { |d| d[:name] }.join(', ')
+    Lodqa::Sources.all_datasets.pluck(:name).join(', ')
   end
 end

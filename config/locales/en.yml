@@ -31,3 +31,4 @@
 
 en:
   hello: "Hello world"
+  delete_success: "Delete success"

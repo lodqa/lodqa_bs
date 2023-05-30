@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # A controller to show registered dialogs.
-class DialogsController < ActionController::Base
+class DialogsController < ApplicationController
   ITEMS_PER_PAGE = 10
 
   # Show registered dialogs

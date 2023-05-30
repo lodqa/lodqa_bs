@@ -7,7 +7,7 @@ class Dialog < ApplicationRecord
   class << self
     # Get user dialog history
     def history user_id
-      return [] unless user_id.present?
+      return [] if user_id.blank?
 
       where(user_id:)
     end

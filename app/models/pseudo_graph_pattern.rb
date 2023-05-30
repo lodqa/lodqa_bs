@@ -42,7 +42,7 @@ class PseudoGraphPattern < ApplicationRecord
     end
 
     def prune
-      PseudoGraphPattern.where(id: Search.expired?.pluck(:pseudo_graph_pattern_id)).destroy_all
+      PseudoGraphPattern.where(id: Search.expired?.select(:pseudo_graph_pattern_id)).destroy_all
     end
   end
 
@@ -67,9 +67,9 @@ class PseudoGraphPattern < ApplicationRecord
 
   # Return elapsed time of the finished search.
   def elapsed_time
-    return nil if !started_at.present? || aborted_at.present?
+    return nil if started_at.blank? || aborted_at.present?
 
-    (finished_at.present? ? finished_at : Time.now) - started_at
+    (finished_at.presence || Time.zone.now) - started_at
   end
 
   def data_for_start_event

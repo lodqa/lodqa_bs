@@ -13,7 +13,7 @@ module Term
     attr_reader :dictionary
 
     def initialize dictionary_url
-      raise ArgumentError, 'dictionary_url should be given.' if dictionary_url.nil? || dictionary_url.empty?
+      raise ArgumentError, 'dictionary_url should be given.' if dictionary_url.blank?
 
       @dictionary = RestClient::Resource.new dictionary_url, headers: { content_type: :json, accept: :json }, timeout: 10
     end

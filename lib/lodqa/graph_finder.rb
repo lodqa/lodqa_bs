@@ -53,7 +53,7 @@ module Lodqa
 
       # initialize the query
       query  = "SELECT #{variables.map { |v| "?#{v}" }.join(' ')}\n"
-      query += "FROM <#{@graph_uri}>\n" unless @graph_uri.nil? || @graph_uri.empty?
+      query += "FROM <#{@graph_uri}>\n" if @graph_uri.present?
       query += 'WHERE {'
 
       # stringify the bgp
@@ -210,7 +210,7 @@ module Lodqa
 
     def sparql_for term
       sparql  = "SELECT ?p\n"
-      sparql += "FROM <#{@graph_uri}>\n" unless @graph_uri.nil? || @graph_uri.empty?
+      sparql += "FROM <#{@graph_uri}>\n" if @graph_uri.present?
       sparql += "WHERE {?s ?p <#{term}> FILTER (str(?p) IN (#{@sortal_predicates.map { |s| "\"#{s}\"" }.join(', ')}))} LIMIT 1"
       sparql
     end

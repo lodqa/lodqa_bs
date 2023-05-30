@@ -64,7 +64,7 @@ module Lodqa
 
     # rubocop:disable Metrics/MethodLength
     def perform
-      start = Time.now
+      start = Time.zone.now
       dataset = {
         name: @target_dataset[:name],
         number: @target_dataset[:number]
@@ -125,7 +125,7 @@ module Lodqa
 
       stats = {
         dataset:,
-        duration: Time.now - start
+        duration: Time.zone.now - start
       }
       if (error + success).positive?
         stats = stats.merge parallel:,
@@ -140,7 +140,7 @@ module Lodqa
       logger.debug e.message
       state = {
         dataset:,
-        duration: Time.now - start,
+        duration: Time.zone.now - start,
         state: 'The parser server is not available.'
       }
       emit :gateway_error, state
@@ -148,7 +148,7 @@ module Lodqa
     rescue Term::FindError
       state = {
         dataset:,
-        duration: Time.now - start,
+        duration: Time.zone.now - start,
         state: 'Terms were not found.'
       }
       emit :gateway_error, state
@@ -159,14 +159,14 @@ module Lodqa
                    error_message: e.message
       {
         dataset:,
-        duration: Time.now - start,
+        duration: Time.zone.now - start,
         state: 'The Sparql endpoint is not available.'
       }
     rescue StandardError => e
       logger.error e
       {
         dataset:,
-        duration: Time.now - start,
+        duration: Time.zone.now - start,
         state: 'Something is wrong.'
       }
     end
@@ -235,7 +235,7 @@ module Lodqa
     end
 
     def mappings dictionary_url, pgp
-      keywords = pgp[:nodes].values.map { |n| n[:text] }.concat(pgp[:edges].map { |e| e[:text] })
+      keywords = pgp[:nodes].values.pluck(:text).concat(pgp[:edges].pluck(:text))
 
       begin
         tf = Term::Finder.new dictionary_url

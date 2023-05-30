@@ -31,3 +31,14 @@ AllCops:
     - spec/spec_helper.rb
     - spec/rails_helper.rb
     - vendor/**/*
+
+require:
+  - rubocop-rails
+
+Rails/HasManyOrHasOneDependent:
+  Exclude:
+    - app/models/pseudo_graph_pattern.rb
+
+Rails/InverseOf:
+  Exclude:
+    - app/models/pseudo_graph_pattern.rb

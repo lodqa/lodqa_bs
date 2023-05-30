@@ -10,10 +10,10 @@ class Search < ApplicationRecord
   has_many :dialogs, dependent: :destroy
   belongs_to :pseudo_graph_pattern
 
-  before_create { self.created_at = Time.now }
+  before_create { self.created_at = Time.zone.now }
 
   scope :expired?, lambda {
-    deadline = Time.now.ago Rails.configuration.lodqa_bs['cache_duration'].days
+    deadline = Time.zone.now.ago Rails.configuration.lodqa_bs['cache_duration'].days
 
     where('referred_at <= ?', deadline)
   }
@@ -107,7 +107,7 @@ class Search < ApplicationRecord
     # If you subscribe to a finished search, the subscription will remain permanently in memory.
     # Use transactions to prevent the search from being terminated just before subscribing to it.
     transaction do
-      yield unless pseudo_graph_pattern.reload.finished_at.present?
+      yield if pseudo_graph_pattern.reload.finished_at.blank?
     end
   end
 
@@ -152,9 +152,9 @@ class Search < ApplicationRecord
 
   # Return elapsed time of the finished search.
   def elapsed_time
-    return nil if !started_at.present? || aborted_at.present?
+    return nil if started_at.blank? || aborted_at.present?
 
-    (finished_at.present? ? finished_at : Time.now) - started_at
+    (finished_at.presence || Time.zone.now) - started_at
   end
 
   def as_json option = nil

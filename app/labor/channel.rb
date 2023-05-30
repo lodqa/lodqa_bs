@@ -32,7 +32,7 @@ class Channel
     err = conn.append data
 
     # debug log for error response
-    puts err if err
+    Rails.logger.debug err if err
   rescue Errno::ECONNREFUSED, Net::OpenTimeout, SocketError
     self.class.unreachable_url << @url
     raise

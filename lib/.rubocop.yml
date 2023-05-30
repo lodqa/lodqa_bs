@@ -7,7 +7,7 @@ Lint/NonLocalExitFromIterator:
   Enabled: false
 
 Metrics/AbcSize:
-  Max: 76
+  Max: 78
 
 Metrics/BlockLength:
   Max: 29

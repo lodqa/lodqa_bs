@@ -11,7 +11,7 @@ module Lodqa; end unless defined? Lodqa
 module Lodqa::Graphicator
   class << self
     def produce_pseudo_graph_pattern query
-      raise ArgumentError, 'query should be given.' if query.nil? || query.empty?
+      raise ArgumentError, 'query should be given.' if query.blank?
 
       produce_pgp_from query
     end
@@ -54,7 +54,7 @@ module Lodqa::Graphicator
         variable = variable.next
         nodes[variable.to_sym] = {
           head: c[:head],
-          text: parsed_query[:tokens][c[:beg]..c[:end]].collect { |t| t[:lex] }.join(' ')
+          text: parsed_query[:tokens][c[:beg]..c[:end]].pluck(:lex).join(' ')
         }
       end
     end
