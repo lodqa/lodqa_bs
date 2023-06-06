@@ -79,27 +79,66 @@ RSpec.describe 'Searches' do
       json_response = JSON.parse(response.body)
       expect(json_response['subscribe_url']).to be_present
     end
-  end
 
-  context 'when the same query has been searched in advance' do
-    let(:search_id) do
-      post '/searches', params: {
-        query: 'Which genes are associated with Endothelin receptor type C?',
-        callback_url: 'http://example.com/callback'
-      }
+    context 'when the same query has been searched in advance' do
+      let(:search_id) do
+        post '/searches', params: {
+          query: 'Which genes are associated with Endothelin receptor type C?',
+          callback_url: 'http://example.com/callback'
+        }
 
-      json_response = JSON.parse(response.body)
-      json_response['search_id']
+        json_response = JSON.parse(response.body)
+        json_response['search_id']
+      end
+
+      it 'returns the same search_id' do
+        post '/searches', params: {
+          query: 'Which genes are associated with Endothelin receptor type C?',
+          callback_url: 'http://example.com/callback'
+        }
+
+        json_response = JSON.parse(response.body)
+        expect(json_response['search_id']).to eq search_id
+      end
     end
 
-    it 'returns the same search_id' do
-      post '/searches', params: {
-        query: 'Which genes are associated with Endothelin receptor type C?',
-        callback_url: 'http://example.com/callback'
-      }
+    context 'when the request contains pgp instead of query' do
+      let(:params) do
+        {
+          pgp: '{
+            "nodes": {
+              "t1": {
+                "head": 1,
+                "text": "genes"
+              },
+              "t2": {
+                "head": 8,
+                "text": "Endothelin receptor type C"
+              }
+            },
+            "edges": [{
+                        "subject": "t1",
+                        "object": "t2",
+                        "text": "associated with"
+                      }],
+            "focus": "t1"
+          }',
+          mappings: '{
+            "genes": "http://identifiers.org/ncbigene/1636"
+          }',
+          target: 'test_database',
+          read_timeout: 10,
+          sparql_limit: 100,
+          answer_limit: 100,
+          private: false,
+          callback_url: 'http://example.com/callback'
+        }
+      end
 
-      json_response = JSON.parse(response.body)
-      expect(json_response['search_id']).to eq search_id
+      it 'acts as export mode' do
+        post('/searches', params:)
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 end
