@@ -9,18 +9,6 @@ module RegisterSearchService
     # Start a new search job unless same search and pgp exists.
     # Call back only if same search or pgp exists.
     def register search_param
-      dup_search = if search_param.simple_mode?
-                     Search.simple_equals_in(search_param)
-                   else
-                     Search.expert_equals_in(search_param)
-                   end
-
-      if dup_search
-        dup_search.append_dialog search_param.user_id if search_param.user_id.present?
-        return start_callback_job_with_search dup_search, search_param.callback_url
-      end
-
-      # Register in expert mode or simple mode
       if search_param.simple_mode?
         simple_mode search_param
       else
@@ -31,18 +19,36 @@ module RegisterSearchService
     private
 
     def simple_mode search_param
+      dup_search = Search.simple_equals_in(search_param)
+      return use_cache dup_search, search_param if dup_search
+
       pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
+
+      # Different natural language queries may result in the same pgp
+      # even if the natural language queries are different,
+      # for example, if the number of whitespace strings in
+      # the natural language queries are different.
       dup_pgp = PseudoGraphPattern.equals_in pgp, search_param
+
       if dup_pgp
         return start_callback_job_with_pgp search_param.query,
                                            dup_pgp,
                                            search_param.callback_url
       end
+
       start_search_job search_param, pgp, search_param.callback_url
     end
 
     def expert_mode search_param
+      dup_search = Search.expert_equals_in(search_param)
+      return use_cache dup_search, search_param if dup_search
+
       start_search_job search_param, search_param.pgp, search_param.callback_url
+    end
+
+    def use_cache dup_search, search_param
+      dup_search.append_dialog search_param.user_id if search_param.user_id.present?
+      start_callback_job_with_search dup_search, search_param.callback_url
     end
 
     # Call back events about an exiting search.
