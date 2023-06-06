@@ -2,7 +2,7 @@
 
 require 'lodqa/graphicator'
 
-# Bussiness logic about registering a serach
+# Business logic about registering a search
 module RegisterSearchService
   class << self
     # Register a search.
