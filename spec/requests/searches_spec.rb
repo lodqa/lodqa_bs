@@ -80,4 +80,26 @@ RSpec.describe 'Searches' do
       expect(json_response['subscribe_url']).to be_present
     end
   end
+
+  context 'when the same query has been searched in advance' do
+    let(:search_id) do
+      post '/searches', params: {
+        query: 'Which genes are associated with Endothelin receptor type C?',
+        callback_url: 'http://example.com/callback'
+      }
+
+      json_response = JSON.parse(response.body)
+      json_response['search_id']
+    end
+
+    it 'returns the same search_id' do
+      post '/searches', params: {
+        query: 'Which genes are associated with Endothelin receptor type C?',
+        callback_url: 'http://example.com/callback'
+      }
+
+      json_response = JSON.parse(response.body)
+      expect(json_response['search_id']).to eq search_id
+    end
+  end
 end
