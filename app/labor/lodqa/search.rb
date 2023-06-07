@@ -8,7 +8,7 @@ module Lodqa
   # Search the query by the LODQA
   module Search
     class << self
-      def start pseudo_graph_pattern, dialogs, on_start, on_event, logger
+      def start pseudo_graph_pattern, on_start, on_event, logger
         tasks = search_for_datasets_async pseudo_graph_pattern, on_event, logger
 
         on_start.call

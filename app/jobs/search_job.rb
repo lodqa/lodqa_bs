@@ -23,7 +23,6 @@ class SearchJob < ApplicationJob
 
   def run search, user_id
     Lodqa::Search.start search.pseudo_graph_pattern,
-                        Dialog.history(user_id),
                         on_start(search),
                         on_event(search),
                         logger
