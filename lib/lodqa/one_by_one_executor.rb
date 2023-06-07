@@ -18,7 +18,6 @@ module Lodqa
     def initialize dataset,
                    pgp,
                    query_id,
-                   dialogs,
                    mappings,
                    urilinks_url: 'http://urilinks.lodqa.org',
                    read_timeout: 5,
@@ -28,7 +27,6 @@ module Lodqa
 
       @target_dataset = dataset
       @pgp = pgp
-      @dialogs = dialogs
       @mappings = mappings
       @urilinks_url = urilinks_url
       @read_timeout = read_timeout
