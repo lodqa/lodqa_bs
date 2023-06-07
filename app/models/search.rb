@@ -80,10 +80,6 @@ class Search < ApplicationRecord
     }.merge pseudo_graph_pattern.data_for_search_detail
   end
 
-  def append_dialog user_id
-    dialogs.create(user_id:)
-  end
-
   def assign_id!
     # Now I will generate search_id myself.
     # Previously, in order to use the id of the job as the search_id of the search,
