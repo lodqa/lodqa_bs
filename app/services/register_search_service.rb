@@ -76,7 +76,7 @@ module RegisterSearchService
       search = create_search search_param.query, pseudo_graph_pattern
       search.append_dialog search_param.user_id if search_param.user_id.present?
 
-      SearchJob.perform_later search.search_id, search_param.user_id
+      SearchJob.perform_later search.search_id
       search.register_callback callback_url
 
       search.search_id

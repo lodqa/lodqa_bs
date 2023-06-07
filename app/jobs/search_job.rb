@@ -4,7 +4,7 @@
 class SearchJob < ApplicationJob
   workers 4
 
-  def perform search_id, user_id
+  def perform search_id
     search = DbConnection.using { Search.start! search_id }
     run search
     clean_up search
