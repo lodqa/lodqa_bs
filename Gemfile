@@ -13,7 +13,6 @@ gem 'puma'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false
 gem 'kaminari'
-gem 'ransack'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
@@ -35,4 +34,3 @@ gem 'rest-client'
 gem 'sparql-client'
 gem 'rails_pretty_json_rednerer'
 gem 'sucker_punch'
-

@@ -176,10 +176,6 @@ GEM
       zeitwerk (~> 2.5)
     rainbow (3.1.1)
     rake (13.0.6)
-    ransack (4.0.0)
-      activerecord (>= 6.1.5)
-      activesupport (>= 6.1.5)
-      i18n
     rdf (3.2.10)
       link_header (~> 0.0, >= 0.0.8)
     regexp_parser (2.8.0)
@@ -265,7 +261,6 @@ DEPENDENCIES
   puma
   rails (~> 7.0.5)
   rails_pretty_json_rednerer
-  ransack
   rest-client
   rspec-rails
   rspec_junit_formatter
