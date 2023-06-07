@@ -6,7 +6,6 @@ require 'term/finder'
 require 'lodqa/anchored_pgps'
 require 'lodqa/graph_finder'
 require 'lodqa/graphicator'
-require 'lodqa/contextualizer'
 require 'enju_access/cgi_accessor'
 require 'sparql_client/cacheable_client'
 
