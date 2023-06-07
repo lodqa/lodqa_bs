@@ -13,13 +13,6 @@ class Dialog < ApplicationRecord
       ['search']
     end
 
-    # Get user dialog history
-    def history user_id
-      return [] if user_id.blank?
-
-      where(user_id:)
-    end
-
     def queued_dialogs
       Dialog.group(:user_id).group(:search_id)
             .select('search_id, user_id, max(dialogs.created_at) as latest_created_at,
