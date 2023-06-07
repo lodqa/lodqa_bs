@@ -9,7 +9,7 @@ module Lodqa
   module Search
     class << self
       def start pseudo_graph_pattern, dialogs, on_start, on_event, logger
-        tasks = search_for_datasets_async pseudo_graph_pattern, dialogs, on_event, logger
+        tasks = search_for_datasets_async pseudo_graph_pattern, on_event, logger
 
         on_start.call
 
@@ -35,7 +35,7 @@ module Lodqa
         gateway_error
       ].freeze
 
-      def search_for_datasets_async pseudo_graph_pattern, dialogs, on_event, logger
+      def search_for_datasets_async pseudo_graph_pattern, on_event, logger
         pseudo_graph_pattern.target.split(',')
                             .map { |target| Sources.dataset_of_target target }
                             .map.with_index(1) { |dataset, number| dataset.merge(number:) }
