@@ -41,12 +41,12 @@ module Lodqa
                             .map.with_index(1) { |dataset, number| dataset.merge(number:) }
                             .map do |dataset|
           Concurrent::Promises.future do
-            search_for dataset, pseudo_graph_pattern, dialogs, on_event, logger
+            search_for dataset, pseudo_graph_pattern, on_event, logger
           end
         end
       end
 
-      def search_for dataset, pseudo_graph_pattern, dialogs, on_event, logger
+      def search_for dataset, pseudo_graph_pattern, on_event, logger
         executor = OneByOneExecutor.new dataset,
                                         pseudo_graph_pattern.pgp.deep_symbolize_keys,
                                         pseudo_graph_pattern.id,
