@@ -5,12 +5,12 @@ class Dialog < ApplicationRecord
   belongs_to :search
 
   class << self
-    def ransackable_attributes(auth_object = nil)
+    def ransackable_attributes _auth_object = nil
       %w[user_id_start]
     end
 
-    def ransackable_associations(auth_object = nil)
-      ["search"]
+    def ransackable_associations _auth_object = nil
+      ['search']
     end
 
     # Get user dialog history
