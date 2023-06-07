@@ -93,8 +93,7 @@ module Lodqa
       anchored_pgps = AnchoredPgps.new pgp, mappings
       anchored_pgps.logger = logger
       anchored_pgps.each do |anchored_pgp|
-        contextualizer = Contextualizer.new anchored_pgp, @dialogs
-        emit :anchored_pgp, contextualizer.anchored_pgp
+        emit :anchored_pgp, anchored_pgp
 
         graph_finder_options = {
           max_hop: @target_dataset[:max_hop],
@@ -110,7 +109,7 @@ module Lodqa
 
           known_sparql << sparql_query
 
-          invoke_sparql endpoint, dataset, pgp, mappings, contextualizer.anchored_pgp, bgp, sparql_query, queue
+          invoke_sparql endpoint, dataset, pgp, mappings, anchored_pgp, bgp, sparql_query, queue
           count += 1
         end
       end
