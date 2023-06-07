@@ -6,7 +6,7 @@ class SearchJob < ApplicationJob
 
   def perform search_id, user_id
     search = DbConnection.using { Search.start! search_id }
-    run search, user_id
+    run search
     clean_up search
   rescue StandardError => e
     logger.error message: 'Execution of SearchJob failed.',
@@ -21,7 +21,7 @@ class SearchJob < ApplicationJob
 
   private
 
-  def run search, user_id
+  def run search
     Lodqa::Search.start search.pseudo_graph_pattern,
                         on_start(search),
                         on_event(search),
