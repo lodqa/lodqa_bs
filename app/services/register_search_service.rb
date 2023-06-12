@@ -10,8 +10,12 @@ module RegisterSearchService
     # Call back only if same search or pgp exists.
     def register search_param
       search = if search_param.simple_mode?
+                 # Different natural language queries may result in the same pgp
+                 # even if the natural language queries are different,
+                 # for example, if the number of whitespace strings in
+                 # the natural language queries are different.
                  pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
-                 simple_mode pgp, search_param
+                 PseudoGraphPattern.equals_in(pgp, search_param)&.searches&.first
                else
                  pgp = search_param.pgp
                  Search.expert_equals_in search_param
@@ -31,18 +35,6 @@ module RegisterSearchService
     end
 
     private
-
-    def simple_mode pgp, search_param
-      # Different natural language queries may result in the same pgp
-      # even if the natural language queries are different,
-      # for example, if the number of whitespace strings in
-      # the natural language queries are different.
-      dup_pgp = PseudoGraphPattern.equals_in pgp, search_param
-
-      return unless dup_pgp
-
-      dup_pgp.searches.first
-    end
 
     # Call back events about an exiting search.
     def start_callback_job_with search, callback_url
