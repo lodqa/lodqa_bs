@@ -27,7 +27,7 @@ class CallbackEventsJob < ApplicationJob
     when :finished
       JsonResource.append_all(callback_url,
                               DbConnection.using { search.data_for_start_event },
-                              DbConnection.using { search.dafa_for_finish_event })
+                              DbConnection.using { search.data_for_finish_event })
     end
   end
 end

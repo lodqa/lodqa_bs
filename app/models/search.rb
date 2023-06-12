@@ -116,7 +116,7 @@ class Search < ApplicationRecord
   end
 
   # Data to sent at the finish event
-  def dafa_for_finish_event
+  def data_for_finish_event
     data_for_start_event.merge(event: :finish)
                         .merge pseudo_graph_pattern.data_for_finish_event
   end

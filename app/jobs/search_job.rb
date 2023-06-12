@@ -63,7 +63,7 @@ class SearchJob < ApplicationJob
 
   def clean_up search
     DbConnection.using { search.finish! }
-    search.callback(DbConnection.using { search.dafa_for_finish_event })
+    search.callback(DbConnection.using { search.data_for_finish_event })
   end
 
   def dispose_notifications_for search_id
