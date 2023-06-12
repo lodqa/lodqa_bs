@@ -19,9 +19,6 @@ module RegisterSearchService
     private
 
     def simple_mode search_param
-      dup_search = Search.simple_equals_in(search_param)
-      return use_cache dup_search, search_param if dup_search
-
       pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
 
       # Different natural language queries may result in the same pgp
