@@ -28,7 +28,6 @@
     <thead>
       <tr>
         <th>Search id</th>
-        <th>Query</th>
         <th>Read timeout</th>
         <th>SPARQL limit</th>
         <th>Answer limit</th>
@@ -51,7 +50,6 @@
       <% @searches.each do |search| %>
         <tr>
           <td><%= search.search_id %></td>
-          <td><%= search.query %></td>
           <td><%= search.pseudo_graph_pattern.read_timeout %></td>
           <td><%= search.pseudo_graph_pattern.sparql_limit %></td>
           <td><%= search.pseudo_graph_pattern.answer_limit %></td>
