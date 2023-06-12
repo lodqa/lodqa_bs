@@ -14,7 +14,7 @@ module RegisterSearchService
                  simple_mode pgp, search_param
                else
                  pgp = search_param.pgp
-                 expert_mode search_param
+                 Search.expert_equals_in search_param
                end
 
       return start_callback_job_with search, search_param.callback_url if search
@@ -42,14 +42,6 @@ module RegisterSearchService
       return unless dup_pgp
 
       dup_pgp.searches.first
-    end
-
-    def expert_mode search_param
-      dup_search = Search.expert_equals_in(search_param)
-
-      return unless dup_search
-
-      dup_search
     end
 
     # Call back events about an exiting search.
