@@ -34,20 +34,6 @@ class Search < ApplicationRecord
       search.to_hash_with_pgp
     end
 
-    # Simple mode check does a same condition search exists?
-    def simple_equals_in other
-      Search.alive?
-            .where(query: other.query)
-            .joins(:pseudo_graph_pattern)
-            .where(pseudo_graph_patterns: { read_timeout: other.read_timeout })
-            .where(pseudo_graph_patterns: { sparql_limit: other.sparql_limit })
-            .where(pseudo_graph_patterns: { answer_limit: other.answer_limit })
-            .where(pseudo_graph_patterns: { target: other.target })
-            .where(pseudo_graph_patterns: { private: false })
-            .order(created_at: :desc)
-            .first
-    end
-
     # Expert mode check does a same condition search exists?
     def expert_equals_in other
       Search.alive?
