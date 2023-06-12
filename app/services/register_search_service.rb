@@ -9,11 +9,15 @@ module RegisterSearchService
     # Start a new search job unless same search and pgp exists.
     # Call back only if same search or pgp exists.
     def register search_param
-      if search_param.simple_mode?
-        simple_mode search_param
-      else
-        expert_mode search_param
-      end
+      search_id, pgp = if search_param.simple_mode?
+                         simple_mode search_param
+                       else
+                         expert_mode search_param
+                       end
+
+      return search_id if search_id
+
+      start_search_job search_param, pgp, search_param.callback_url
     end
 
     private
@@ -28,23 +32,24 @@ module RegisterSearchService
       dup_pgp = PseudoGraphPattern.equals_in pgp, search_param
 
       if dup_pgp
-        return start_callback_job_with dup_pgp.searches.first,
-                                       search_param.callback_url
+        search_id = start_callback_job_with dup_pgp.searches.first,
+                                            search_param.callback_url
+        return [search_id, nil]
       end
 
-      start_search_job search_param, pgp, search_param.callback_url
+      [nil, pgp]
     end
 
     def expert_mode search_param
       dup_search = Search.expert_equals_in(search_param)
 
       if dup_search
-        return start_callback_job_with dup_search,
-                                       search_param.callback_url
-
+        search_id = start_callback_job_with dup_search,
+                                            search_param.callback_url
+        return [search_id, nil]
       end
 
-      start_search_job search_param, search_param.pgp, search_param.callback_url
+      [nil, search_param.pgp]
     end
 
     # Call back events about an exiting search.
