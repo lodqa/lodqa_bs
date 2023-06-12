@@ -9,12 +9,13 @@ module RegisterSearchService
     # Start a new search job unless same search and pgp exists.
     # Call back only if same search or pgp exists.
     def register search_param
-      search_id, pgp = if search_param.simple_mode?
-                         pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
-                         simple_mode pgp, search_param
-                       else
-                         expert_mode search_param
-                       end
+      search_id = if search_param.simple_mode?
+                    pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
+                    simple_mode pgp, search_param
+                  else
+                    pgp = search_param.pgp
+                    expert_mode search_param
+                  end
 
       return search_id if search_id
 
@@ -38,25 +39,19 @@ module RegisterSearchService
       # the natural language queries are different.
       dup_pgp = PseudoGraphPattern.equals_in pgp, search_param
 
-      if dup_pgp
-        search_id = start_callback_job_with dup_pgp.searches.first,
-                                            search_param.callback_url
-        return [search_id, nil]
-      end
+      return unless dup_pgp
 
-      [nil, pgp]
+      start_callback_job_with dup_pgp.searches.first,
+                              search_param.callback_url
     end
 
     def expert_mode search_param
       dup_search = Search.expert_equals_in(search_param)
 
-      if dup_search
-        search_id = start_callback_job_with dup_search,
-                                            search_param.callback_url
-        return [search_id, nil]
-      end
+      return unless dup_search
 
-      [nil, search_param.pgp]
+      start_callback_job_with dup_search,
+                              search_param.callback_url
     end
 
     # Call back events about an exiting search.
