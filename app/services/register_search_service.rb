@@ -17,7 +17,7 @@ module RegisterSearchService
 
       return search_id if search_id
 
-      start_search_job search_param, pgp, search_param.callback_url
+      start_search_job search_param, pgp
     end
 
     private
@@ -59,7 +59,7 @@ module RegisterSearchService
     end
 
     # Start new job for new search.
-    def start_search_job search_param, pgp, callback_url
+    def start_search_job search_param, pgp
       pseudo_graph_pattern = PseudoGraphPattern.create pgp:,
                                                        target: search_param.target,
                                                        read_timeout: search_param.read_timeout,
@@ -71,7 +71,7 @@ module RegisterSearchService
       search = create_search pseudo_graph_pattern
 
       SearchJob.perform_later search.search_id
-      search.register_callback callback_url
+      search.register_callback search_param.callback_url
 
       search.search_id
     end
