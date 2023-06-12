@@ -37,13 +37,14 @@ module RegisterSearchService
 
     def expert_mode search_param
       dup_search = Search.expert_equals_in(search_param)
-      return use_cache dup_search, search_param if dup_search
+
+      if dup_search
+        return start_callback_job_with_search dup_search,
+                                              search_param.callback_url
+
+      end
 
       start_search_job search_param, search_param.pgp, search_param.callback_url
-    end
-
-    def use_cache dup_search, search_param
-      start_callback_job_with_search dup_search, search_param.callback_url
     end
 
     # Call back events about an exiting search.
