@@ -17,7 +17,15 @@ module RegisterSearchService
 
       return search_id if search_id
 
-      start_search_job search_param, pgp
+      pseudo_graph_pattern = PseudoGraphPattern.create pgp:,
+                                                       target: search_param.target,
+                                                       read_timeout: search_param.read_timeout,
+                                                       sparql_limit: search_param.sparql_limit,
+                                                       answer_limit: search_param.answer_limit,
+                                                       private: search_param.private
+      create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
+
+      start_search_job search_param, pseudo_graph_pattern
     end
 
     private
@@ -59,15 +67,7 @@ module RegisterSearchService
     end
 
     # Start new job for new search.
-    def start_search_job search_param, pgp
-      pseudo_graph_pattern = PseudoGraphPattern.create pgp:,
-                                                       target: search_param.target,
-                                                       read_timeout: search_param.read_timeout,
-                                                       sparql_limit: search_param.sparql_limit,
-                                                       answer_limit: search_param.answer_limit,
-                                                       private: search_param.private
-      create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
-
+    def start_search_job search_param, pseudo_graph_pattern
       search = create_search pseudo_graph_pattern
 
       SearchJob.perform_later search.search_id
