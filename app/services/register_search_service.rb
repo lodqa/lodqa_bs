@@ -55,7 +55,7 @@ module RegisterSearchService
 
     # Call back events about an exiting pgp with new search.
     def start_callback_job_with_pgp query, pseudo_graph_pattern, callback_url
-      search = create_search query, pseudo_graph_pattern
+      search = pseudo_graph_pattern.searches.first
       start_callback_job_with_search search, callback_url
     end
 
