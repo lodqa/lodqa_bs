@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_07_083443) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_12_090114) do
   create_table "events", force: :cascade do |t|
     t.string "event", null: false
     t.text "data", null: false
@@ -37,7 +37,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_07_083443) do
 
   create_table "searches", force: :cascade do |t|
     t.string "search_id", limit: 36, null: false
-    t.string "query", default: "", null: false
     t.datetime "created_at", precision: nil, default: "-4712-01-01 00:00:00", null: false
     t.datetime "started_at", precision: nil
     t.datetime "finished_at", precision: nil
