@@ -9,20 +9,11 @@ module RegisterSearchService
     # Start a new search job unless same search and pgp exists.
     # Call back only if same search or pgp exists.
     def register search_param
-      search = if search_param.simple_mode?
-                 # Different natural language queries may result in the same pgp
-                 # even if the natural language queries are different,
-                 # for example, if the number of whitespace strings in
-                 # the natural language queries are different.
-                 pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
-                 PseudoGraphPattern.equals_in(pgp, search_param)&.searches&.first
-               else
-                 pgp = search_param.pgp
-                 Search.expert_equals_in search_param
-               end
-
+      # Detect duplicate search
+      search, pgp = detect_duplicate search_param
       return start_callback_job_with search, search_param.callback_url if search
 
+      # Create a new search
       pseudo_graph_pattern = PseudoGraphPattern.create pgp:,
                                                        target: search_param.target,
                                                        read_timeout: search_param.read_timeout,
@@ -35,6 +26,22 @@ module RegisterSearchService
     end
 
     private
+
+    def detect_duplicate search_param
+      if search_param.simple_mode?
+        # Different natural language queries may result in the same pgp
+        # even if the natural language queries are different,
+        # for example, if the number of whitespace strings in
+        # the natural language queries are different.
+        pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
+        search = PseudoGraphPattern.equals_in(pgp, search_param)&.searches&.first
+      else
+        pgp = search_param.pgp
+        search = Search.expert_equals_in search_param
+      end
+
+      [search, pgp]
+    end
 
     # Call back events about an exiting search.
     def start_callback_job_with search, callback_url
