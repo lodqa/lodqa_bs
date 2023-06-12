@@ -9,20 +9,10 @@ module RegisterSearchService
     # Start a new search job unless same search and pgp exists.
     # Call back only if same search or pgp exists.
     def register search_param
-      # Detect duplicate search
       search, pgp = detect_duplicate search_param
       return start_callback_job_with search, search_param.callback_url if search
 
-      # Create a new search
-      pseudo_graph_pattern = PseudoGraphPattern.create pgp:,
-                                                       target: search_param.target,
-                                                       read_timeout: search_param.read_timeout,
-                                                       sparql_limit: search_param.sparql_limit,
-                                                       answer_limit: search_param.answer_limit,
-                                                       private: search_param.private
-      create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
-
-      start_search_job search_param, pseudo_graph_pattern
+      start_new_search search_param, pgp
     end
 
     private
@@ -41,6 +31,18 @@ module RegisterSearchService
       end
 
       [search, pgp]
+    end
+
+    def start_new_search search_param, pgp
+      pseudo_graph_pattern = PseudoGraphPattern.create pgp:,
+                                                       target: search_param.target,
+                                                       read_timeout: search_param.read_timeout,
+                                                       sparql_limit: search_param.sparql_limit,
+                                                       answer_limit: search_param.answer_limit,
+                                                       private: search_param.private
+      create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
+
+      start_search_job search_param, pseudo_graph_pattern
     end
 
     # Call back events about an exiting search.
