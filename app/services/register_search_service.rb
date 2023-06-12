@@ -28,8 +28,8 @@ module RegisterSearchService
       dup_pgp = PseudoGraphPattern.equals_in pgp, search_param
 
       if dup_pgp
-        return start_callback_job_with_search dup_pgp.searches.first,
-                                              search_param.callback_url
+        return start_callback_job_with dup_pgp.searches.first,
+                                       search_param.callback_url
       end
 
       start_search_job search_param, pgp, search_param.callback_url
@@ -39,8 +39,8 @@ module RegisterSearchService
       dup_search = Search.expert_equals_in(search_param)
 
       if dup_search
-        return start_callback_job_with_search dup_search,
-                                              search_param.callback_url
+        return start_callback_job_with dup_search,
+                                       search_param.callback_url
 
       end
 
@@ -48,7 +48,7 @@ module RegisterSearchService
     end
 
     # Call back events about an exiting search.
-    def start_callback_job_with_search search, callback_url
+    def start_callback_job_with search, callback_url
       CallbackEventsJob.perform_later search, callback_url
       search.search_id
     end
