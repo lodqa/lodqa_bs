@@ -54,7 +54,7 @@ module RegisterSearchService
     end
 
     # Call back events about an exiting pgp with new search.
-    def start_callback_job_with_pgp query, pseudo_graph_pattern, callback_url
+    def start_callback_job_with_pgp _query, pseudo_graph_pattern, callback_url
       search = pseudo_graph_pattern.searches.first
       start_callback_job_with_search search, callback_url
     end
@@ -69,7 +69,7 @@ module RegisterSearchService
                                                        private: search_param.private
       create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
 
-      search = create_search search_param.query, pseudo_graph_pattern
+      search = create_search pseudo_graph_pattern
 
       SearchJob.perform_later search.search_id
       search.register_callback callback_url
@@ -83,7 +83,7 @@ module RegisterSearchService
                          mapping: search_param.mappings
     end
 
-    def create_search query, pseudo_graph_pattern
+    def create_search pseudo_graph_pattern
       search = Search.new(pseudo_graph_pattern:)
       search.assign_id!
       search.be_referred!
