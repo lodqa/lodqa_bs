@@ -3,7 +3,6 @@
 require 'securerandom'
 
 # The search accepted.
-# rubocop:disable Metrics/ClassLength
 class Search < ApplicationRecord
   include Subscribable
 
@@ -158,4 +157,3 @@ class Search < ApplicationRecord
     LateCallbacks.publish_for self, data
   end
 end
-# rubocop:enable Metrics/ClassLength
