@@ -10,7 +10,8 @@ module RegisterSearchService
     # Call back only if same search or pgp exists.
     def register search_param
       search_id, pgp = if search_param.simple_mode?
-                         simple_mode search_param
+                         pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
+                         simple_mode pgp, search_param
                        else
                          expert_mode search_param
                        end
@@ -30,9 +31,7 @@ module RegisterSearchService
 
     private
 
-    def simple_mode search_param
-      pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
-
+    def simple_mode pgp, search_param
       # Different natural language queries may result in the same pgp
       # even if the natural language queries are different,
       # for example, if the number of whitespace strings in
