@@ -68,6 +68,7 @@ module RegisterSearchService
     end
 
     def create_search pseudo_graph_pattern
+      # Use new instead of create to give it its own ID.
       search = Search.new(pseudo_graph_pattern:)
       search.assign_id!
       search.be_referred!
