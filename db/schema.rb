@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_13_064221) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_13_064426) do
+  create_table "contextualized_natural_language_expressions", force: :cascade do |t|
+    t.string "query"
+    t.integer "dialog_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dialog_id"], name: "index_contextualized_natural_language_expressions_on_dialog_id"
+  end
+
   create_table "dialogs", force: :cascade do |t|
     t.string "user_id"
     t.datetime "created_at", null: false
@@ -70,6 +78,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_064221) do
     t.index ["pseudo_graph_pattern_id"], name: "index_term_mappings_on_pseudo_graph_pattern_id"
   end
 
+  add_foreign_key "contextualized_natural_language_expressions", "dialogs"
   add_foreign_key "events", "pseudo_graph_patterns"
   add_foreign_key "natural_language_expressions", "dialogs"
   add_foreign_key "searches", "pseudo_graph_patterns"
