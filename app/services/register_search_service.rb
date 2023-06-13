@@ -20,13 +20,14 @@ module RegisterSearchService
         if search_param.user_id
           dialog = Dialog.for search_param.user_id
           dialog.natural_language_expressions.create! query: search_param.query
+          cnle = ContextualizeService.contextualize dialog
         end
 
         # Different natural language queries may result in the same pgp
         # even if the natural language queries are different,
         # for example, if the number of whitespace strings in
         # the natural language queries are different.
-        pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern search_param.query
+        pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern cnle&.query || search_param.query
         search = PseudoGraphPattern.equals_in(pgp, search_param)&.search
       else
         pgp = search_param.pgp

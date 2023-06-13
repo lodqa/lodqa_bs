@@ -126,6 +126,14 @@ RSpec.describe 'Searches' do
         dialog = Dialog.find_by user_id: 'test_user'
         expect(dialog.natural_language_expressions.first).to be_present
       end
+
+      it 'save a contextualized query to a dialog' do
+        post('/searches', params:)
+        expect(response).to have_http_status(:ok)
+
+        dialog = Dialog.find_by user_id: 'test_user'
+        expect(dialog.contextualized_natural_language_expressions.first).to be_present
+      end
     end
 
     context 'when the request contains pgp instead of query' do
