@@ -7,6 +7,8 @@ class Search < ApplicationRecord
   include Subscribable
 
   belongs_to :pseudo_graph_pattern
+
+  # In expert mode, there is no CNLE from which to generate PGP.
   belongs_to :contextualized_natural_language_expression, optional: true
 
   before_create { self.created_at = Time.zone.now }
