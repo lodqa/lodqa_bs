@@ -3,8 +3,7 @@
 #
 # It parses a query and produces its parse rendering and PGP.
 #
-require 'net/http'
-require 'enju_access/cgi_accessor'
+require_relative '../enju_access/cgi_accessor'
 
 module Lodqa; end unless defined? Lodqa
 

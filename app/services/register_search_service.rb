@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'securerandom'
-require 'lodqa/graphicator'
-
 # Business logic about registering a search
 module RegisterSearchService
   class << self
