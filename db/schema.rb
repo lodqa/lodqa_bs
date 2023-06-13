@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_13_063023) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_13_064221) do
   create_table "dialogs", force: :cascade do |t|
     t.string "user_id"
     t.datetime "created_at", null: false
@@ -25,6 +25,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_063023) do
     t.integer "pseudo_graph_pattern_id"
     t.index ["event"], name: "index_events_on_event"
     t.index ["pseudo_graph_pattern_id"], name: "index_events_on_pseudo_graph_pattern_id"
+  end
+
+  create_table "natural_language_expressions", force: :cascade do |t|
+    t.string "query"
+    t.integer "dialog_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dialog_id"], name: "index_natural_language_expressions_on_dialog_id"
   end
 
   create_table "pseudo_graph_patterns", force: :cascade do |t|
@@ -63,6 +71,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_063023) do
   end
 
   add_foreign_key "events", "pseudo_graph_patterns"
+  add_foreign_key "natural_language_expressions", "dialogs"
   add_foreign_key "searches", "pseudo_graph_patterns"
   add_foreign_key "term_mappings", "pseudo_graph_patterns"
 end
