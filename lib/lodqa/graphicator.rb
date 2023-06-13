@@ -18,7 +18,7 @@ module Lodqa::Graphicator
     private
 
     def produce_pgp_from query
-      parsed_query = EnjuAccess::CGIAccessor.parse query
+      parsed_query = EnjuAccess::CgiAccessor.parse query
       graphicate parsed_query
     end
 

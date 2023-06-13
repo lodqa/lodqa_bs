@@ -9,7 +9,7 @@ require 'enju_access/token'
 
 module EnjuAccess
   # An instance of this class connects to an Enju CGI server to parse a sentence.
-  module CGIAccessor
+  module CgiAccessor
     class << self
       # It takes a plain-English sentence as input, and
       # returns a hash that represent various aspects
