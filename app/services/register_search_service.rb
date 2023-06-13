@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'securerandom'
 require 'lodqa/graphicator'
 
 # Business logic about registering a search
@@ -68,9 +69,7 @@ module RegisterSearchService
     end
 
     def create_search pseudo_graph_pattern
-      # Use new instead of create to give it its own ID.
-      search = Search.new(pseudo_graph_pattern:)
-      search.assign_id!
+      search = Search.create!(pseudo_graph_pattern:, search_id: SecureRandom.uuid)
       search.be_referred!
       search
     end

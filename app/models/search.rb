@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'securerandom'
-
 # The search accepted.
 class Search < ApplicationRecord
   include Subscribable
@@ -68,23 +66,6 @@ class Search < ApplicationRecord
   end
 
   def query = ''
-
-  def assign_id!
-    # Now I will generate search_id myself.
-    # Previously, in order to use the id of the job as the search_id of the search,
-    # we set the search_id of the search after starting the job and update it like blew:
-    # ```rb
-    # job = SearchJob.perform_later
-    # search.search_id = job.job_id
-    # ```
-    # When using AsyncAdapter, the job may be executed before saving the search_id of the search.
-    # In that case, even if you search for a search with search_id in the job,
-    # it can not be found. And Job fails.
-    # Failure to set the start time or stop time for the search
-    # and the search will remain in the queued state.
-    update search_id: SecureRandom.uuid
-    search_id
-  end
 
   # Invoke received block if the search finished.
   def not_finished?
