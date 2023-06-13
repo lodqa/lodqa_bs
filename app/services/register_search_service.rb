@@ -17,6 +17,11 @@ module RegisterSearchService
 
     def detect_duplicate search_param
       if search_param.simple_mode?
+        if search_param.user_id
+          dialog = Dialog.for search_param.user_id
+          dialog.natural_language_expressions.create! query: search_param.query
+        end
+
         # Different natural language queries may result in the same pgp
         # even if the natural language queries are different,
         # for example, if the number of whitespace strings in

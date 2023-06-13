@@ -102,6 +102,32 @@ RSpec.describe 'Searches' do
       end
     end
 
+    context 'when the request contains user_id' do
+      let(:params) do
+        {
+          query: 'Which genes are associated with Endothelin receptor type C?',
+          callback_url: 'http://example.com/callback',
+          user_id: 'test_user'
+        }
+      end
+
+      it 'saves a dialog' do
+        post('/searches', params:)
+        expect(response).to have_http_status(:ok)
+
+        dialog = Dialog.find_by user_id: 'test_user'
+        expect(dialog).to be_present
+      end
+
+      it 'save a query to a dialog' do
+        post('/searches', params:)
+        expect(response).to have_http_status(:ok)
+
+        dialog = Dialog.find_by user_id: 'test_user'
+        expect(dialog.natural_language_expressions.first).to be_present
+      end
+    end
+
     context 'when the request contains pgp instead of query' do
       let(:params) do
         {
