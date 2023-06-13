@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_13_064426) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_13_064919) do
   create_table "contextualized_natural_language_expressions", force: :cascade do |t|
     t.string "query"
     t.integer "dialog_id", null: false
@@ -65,6 +65,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_064426) do
     t.datetime "aborted_at", precision: nil
     t.integer "pseudo_graph_pattern_id"
     t.datetime "referred_at", precision: nil
+    t.integer "contextualized_natural_language_expression_id"
+    t.index ["contextualized_natural_language_expression_id"], name: "index_searches_on_contextualized_natural_language_expression_id"
     t.index ["pseudo_graph_pattern_id"], name: "index_searches_on_pseudo_graph_pattern_id"
     t.index ["search_id"], name: "index_searches_on_search_id", unique: true
   end
@@ -81,6 +83,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_064426) do
   add_foreign_key "contextualized_natural_language_expressions", "dialogs"
   add_foreign_key "events", "pseudo_graph_patterns"
   add_foreign_key "natural_language_expressions", "dialogs"
+  add_foreign_key "searches", "contextualized_natural_language_expressions"
   add_foreign_key "searches", "pseudo_graph_patterns"
   add_foreign_key "term_mappings", "pseudo_graph_patterns"
 end
