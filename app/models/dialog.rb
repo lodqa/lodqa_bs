@@ -1,0 +1,2 @@
+class Dialog < ApplicationRecord
+end
