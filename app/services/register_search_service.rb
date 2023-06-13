@@ -69,9 +69,9 @@ module RegisterSearchService
     end
 
     def create_search pseudo_graph_pattern
-      search = Search.create!(pseudo_graph_pattern:, search_id: SecureRandom.uuid)
-      search.be_referred!
-      search
+      Search.create! pseudo_graph_pattern:,
+                     search_id: SecureRandom.uuid,
+                     referred_at: Time.now.utc
     end
   end
 end

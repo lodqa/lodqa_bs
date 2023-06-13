@@ -77,10 +77,6 @@ class Search < ApplicationRecord
     end
   end
 
-  def be_referred!
-    update referred_at: Time.now.utc
-  end
-
   # Finish to search and save the finish time.
   def finish!
     pseudo_graph_pattern.update finished_at: Time.now.utc
