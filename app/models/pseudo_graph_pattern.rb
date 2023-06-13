@@ -10,7 +10,7 @@
 class PseudoGraphPattern < ApplicationRecord
   serialize :pgp, JSON
 
-  has_many :searches, dependent: :destroy
+  has_one :search, dependent: :destroy
   has_many :events, dependent: :destroy
   has_many :term_mappings, dependent: :destroy
   has_many :all_answers, -> { where(event: 'answer') },
