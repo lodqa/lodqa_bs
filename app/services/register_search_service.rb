@@ -20,7 +20,7 @@ module RegisterSearchService
         if search_param.user_id
           dialog = Dialog.for search_param.user_id
           dialog.natural_language_expressions.create! query: search_param.query
-          cnle = ContextualizeService.contextualize dialog
+          cnle = Contextualizer.new(dialog).contextualize
         end
 
         # Different natural language queries may result in the same pgp
