@@ -12,4 +12,8 @@ class Dialog < ApplicationRecord
     # Consider stopwords in the future.
     Dialog.find_or_create_by user_id:
   end
+
+  def sentences_in depth
+    context.order(:id).last(depth).pluck(:query)
+  end
 end
