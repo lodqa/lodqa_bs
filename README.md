@@ -17,6 +17,14 @@ LODQA deals queries that spend long time to perform.
 This server enqueues queries and perform queries asynchronously.
 Then after performing queries, callback API to send answer of queries.
 
+## To cotextualize by OpenAI API
+
+```sh
+cp .env.example .env
+```
+
+Write your OpenAI API key to .env
+
 ## APIs
 
 ### Register query

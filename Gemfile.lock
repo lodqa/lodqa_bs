@@ -81,6 +81,7 @@ GEM
     diff-lcs (1.5.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
+    dotenv (2.8.1)
     erubi (1.12.0)
     globalid (1.1.0)
       activesupport (>= 5.0)
@@ -258,6 +259,7 @@ PLATFORMS
 
 DEPENDENCIES
   bootsnap
+  dotenv (~> 2.8)
   kaminari
   puma
   rails (~> 7.0.5)
