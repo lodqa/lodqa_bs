@@ -3,5 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Dialog do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'context' do
+    it 'returns the natural language expressions' do
+      dialog = described_class.create(user_id: 1)
+      dialog.natural_language_expressions.create(query: 'Hello')
+
+      expect(dialog.context).to eq dialog.natural_language_expressions
+    end
+  end
 end
