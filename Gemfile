@@ -35,4 +35,6 @@ gem 'sparql-client'
 gem 'rails_pretty_json_rednerer'
 gem 'sucker_punch'
 
-gem "dotenv", "~> 2.8"
+# contextualizer
+gem "dotenv-rails"
+gem "ruby-openai"
