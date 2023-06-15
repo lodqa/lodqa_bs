@@ -51,8 +51,16 @@ module RegisterSearchService
 
       return start_callback_job_with search, search_param.callback_url if search
 
-      pgp = search_param.pgp
-      start_new_search search_param, pgp, nil
+      pseudo_graph_pattern = PseudoGraphPattern.create(pgp: search_param.pgp,
+                                                       target: search_param.target,
+                                                       read_timeout: search_param.read_timeout,
+                                                       sparql_limit: search_param.sparql_limit,
+                                                       answer_limit: search_param.answer_limit,
+                                                       private: search_param.private)
+      create_term_mapping pseudo_graph_pattern, search_param.target,
+                          search_param.mappings
+
+      start_search_job search_param, pseudo_graph_pattern
     end
 
     def contextualize user_id, query
