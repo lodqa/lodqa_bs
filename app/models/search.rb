@@ -35,7 +35,7 @@ class Search < ApplicationRecord
     end
 
     # Expert mode check does a same condition search exists?
-    def expert_equals_in read_timeout, sparql_limit, answer_limit, target, mappings
+    def equals_in read_timeout, sparql_limit, answer_limit, target, mappings
       Search.alive?
             .joins(pseudo_graph_pattern: :term_mappings)
             .where(pseudo_graph_patterns: { read_timeout: })
