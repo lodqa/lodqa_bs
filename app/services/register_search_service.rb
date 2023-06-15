@@ -7,15 +7,6 @@ module RegisterSearchService
     # Start a new search job unless same search and pgp exists.
     # Call back only if same search or pgp exists.
     def register search_param
-      search, pgp, query = detect_duplicate search_param
-      return start_callback_job_with search, search_param.callback_url if search
-
-      start_new_search search_param, pgp, query
-    end
-
-    private
-
-    def detect_duplicate search_param
       if search_param.simple_mode?
         query = if search_param.user_id
                   contextualize search_param.user_id, search_param.query
@@ -29,13 +20,21 @@ module RegisterSearchService
         # the natural language queries are different.
         pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern query
         search = PseudoGraphPattern.equals_in(pgp, search_param)&.search
-      else
-        pgp = search_param.pgp
-        search = Search.expert_equals_in search_param
-      end
 
-      [search, pgp, query]
+        return start_callback_job_with search, search_param.callback_url if search
+
+        start_new_search search_param, pgp, query
+      else
+        search = Search.expert_equals_in search_param
+
+        return start_callback_job_with search, search_param.callback_url if search
+
+        pgp = search_param.pgp
+        start_new_search search_param, pgp, nil
+      end
     end
+
+    private
 
     def contextualize user_id, query
       dialog = Dialog.with user_id
