@@ -7,10 +7,10 @@ module RegisterSearchService
     # Start a new search job unless same search and pgp exists.
     # Call back only if same search or pgp exists.
     def register search_param
-      search, pgp = detect_duplicate search_param
+      search, pgp, query = detect_duplicate search_param
       return start_callback_job_with search, search_param.callback_url if search
 
-      start_new_search search_param, pgp
+      start_new_search search_param, pgp, query
     end
 
     private
@@ -21,20 +21,21 @@ module RegisterSearchService
           dialog = Dialog.for search_param.user_id
           dialog.natural_language_expressions.create! query: search_param.query
           cnle = Contextualizer.new(dialog).contextualize
+          query = cnle.query
         end
 
         # Different natural language queries may result in the same pgp
         # even if the natural language queries are different,
         # for example, if the number of whitespace strings in
         # the natural language queries are different.
-        pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern cnle&.query || search_param.query
+        pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern query || search_param.query
         search = PseudoGraphPattern.equals_in(pgp, search_param)&.search
       else
         pgp = search_param.pgp
         search = Search.expert_equals_in search_param
       end
 
-      [search, pgp]
+      [search, pgp, query]
     end
 
     # Call back events about an exiting search.
@@ -43,13 +44,14 @@ module RegisterSearchService
       search.search_id
     end
 
-    def start_new_search search_param, pgp
+    def start_new_search search_param, pgp, query
       pseudo_graph_pattern = PseudoGraphPattern.create pgp:,
                                                        target: search_param.target,
                                                        read_timeout: search_param.read_timeout,
                                                        sparql_limit: search_param.sparql_limit,
                                                        answer_limit: search_param.answer_limit,
-                                                       private: search_param.private
+                                                       private: search_param.private,
+                                                       query: query
       create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
 
       start_search_job search_param, pseudo_graph_pattern

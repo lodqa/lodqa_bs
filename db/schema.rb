@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_13_064919) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_15_053041) do
   create_table "contextualized_natural_language_expressions", force: :cascade do |t|
     t.string "query"
     t.integer "dialog_id", null: false
@@ -55,6 +55,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_064919) do
     t.datetime "aborted_at", precision: nil
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.string "query"
   end
 
   create_table "searches", force: :cascade do |t|
