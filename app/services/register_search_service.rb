@@ -75,15 +75,18 @@ module RegisterSearchService
                                                        answer_limit: search_param.answer_limit,
                                                        private: search_param.private,
                                                        query:)
-      create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
+      unless search_param.simple_mode?
+        create_term_mapping pseudo_graph_pattern, search_param.target,
+                            search_param.mappings
+      end
 
       start_search_job search_param, pseudo_graph_pattern
     end
 
-    def create_term_mapping pseudo_graph_pattern, search_param
+    def create_term_mapping pseudo_graph_pattern, dataset_name, mapping
       TermMapping.create pseudo_graph_pattern:,
-                         dataset_name: search_param.target,
-                         mapping: search_param.mappings
+                         dataset_name:,
+                         mapping:
     end
 
     # Start new job for new search.
