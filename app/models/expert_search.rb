@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# ExpertSearch is a class that is used to start a search for a given PGP, target and mappings.
 class ExpertSearch
   include CanStartSearch
 
