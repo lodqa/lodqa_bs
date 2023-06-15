@@ -20,7 +20,6 @@ class NaturalLanguageSearch
     # even if the natural language queries are different,
     # for example, if the number of whitespace strings in
     # the natural language queries are different.
-    pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern real_query
     duplicated_pgp = PseudoGraphPattern.equals_in pgp,
                                                   @read_timeout,
                                                   @sparql_limit,
@@ -44,6 +43,10 @@ class NaturalLanguageSearch
   end
 
   private
+
+  def pgp
+    @pgp ||= Lodqa::Graphicator.produce_pseudo_graph_pattern real_query
+  end
 
   def real_query
     @real_query ||= if @user_id
