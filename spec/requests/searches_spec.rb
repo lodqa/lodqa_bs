@@ -4,6 +4,24 @@ require 'rails_helper'
 
 RSpec.describe 'Searches' do
   before do
+    # Stub OpenAI API
+    stub_request(:post, 'https://api.openai.com/v1/completions')
+      .with(
+        body: {
+          'model' => 'text-davinci-001',
+          'prompt' => 'Make the following sentences into one sentence: Which genes are associated with Endothelin receptor type C?',
+          'temperature' => 0
+        }.to_json
+
+      )
+      .to_return(status: 200,
+                 body: { 'choices' =>
+                           [{
+                             'text' => 'Which genes are associated with Endothelin receptor type C?'
+                           }] }.to_json,
+                 headers: {})
+
+    # Stub LODQA Targets API
     stub_request(:get, 'http://targets.lodqa.org/targets.json')
       .with(
         headers: {
@@ -15,6 +33,7 @@ RSpec.describe 'Searches' do
       )
       .to_return(status: 200, body: '{}', headers: {})
 
+    # Stub Enju API
     body = <<~RESPONSE
       0	ROOT	ROOT	ROOT	ROOT	ROOT	ROOT:4
       1	Which	which	WDT	WDT	det_arg1	ARG1:2

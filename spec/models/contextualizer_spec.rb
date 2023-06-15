@@ -10,6 +10,24 @@ RSpec.describe Contextualizer do
   end
 
   describe 'contextualize' do
+    before do
+      stub_request(:post, 'https://api.openai.com/v1/completions')
+        .with(
+          body: {
+            'model' => 'text-davinci-001',
+            'prompt' => 'Make the following sentences into one sentence: Hello.',
+            'temperature' => 0
+          }.to_json
+
+        )
+        .to_return(status: 200,
+                   body: { 'choices' =>
+                                        [{
+                                          'text' => "\n\nHello."
+                                        }] }.to_json,
+                   headers: {})
+    end
+
     it 'returns the contextualized natural language expression' do
       cnle = contextualizer.contextualize
 
