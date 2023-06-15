@@ -17,18 +17,13 @@ module RegisterSearchService
 
     def detect_duplicate search_param
       if search_param.simple_mode?
-        if search_param.user_id
-          dialog = Dialog.with search_param.user_id
-          dialog.natural_language_expressions.create! query: search_param.query
-          cnle = Contextualizer.new(dialog).contextualize
-          query = cnle.query
-        end
+        query = query_for_simple_mode search_param
 
         # Different natural language queries may result in the same pgp
         # even if the natural language queries are different,
         # for example, if the number of whitespace strings in
         # the natural language queries are different.
-        pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern query || search_param.query
+        pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern query
         search = PseudoGraphPattern.equals_in(pgp, search_param)&.search
       else
         pgp = search_param.pgp
@@ -36,6 +31,16 @@ module RegisterSearchService
       end
 
       [search, pgp, query]
+    end
+
+    def query_for_simple_mode search_param
+      if search_param.user_id
+        dialog = Dialog.with search_param.user_id
+        dialog.natural_language_expressions.create! query: search_param.query
+        Contextualizer.new(dialog).contextualize.query
+      else
+        search_param.query
+      end
     end
 
     # Call back events about an exiting search.
