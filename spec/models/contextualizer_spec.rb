@@ -3,9 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe Contextualizer do
+  let(:dialog) { Dialog.create(user_id: 1) }
+
   describe 'contextualize' do
     it 'returns the contextualized natural language expression' do
-      dialog = Dialog.create(user_id: 1)
       dialog.natural_language_expressions.create(query: 'Hello')
 
       contextualizer = described_class.new dialog
@@ -18,13 +19,34 @@ RSpec.describe Contextualizer do
 
   describe 'prompt' do
     it 'returns instruction and context' do
-      dialog = Dialog.create(user_id: 1)
-      dialog.natural_language_expressions.create(query: 'Hello')
+      dialog.natural_language_expressions.create(query: 'Hello.')
 
       contextualizer = described_class.new dialog
       prompt = contextualizer.prompt
 
-      expect(prompt).to eq 'Make the following sentences into one sentence: Hello'
+      expect(prompt).to eq 'Make the following sentences into one sentence: Hello.'
+    end
+
+    context 'when query has no period or question mark' do
+      it 'returns sentence with period' do
+        dialog.natural_language_expressions.create(query: 'Hello')
+
+        contextualizer = described_class.new dialog
+        prompt = contextualizer.prompt
+
+        expect(prompt).to eq 'Make the following sentences into one sentence: Hello.'
+      end
+    end
+
+    context 'when query has question mark' do
+      it 'returns sentence with question mark' do
+        dialog.natural_language_expressions.create(query: 'Hello?')
+
+        contextualizer = described_class.new dialog
+        prompt = contextualizer.prompt
+
+        expect(prompt).to eq 'Make the following sentences into one sentence: Hello?'
+      end
     end
   end
 end

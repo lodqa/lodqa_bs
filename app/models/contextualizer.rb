@@ -18,8 +18,16 @@ class Contextualizer
   end
 
   def prompt
-    instruction = Rails.application.config.contextualizer[:instruction]
-    sentences = @dialog.sentences_in Rails.application.config.contextualizer[:dialog_depth]
-    "#{instruction} #{sentences.join(' ')}"
+    "#{Rails.application.config.contextualizer[:instruction]} #{sentences}"
+  end
+
+  private
+
+  def sentences
+    depth = Rails.application.config.contextualizer[:dialog_depth]
+
+    @dialog.sentences_in(depth)
+           .map { _1.end_with?('.', '?') ? _1 : "#{_1}." }
+           .join(' ')
   end
 end
