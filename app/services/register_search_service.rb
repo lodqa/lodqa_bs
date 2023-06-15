@@ -47,7 +47,7 @@ module RegisterSearchService
                                                        private: search_param.private,
                                                        query:)
 
-      start_search_job search_param, pseudo_graph_pattern
+      start_search_job pseudo_graph_pattern, search_param.callback_url
     end
 
     def do_export_mode search_param
@@ -68,7 +68,7 @@ module RegisterSearchService
       create_term_mapping pseudo_graph_pattern, search_param.target,
                           search_param.mappings
 
-      start_search_job search_param, pseudo_graph_pattern
+      start_search_job pseudo_graph_pattern, search_param.callback_url
     end
 
     def contextualize user_id, query
@@ -90,11 +90,11 @@ module RegisterSearchService
     end
 
     # Start new job for new search.
-    def start_search_job search_param, pseudo_graph_pattern
+    def start_search_job pseudo_graph_pattern, callback_url
       search = create_search pseudo_graph_pattern
 
       SearchJob.perform_later search.search_id
-      search.register_callback search_param.callback_url
+      search.register_callback callback_url
 
       search.search_id
     end
