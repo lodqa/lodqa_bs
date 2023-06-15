@@ -40,7 +40,11 @@ module RegisterSearchService
     end
 
     def do_export_mode search_param
-      search = Search.expert_equals_in search_param
+      search = Search.expert_equals_in search_param.read_timeout,
+                                       search_param.sparql_limit,
+                                       search_param.answer_limit,
+                                       search_param.target,
+                                       search_param.mappings
 
       return start_callback_job_with search, search_param.callback_url if search
 
