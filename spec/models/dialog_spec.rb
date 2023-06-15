@@ -21,6 +21,15 @@ RSpec.describe Dialog do
     it 'creates a dialog with the specified user if not exists' do
       expect { described_class.with(1) }.to change(described_class, :count).by 1
     end
+
+    context 'when dialog has a stop sentence "Begin new search"' do
+      it 'creates a new dialog' do
+        dialog = described_class.create(user_id: 1)
+        dialog.natural_language_expressions.create(query: 'Begin new search')
+
+        expect { described_class.with(1) }.to change(described_class, :count).by 1
+      end
+    end
   end
 
   describe 'sentences_in' do

@@ -9,8 +9,10 @@ class Dialog < ApplicationRecord
   alias context natural_language_expressions
 
   def self.with user_id
-    # Consider stopwords in the future.
-    Dialog.find_or_create_by user_id:
+    Dialog.where.not(
+      id: NaturalLanguageExpression.where(query: 'Begin new search').select(:dialog_id)
+    )
+          .find_or_create_by user_id:
   end
 
   def sentences_in depth
