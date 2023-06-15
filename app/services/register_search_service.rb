@@ -39,7 +39,15 @@ module RegisterSearchService
                                        search_param.callback_url
       end
 
-      start_new_search search_param, pgp, query
+      pseudo_graph_pattern = PseudoGraphPattern.create(pgp:,
+                                                       target: search_param.target,
+                                                       read_timeout: search_param.read_timeout,
+                                                       sparql_limit: search_param.sparql_limit,
+                                                       answer_limit: search_param.answer_limit,
+                                                       private: search_param.private,
+                                                       query:)
+
+      start_search_job search_param, pseudo_graph_pattern
     end
 
     def do_export_mode search_param
@@ -73,22 +81,6 @@ module RegisterSearchService
     def start_callback_job_with search, callback_url
       CallbackEventsJob.perform_later search, callback_url
       search.search_id
-    end
-
-    def start_new_search search_param, pgp, query
-      pseudo_graph_pattern = PseudoGraphPattern.create(pgp:,
-                                                       target: search_param.target,
-                                                       read_timeout: search_param.read_timeout,
-                                                       sparql_limit: search_param.sparql_limit,
-                                                       answer_limit: search_param.answer_limit,
-                                                       private: search_param.private,
-                                                       query:)
-      unless search_param.simple_mode?
-        create_term_mapping pseudo_graph_pattern, search_param.target,
-                            search_param.mappings
-      end
-
-      start_search_job search_param, pseudo_graph_pattern
     end
 
     def create_term_mapping pseudo_graph_pattern, dataset_name, mapping
