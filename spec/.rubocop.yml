@@ -1,7 +1,7 @@
 inherit_from: ../.rubocop.yml
 
 Layout/LineLength:
-  Max: 102
+  Max: 132
 
 Metrics/BlockLength:
   Max: 36
