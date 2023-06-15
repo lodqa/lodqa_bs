@@ -17,7 +17,11 @@ module RegisterSearchService
 
     def detect_duplicate search_param
       if search_param.simple_mode?
-        query = query_for_simple_mode search_param
+        query = if search_param.user_id
+                  contextualize search_param.user_id, search_param.query
+                else
+                  search_param.query
+                end
 
         # Different natural language queries may result in the same pgp
         # even if the natural language queries are different,
@@ -33,14 +37,10 @@ module RegisterSearchService
       [search, pgp, query]
     end
 
-    def query_for_simple_mode search_param
-      if search_param.user_id
-        dialog = Dialog.with search_param.user_id
-        dialog.natural_language_expressions.create! query: search_param.query
-        Contextualizer.new(dialog).contextualize.query
-      else
-        search_param.query
-      end
+    def contextualize user_id, query
+      dialog = Dialog.with user_id
+      dialog.natural_language_expressions.create!(query:)
+      Contextualizer.new(dialog).contextualize.query
     end
 
     # Call back events about an exiting search.
