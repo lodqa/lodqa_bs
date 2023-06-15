@@ -8,33 +8,41 @@ module RegisterSearchService
     # Call back only if same search or pgp exists.
     def register search_param
       if search_param.simple_mode?
-        query = if search_param.user_id
-                  contextualize search_param.user_id, search_param.query
-                else
-                  search_param.query
-                end
-
-        # Different natural language queries may result in the same pgp
-        # even if the natural language queries are different,
-        # for example, if the number of whitespace strings in
-        # the natural language queries are different.
-        pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern query
-        search = PseudoGraphPattern.equals_in(pgp, search_param)&.search
-
-        return start_callback_job_with search, search_param.callback_url if search
-
-        start_new_search search_param, pgp, query
+        do_simple_mode search_param
       else
-        search = Search.expert_equals_in search_param
-
-        return start_callback_job_with search, search_param.callback_url if search
-
-        pgp = search_param.pgp
-        start_new_search search_param, pgp, nil
+        do_export_mode search_param
       end
     end
 
     private
+
+    def do_simple_mode search_param
+      query = if search_param.user_id
+                contextualize search_param.user_id, search_param.query
+              else
+                search_param.query
+              end
+
+      # Different natural language queries may result in the same pgp
+      # even if the natural language queries are different,
+      # for example, if the number of whitespace strings in
+      # the natural language queries are different.
+      pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern query
+      search = PseudoGraphPattern.equals_in(pgp, search_param)&.search
+
+      return start_callback_job_with search, search_param.callback_url if search
+
+      start_new_search search_param, pgp, query
+    end
+
+    def do_export_mode search_param
+      search = Search.expert_equals_in search_param
+
+      return start_callback_job_with search, search_param.callback_url if search
+
+      pgp = search_param.pgp
+      start_new_search search_param, pgp, nil
+    end
 
     def contextualize user_id, query
       dialog = Dialog.with user_id
