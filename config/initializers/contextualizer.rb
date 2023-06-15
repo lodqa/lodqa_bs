@@ -3,7 +3,7 @@ OpenAI.configure do |config|
 end
 
 Rails.application.configure do
-  config.contextulizer = {
+  config.contextualizer = {
     instruction: "Make the following sentences into one sentence:",
     dialog_depth: 2,
   }

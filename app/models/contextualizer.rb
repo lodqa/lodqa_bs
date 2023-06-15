@@ -16,4 +16,10 @@ class Contextualizer
 
     @dialog.contextualized_natural_language_expressions.create query:
   end
+
+  def prompt
+    instruction = Rails.application.config.contextualizer[:instruction]
+    sentences = @dialog.sentences_in Rails.application.config.contextualizer[:dialog_depth]
+    "#{instruction} #{sentences.join(' ')}"
+  end
 end

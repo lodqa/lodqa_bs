@@ -15,4 +15,16 @@ RSpec.describe Contextualizer do
       expect(cnle.query).to eq 'Hello'
     end
   end
+
+  describe 'prompt' do
+    it 'returns instruction and context' do
+      dialog = Dialog.create(user_id: 1)
+      dialog.natural_language_expressions.create(query: 'Hello')
+
+      contextualizer = described_class.new dialog
+      prompt = contextualizer.prompt
+
+      expect(prompt).to eq 'Make the following sentences into one sentence: Hello'
+    end
+  end
 end
