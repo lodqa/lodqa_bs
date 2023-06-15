@@ -65,8 +65,8 @@ module RegisterSearchService
                                                        sparql_limit: search_param.sparql_limit,
                                                        answer_limit: search_param.answer_limit,
                                                        private: search_param.private)
-      create_term_mapping pseudo_graph_pattern, search_param.target,
-                          search_param.mappings
+      pseudo_graph_pattern.term_mappings.create dataset_name: search_param.target,
+                                                mapping: search_param.mappings
 
       start_search_job pseudo_graph_pattern, search_param.callback_url
     end
@@ -81,12 +81,6 @@ module RegisterSearchService
     def start_callback_job_with search, callback_url
       CallbackEventsJob.perform_later search, callback_url
       search.search_id
-    end
-
-    def create_term_mapping pseudo_graph_pattern, dataset_name, mapping
-      TermMapping.create pseudo_graph_pattern:,
-                         dataset_name:,
-                         mapping:
     end
 
     # Start new job for new search.
