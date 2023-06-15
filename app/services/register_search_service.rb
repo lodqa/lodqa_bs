@@ -8,14 +8,14 @@ module RegisterSearchService
     # Call back only if same search or pgp exists.
     def register search_param
       if search_param.simple_mode?
-        do_simple_mode search_param.user_id,
-                       search_param.query,
-                       search_param.read_timeout,
-                       search_param.sparql_limit,
-                       search_param.answer_limit,
-                       search_param.target,
-                       search_param.private,
-                       search_param.callback_url
+        NaturalLanguageSearch.new(search_param.user_id,
+                                  search_param.query,
+                                  search_param.read_timeout,
+                                  search_param.sparql_limit,
+                                  search_param.answer_limit,
+                                  search_param.target,
+                                  search_param.private,
+                                  search_param.callback_url).run
 
       else
         do_export_mode search_param.pgp,
@@ -30,41 +30,6 @@ module RegisterSearchService
     end
 
     private
-
-    def do_simple_mode user_id, query, read_timeout, sparql_limit, answer_limit, target, private,
-                       callback_url
-      query = if user_id
-                contextualize user_id, query
-              else
-                query
-              end
-
-      # Different natural language queries may result in the same pgp
-      # even if the natural language queries are different,
-      # for example, if the number of whitespace strings in
-      # the natural language queries are different.
-      pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern query
-      duplicated_pgp = PseudoGraphPattern.equals_in pgp,
-                                                    read_timeout,
-                                                    sparql_limit,
-                                                    answer_limit,
-                                                    target
-
-      if duplicated_pgp
-        return start_callback_job_with duplicated_pgp.search,
-                                       callback_url
-      end
-
-      pseudo_graph_pattern = PseudoGraphPattern.create(pgp:,
-                                                       target:,
-                                                       read_timeout:,
-                                                       sparql_limit:,
-                                                       answer_limit:,
-                                                       private:,
-                                                       query:)
-
-      start_search_job pseudo_graph_pattern, callback_url
-    end
 
     def do_export_mode pgp, read_timeout, sparql_limit, answer_limit, target, mappings, private,
                        callback_url
