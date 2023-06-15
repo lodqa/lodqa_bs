@@ -8,9 +8,11 @@ class Dialog < ApplicationRecord
 
   alias context natural_language_expressions
 
+  # Returns the active dialog with the user.
+  # Conversations containing stop phrases are considered terminated.
   def self.with user_id
     Dialog.where.not(
-      id: NaturalLanguageExpression.where(query: 'Begin new search').select(:dialog_id)
+      id: NaturalLanguageExpression.stop_sentence.select(:dialog_id)
     )
           .find_or_create_by user_id:
   end
