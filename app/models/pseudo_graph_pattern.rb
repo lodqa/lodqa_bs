@@ -19,13 +19,13 @@ class PseudoGraphPattern < ApplicationRecord
   scope :alive?, -> { where aborted_at: nil }
 
   class << self
-    def equals_in pgp, other
+    def equals_in pgp, read_timeout, sparql_limit, answer_limit, target
       PseudoGraphPattern.alive?
                         .where(pgp:)
-                        .where(read_timeout: other.read_timeout)
-                        .where(sparql_limit: other.sparql_limit)
-                        .where(answer_limit: other.answer_limit)
-                        .where(target: other.target)
+                        .where(read_timeout:)
+                        .where(sparql_limit:)
+                        .where(answer_limit:)
+                        .where(target:)
                         .where(private: false)
                         .order(created_at: :desc)
                         .first

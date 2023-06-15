@@ -28,7 +28,11 @@ module RegisterSearchService
       # for example, if the number of whitespace strings in
       # the natural language queries are different.
       pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern query
-      search = PseudoGraphPattern.equals_in(pgp, search_param)&.search
+      search = PseudoGraphPattern.equals_in(pgp,
+                                            search_param.read_timeout,
+                                            search_param.sparql_limit,
+                                            search_param.answer_limit,
+                                            search_param.target)&.search
 
       return start_callback_job_with search, search_param.callback_url if search
 
