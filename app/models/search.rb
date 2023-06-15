@@ -65,7 +65,7 @@ class Search < ApplicationRecord
     }.merge pseudo_graph_pattern.data_for_search_detail
   end
 
-  def query = pseudo_graph_pattern.query
+  delegate :query, to: :pseudo_graph_pattern
 
   # Invoke received block if the search finished.
   def not_finished?

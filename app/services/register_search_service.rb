@@ -45,13 +45,13 @@ module RegisterSearchService
     end
 
     def start_new_search search_param, pgp, query
-      pseudo_graph_pattern = PseudoGraphPattern.create pgp:,
+      pseudo_graph_pattern = PseudoGraphPattern.create(pgp:,
                                                        target: search_param.target,
                                                        read_timeout: search_param.read_timeout,
                                                        sparql_limit: search_param.sparql_limit,
                                                        answer_limit: search_param.answer_limit,
                                                        private: search_param.private,
-                                                       query: query
+                                                       query:)
       create_term_mapping pseudo_graph_pattern, search_param unless search_param.simple_mode?
 
       start_search_job search_param, pseudo_graph_pattern
