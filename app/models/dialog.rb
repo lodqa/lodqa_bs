@@ -17,6 +17,8 @@ class Dialog < ApplicationRecord
           .find_or_create_by user_id:
   end
 
+  # Get the sentences contained in the dialog.
+  # Specify the amount of sentences to be considered context.
   def sentences_in depth
     context.order(:id).last(depth).pluck(:query)
   end
