@@ -16,17 +16,11 @@ class NaturalLanguageSearch
   end
 
   def run
-    query = if @user_id
-              contextualize @user_id, @query
-            else
-              @query
-            end
-
     # Different natural language queries may result in the same pgp
     # even if the natural language queries are different,
     # for example, if the number of whitespace strings in
     # the natural language queries are different.
-    pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern query
+    pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern real_query
     duplicated_pgp = PseudoGraphPattern.equals_in pgp,
                                                   @read_timeout,
                                                   @sparql_limit,
@@ -44,12 +38,20 @@ class NaturalLanguageSearch
                                                      sparql_limit: @sparql_limit,
                                                      answer_limit: @answer_limit,
                                                      private: @private,
-                                                     query:)
+                                                     query: real_query)
 
     start_search_job pseudo_graph_pattern, @callback_url
   end
 
   private
+
+  def real_query
+    @real_query ||= if @user_id
+                      contextualize @user_id, @query
+                    else
+                      @query
+                    end
+  end
 
   def contextualize user_id, query
     dialog = Dialog.with user_id
