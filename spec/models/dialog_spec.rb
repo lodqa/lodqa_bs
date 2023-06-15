@@ -12,14 +12,14 @@ RSpec.describe Dialog do
     end
   end
 
-  describe 'for' do
-    it 'returns the dialog for the specified user' do
+  describe 'with' do
+    it 'returns the dialog with the specified user' do
       dialog = described_class.create(user_id: 1)
-      expect(described_class.for(1)).to eq dialog
+      expect(described_class.with(1)).to eq dialog
     end
 
-    it 'creates a dialog for the specified user if not exists' do
-      expect { described_class.for(1) }.to change(described_class, :count).by 1
+    it 'creates a dialog with the specified user if not exists' do
+      expect { described_class.with(1) }.to change(described_class, :count).by 1
     end
   end
 

@@ -8,7 +8,7 @@ class Dialog < ApplicationRecord
 
   alias context natural_language_expressions
 
-  def self.for user_id
+  def self.with user_id
     # Consider stopwords in the future.
     Dialog.find_or_create_by user_id:
   end

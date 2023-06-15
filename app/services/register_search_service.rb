@@ -18,7 +18,7 @@ module RegisterSearchService
     def detect_duplicate search_param
       if search_param.simple_mode?
         if search_param.user_id
-          dialog = Dialog.for search_param.user_id
+          dialog = Dialog.with search_param.user_id
           dialog.natural_language_expressions.create! query: search_param.query
           cnle = Contextualizer.new(dialog).contextualize
           query = cnle.query
