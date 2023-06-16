@@ -23,7 +23,7 @@ class Dialog < ApplicationRecord
     context.order(:id).last(depth).pluck(:query)
   end
 
-  def stopping?
-    context.last.stop_sentence?
+  def one_sentence?
+    context.length == 1 || context.last.stop_sentence?
   end
 end

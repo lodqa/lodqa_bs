@@ -9,7 +9,7 @@ class Contextualizer
   def contextualize
     # create a prompt from context
     # Call OpenAI API
-    query = if !@dialog.stopping? && ENV.fetch('OPENAI_API_KEY', nil)
+    query = if !@dialog.one_sentence? && ENV.fetch('OPENAI_API_KEY', nil)
               client = OpenAI::Client.new
               response = client.completions(parameters: { model: 'text-davinci-001',
                                                           prompt:,
