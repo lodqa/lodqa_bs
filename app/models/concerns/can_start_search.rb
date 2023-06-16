@@ -21,8 +21,9 @@ module CanStartSearch
   end
 
   def create_search pseudo_graph_pattern
-    Search.create! pseudo_graph_pattern:,
-                   search_id: SecureRandom.uuid,
-                   referred_at: Time.now.utc
+    search = Search.create! pseudo_graph_pattern:,
+                            search_id: SecureRandom.uuid
+    search.be_referred!
+    search
   end
 end
