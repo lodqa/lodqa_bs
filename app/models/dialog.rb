@@ -22,4 +22,8 @@ class Dialog < ApplicationRecord
   def sentences_in depth
     context.order(:id).last(depth).pluck(:query)
   end
+
+  def stopping?
+    context.last.stop_sentence?
+  end
 end

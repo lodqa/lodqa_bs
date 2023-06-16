@@ -7,18 +7,16 @@ class Contextualizer
   end
 
   def contextualize
-    context = @dialog.context
-
     # create a prompt from context
     # Call OpenAI API
-    query = if ENV.fetch('OPENAI_API_KEY', nil)
+    query = if !@dialog.stopping? && ENV.fetch('OPENAI_API_KEY', nil)
               client = OpenAI::Client.new
               response = client.completions(parameters: { model: 'text-davinci-001',
                                                           prompt:,
                                                           temperature: 0 })
               response['choices'].first['text'].strip
             else
-              context.last.query
+              @dialog.context.last.query
             end
 
     @dialog.contextualized_natural_language_expressions.create query:
