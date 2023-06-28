@@ -22,7 +22,7 @@ RSpec.describe 'Searches' do
                  headers: {})
 
     # Stub LODQA Targets API
-    stub_request(:get, 'http://targets.lodqa.org/targets.json')
+    stub_request(:get, 'https://targets.lodqa.org/targets.json')
       .with(
         headers: {
           'Accept' => '*/*',

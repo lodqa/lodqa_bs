@@ -5,7 +5,7 @@ require 'lodqa/source_error'
 
 module Lodqa
   module Sources
-    TARGETS_URL = 'http://targets.lodqa.org/targets'
+    TARGETS_URL = 'https://targets.lodqa.org/targets'
 
     class << self
       def all_datasets
