@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "LODQA",
+  "name_for_model": "LODQA",
+  "description_for_human": "Search linked open data by natural language query.",
+  "description_for_model": "Help the user with searching linked open data.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost:300/openapi.yaml"
+  },
+  "logo_url": "http://localhost:3000/logo.png",
+  "contact_email": "support@example.com",
+  "legal_info_url": "http://www.example.com/legal"
+}
