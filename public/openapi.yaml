@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Chat GPT Plugin API
+paths:
+  /chat_gpt_plugin:
+    post:
+      summary: Search linked data by natural language query
+      operationId: createChatGptPlugin
+      requestBody:
+        description: query to search
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: The query string for search.
+      responses:
+        '200':
+          description: OK!
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "http://lodqa.org/answer?search_id=12345"

@@ -156,6 +156,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.7.1)
     rack (2.2.7)
+    rack-cors (2.0.1)
+      rack (>= 2.0.0)
     rack-test (2.1.0)
       rack (>= 1.3)
     rails (7.0.6)
@@ -279,6 +281,7 @@ DEPENDENCIES
   dotenv-rails
   kaminari
   puma
+  rack-cors
   rails (~> 7.0.5)
   rails_pretty_json_rednerer
   rest-client

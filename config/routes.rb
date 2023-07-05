@@ -13,4 +13,6 @@ Rails.application.routes.draw do
     resources :subscriptions, only: :create
   end
   resource :sparqls_count, only: :show
+
+  post '/chat_gpt_plugin', to: 'chat_gpt_plugin_api#create'
 end
