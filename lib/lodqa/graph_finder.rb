@@ -57,7 +57,11 @@ module Lodqa
       query += 'WHERE {'
 
       # stringify the bgp
-      query += "#{bgp.map { |tp| tp.map { |e| nodes.key?(e.to_sym) ? "<#{nodes[e.to_sym][:term]}>" : '?e' }.join(' ') }.join(' . ')} ."
+      query += "#{bgp.map do |tp|
+        tp.map do |e|
+          nodes.key?(e.to_sym) ? "<#{nodes[e.to_sym][:term]}>" : "?#{e}"
+        end.join(' ')
+      end.join(' . ')} ."
 
       ## constraints on x-variables (including i-variables)
       x_variables = variables.dup.keep_if { |v| (v[0] == 'x') || (v[0] == 'i') }
