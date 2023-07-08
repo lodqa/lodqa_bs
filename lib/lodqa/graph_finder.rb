@@ -54,19 +54,19 @@ module Lodqa
       # initialize the query
       query  = "SELECT #{variables.map { |v| "?#{v}" }.join(' ')}\n"
       query += "FROM <#{@graph_uri}>\n" if @graph_uri.present?
-      query += 'WHERE {'
+      query += "WHERE {\n"
 
       # stringify the bgp
-      query += "#{bgp.map { |tp| tp.map { |e| nodes.key?(e.to_sym) ? "<#{nodes[e.to_sym][:term]}>" : '?e' }.join(' ') }.join(' . ')} ."
+      query += " #{bgp.map { |tp| tp.map { |e| nodes.key?(e.to_sym) ? "<#{nodes[e.to_sym][:term]}>" : '?' + e }.join(' ') }.join(" .\n ")} .\n"
 
       ## constraints on x-variables (including i-variables)
       x_variables = variables.dup.keep_if { |v| (v[0] == 'x') || (v[0] == 'i') }
 
       # x-variables to be bound to IRIs
-      query += " FILTER (#{x_variables.map { |v| "isIRI(?#{v})" }.join(' && ')})" unless x_variables.empty?
+      query += " FILTER (#{x_variables.map { |v| "isIRI(?#{v})" }.join(' && ')})\n" unless x_variables.empty?
 
       # x-variables to be bound to different IRIs
-      x_variables.combination(2) { |c| query += " FILTER (#{"?#{c[0]}"} != #{"?#{c[1]}"})" } if x_variables.length > 1
+      x_variables.combination(2) { |c| query += " FILTER (#{"?#{c[0]}"} != #{"?#{c[1]}"})\n" } if x_variables.length > 1
 
       ## constraintes on p-variables
       p_variables = variables.dup.keep_if { |v| v[0] == 'p' }
@@ -80,16 +80,16 @@ module Lodqa
       # filter out sotral predicates
       ex_predicates += @sortal_predicates
 
-      p_variables.each { |v| query += %| FILTER (str(?#{v}) NOT IN (#{ex_predicates.map { |s| "\"#{s}\"" }.join(', ')}))| } unless ex_predicates.empty?
+      p_variables.each { |v| query += %| FILTER (str(?#{v}) NOT IN (#{ex_predicates.map { |s| "\"#{s}\"" }.join(', ')}))\n| } unless ex_predicates.empty?
 
       ## constraintes on s-variables
       s_variables = variables.dup.keep_if { |v| v[0] == 's' }
 
       # s-variables to be bound to sortal predicates
-      s_variables.each { |v| query += %| FILTER (str(?#{v}) IN (#{@sortal_predicates.map { |s| "\"#{s}\"" }.join(', ')}))| }
+      s_variables.each { |v| query += %| FILTER (str(?#{v}) IN (#{@sortal_predicates.map { |s| "\"#{s}\"" }.join(', ')}))\n| }
 
       # query += "}"
-      query += "} LIMIT #{@answer_limit}"
+      query += "}\nLIMIT #{@answer_limit}"
     end
 
     def generate_split_variations bgps, max_hop = 2
