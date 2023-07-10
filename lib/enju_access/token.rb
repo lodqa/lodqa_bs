@@ -54,7 +54,7 @@ module EnjuAccess
 
       # response is a parsing result in CONLL format.
       response.body.split(/\r?\n/).each_with_index do |t, i| # for each token analysis
-        dat = t.split(/\t/, 7)
+        dat = t.split("\t", 7)
         token = {}
         token[:idx] = i - 1 # use 0-oriented index
         token[:lex] = dat[1].force_encoding('UTF-8')
