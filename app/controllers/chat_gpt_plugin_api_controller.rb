@@ -5,6 +5,8 @@
 # It returns the URL of the search result page.
 class ChatGptPluginApiController < ActionController::API
   def create
-    render plain: 'http://lodqa.org/answer?search_id=12345'
+    query = params.require(:query)
+    search_id = ChatGptSearch.new(query).run
+    render plain: "http://lodqa.org/answer?search_id=#{search_id}"
   end
 end
