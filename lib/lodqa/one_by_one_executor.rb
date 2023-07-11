@@ -19,7 +19,7 @@ module Lodqa
                    pgp,
                    query_id,
                    mappings,
-                   urilinks_url: 'http://urilinks.lodqa.org',
+                   urilinks_url: 'https://urilinks.lodqa.org',
                    read_timeout: 5,
                    sparql_limit: nil,
                    answer_limit: nil,
