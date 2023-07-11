@@ -34,5 +34,15 @@ module Myapp
     config.lodqa_bs = config_for :lodqa_bs
 
     config.eager_load_paths << Rails.root.join('lib')
+
+    # configures CORS for Chat GPT Plugin
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'  # allow all origins
+        resource '/.well-known/ai-plugin.json', headers: :any, methods: :options
+        resource '/openapi.yaml', headers: :any, methods: :options
+        resource '/chat_gpt_plugin', headers: :any, methods: :post
+      end
+    end
   end
 end
