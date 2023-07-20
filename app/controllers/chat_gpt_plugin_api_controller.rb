@@ -7,6 +7,6 @@ class ChatGptPluginApiController < ActionController::API
   def create
     query = params.require(:query)
     search_id = ChatGptSearch.new(query).run
-    render plain: "http://lodqa.org/answer?search_id=#{search_id}"
+    render plain: "#{ENV.fetch('LODQA', 'http://lodqa.org')}/answer?search_id=#{search_id}"
   end
 end
