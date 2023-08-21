@@ -80,8 +80,8 @@ module SparqlClient
       end
     end
 
-    def select *args
-      @cilent.select(*args)
+    def select(*)
+      @cilent.select(*)
     end
   end
 end
