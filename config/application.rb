@@ -33,7 +33,7 @@ module Myapp
 
     config.lodqa_bs = config_for :lodqa_bs
 
-    config.eager_load_paths << Rails.root.join('lib')
+    config.autoload_lib(ignore: nil)
 
     # configures CORS for Chat GPT Plugin
     config.middleware.insert_before 0, Rack::Cors do
