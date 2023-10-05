@@ -176,7 +176,7 @@ module Lodqa
         [false, true].repeated_permutation(iids.keys.length) do |instantiate_scheme|
           # id of the terms to be instantiated
           itids = iids.keys.keep_if.with_index { |_t, i| instantiate_scheme[i] }
-          next unless itids.include?(focus_id.to_sym)
+          next if itids.exclude?(focus_id.to_sym)
 
           if bgps.empty? && !itids.empty?
             ibgp = itids.map { |t| [iids[t], "s#{t}", t] }
