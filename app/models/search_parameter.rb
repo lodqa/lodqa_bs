@@ -23,7 +23,7 @@ class SearchParameter
     self.read_timeout = params[:read_timeout] || 5
     self.sparql_limit = params[:sparql_limit] || 100
     self.answer_limit = params[:answer_limit] || 10
-    self.targets = params[:target] ? params[:target].split(',') : Lodqa::Sources.targets
+    self.targets = parse_target params[:target]
     self.user_id = params[:user_id]
     self.private = params[:cache] == 'no'
     self.callback_url = params[:callback_url]
@@ -37,5 +37,13 @@ class SearchParameter
 
   def convert_param_to_json param
     param.blank? ? nil : JSON.parse(param)
+  end
+
+  def parse_target param
+    if param
+      params.split(',')
+    else
+      Lodqa::Sources.targets
+    end
   end
 end
