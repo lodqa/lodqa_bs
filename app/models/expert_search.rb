@@ -36,10 +36,4 @@ class ExpertSearch
 
     start_search_job pseudo_graph_pattern, @callback_url
   end
-
-  private
-
-  def target
-    @targets.join(', ')
-  end
 end

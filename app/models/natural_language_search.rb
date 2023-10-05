@@ -48,10 +48,6 @@ class NaturalLanguageSearch
     @pgp ||= Lodqa::Graphicator.produce_pseudo_graph_pattern real_query
   end
 
-  def target
-    @targets.join(', ')
-  end
-
   def real_query
     @real_query ||= if @user_id
                       contextualize @user_id, @query

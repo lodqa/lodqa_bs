@@ -26,4 +26,11 @@ module CanStartSearch
     search.be_referred!
     search
   end
+
+  private
+
+  # Return target string for PseudoGraphPattern.
+  def target
+    @targets.join(', ')
+  end
 end
