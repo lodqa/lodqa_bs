@@ -8,8 +8,8 @@ module Lodqa
     TARGETS_URL = 'https://targets.lodqa.org/targets'
 
     class << self
-      def all_datasets
-        get "#{TARGETS_URL}.json"
+      def targets
+        all.pluck(:name)
       end
 
       def dataset_of_target target
@@ -19,6 +19,10 @@ module Lodqa
       end
 
       private
+
+      def all
+        get "#{TARGETS_URL}.json"
+      end
 
       def get url
         RestClient.get url do |response|
