@@ -19,7 +19,7 @@ class PseudoGraphPattern < ApplicationRecord
   scope :alive?, -> { where aborted_at: nil }
 
   class << self
-    def equals_in pgp, read_timeout, sparql_limit, answer_limit, target
+    def equals_in pgp, target, read_timeout = 5, sparql_limit = 100, answer_limit = 10
       PseudoGraphPattern.alive?
                         .where(pgp:)
                         .where(read_timeout:)

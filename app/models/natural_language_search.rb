@@ -21,10 +21,10 @@ class NaturalLanguageSearch
     # for example, if the number of whitespace strings in
     # the natural language queries are different.
     duplicated_pgp = PseudoGraphPattern.equals_in pgp,
+                                                  target,
                                                   @read_timeout,
                                                   @sparql_limit,
-                                                  @answer_limit,
-                                                  target
+                                                  @answer_limit
 
     if duplicated_pgp
       return start_callback_job_with duplicated_pgp.search,

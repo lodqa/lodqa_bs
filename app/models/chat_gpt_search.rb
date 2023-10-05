@@ -16,11 +16,7 @@ class ChatGptSearch
   def run
     pgp = Lodqa::Graphicator.produce_pseudo_graph_pattern @query
 
-    duplicated_pgp = PseudoGraphPattern.equals_in pgp,
-                                                  5,
-                                                  100,
-                                                  10,
-                                                  target
+    duplicated_pgp = PseudoGraphPattern.equals_in pgp, target
     return duplicated_pgp.search.search_id if duplicated_pgp
 
     pseudo_graph_pattern = PseudoGraphPattern.create(pgp:, query: @query, target:)
