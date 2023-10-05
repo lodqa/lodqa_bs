@@ -41,7 +41,7 @@ class SearchParameter
 
   def parse_target param
     if param
-      params.split(',')
+      param.split(',')
     else
       Lodqa::Sources.targets
     end
