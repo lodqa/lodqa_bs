@@ -3,14 +3,14 @@
 # Search by natural language query.
 class NaturalLanguageSearch
   include CanStartSearch
-  def initialize user_id, query, read_timeout, sparql_limit, answer_limit, target, private,
+  def initialize user_id, query, read_timeout, sparql_limit, answer_limit, targets, private,
                  callback_url
     @user_id = user_id
     @query = query
     @read_timeout = read_timeout
     @sparql_limit = sparql_limit
     @answer_limit = answer_limit
-    @target = target
+    @targets = targets
     @private = private
     @callback_url = callback_url
   end
@@ -24,7 +24,7 @@ class NaturalLanguageSearch
                                                   @read_timeout,
                                                   @sparql_limit,
                                                   @answer_limit,
-                                                  @target
+                                                  target
 
     if duplicated_pgp
       return start_callback_job_with duplicated_pgp.search,
@@ -32,7 +32,7 @@ class NaturalLanguageSearch
     end
 
     pseudo_graph_pattern = PseudoGraphPattern.create(pgp:,
-                                                     target: @target,
+                                                     target:,
                                                      read_timeout: @read_timeout,
                                                      sparql_limit: @sparql_limit,
                                                      answer_limit: @answer_limit,
@@ -46,6 +46,10 @@ class NaturalLanguageSearch
 
   def pgp
     @pgp ||= Lodqa::Graphicator.produce_pseudo_graph_pattern real_query
+  end
+
+  def target
+    @targets.join(', ')
   end
 
   def real_query

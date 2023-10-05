@@ -13,7 +13,7 @@ module RegisterSearchService
                                   search_param.read_timeout,
                                   search_param.sparql_limit,
                                   search_param.answer_limit,
-                                  search_param.target,
+                                  search_param.targets,
                                   search_param.private,
                                   search_param.callback_url).run
 
@@ -22,7 +22,7 @@ module RegisterSearchService
                          search_param.read_timeout,
                          search_param.sparql_limit,
                          search_param.answer_limit,
-                         search_param.target,
+                         search_param.targets,
                          search_param.mappings,
                          search_param.private,
                          search_param.callback_url).run
