@@ -8,7 +8,7 @@
 # i.e. what the user wants to get as the answer of the query, e.g., 'genes'
 # in the above example query.
 class PseudoGraphPattern < ApplicationRecord
-  serialize :pgp, JSON
+  serialize :pgp, coder: JSON
 
   has_one :search, dependent: :destroy
   has_many :events, dependent: :destroy

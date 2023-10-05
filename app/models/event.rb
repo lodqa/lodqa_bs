@@ -5,7 +5,7 @@
 class Event < ApplicationRecord
   belongs_to :pseudo_graph_pattern
 
-  serialize :data, JSON
+  serialize :data, coder: JSON
 
   class << self
     def reader_by offset_size, conditions
