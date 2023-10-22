@@ -3,7 +3,7 @@
   "name_for_human": "LODQA",
   "name_for_model": "LODQA",
   "description_for_human": "Search linked open data by natural language query.",
-  "description_for_model": "Help the user with searching linked open data.",
+  "description_for_model": "Plugin for searching linked open data based on user input. Always display results using markdown.",
   "auth": {
     "type": "none"
   },
