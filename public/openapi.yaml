@@ -5,7 +5,7 @@ info:
 paths:
   /chat_gpt_plugin:
     post:
-      summary: Search linked data by natural language query
+      summary: Search linked open data by natural language query. The result has to be rendered as [Result in LODQA](lodqaLink).
       operationId: createChatGptPlugin
       requestBody:
         description: query to search
@@ -22,7 +22,10 @@ paths:
         '200':
           description: OK!
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                example: "http://lodqa.org/answer?search_id=12345"
+                type: object
+                properties:
+                  lodqaLink:
+                    type: string
+                    description: The URL to LODQA.
