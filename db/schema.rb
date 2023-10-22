@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_15_053041) do
+ActiveRecord::Schema[7.1].define(version: 2023_06_15_053041) do
   create_table "contextualized_natural_language_expressions", force: :cascade do |t|
     t.string "query"
     t.integer "dialog_id", null: false
