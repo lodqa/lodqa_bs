@@ -12,10 +12,16 @@ module Term
 
     attr_reader :dictionary
 
-    def initialize dictionary_url
-      raise ArgumentError, 'dictionary_url should be given.' if dictionary_url.blank?
+    def initialize dictionary_url, endpoint_url, name_predicates
+      raise ArgumentError, 'dictionary_url should be given.' if dictionary_url.blank? && endpoint_url.blank?
 
-      @dictionary = RestClient::Resource.new dictionary_url, headers: { content_type: :json, accept: :json }, timeout: 10
+      @dictionary = if dictionary_url
+        RestClient::Resource.new dictionary_url, headers: { content_type: :json, accept: :json }, timeout: 10
+      else
+        nil
+      end
+      @endpoint_url = endpoint_url
+      @name_predicates = name_predicates
     end
 
     def find terms
@@ -23,10 +29,15 @@ module Term
       return {} if terms.empty?
 
       terms = [terms] if terms.instance_of?(String)
-      return nil unless terms.instance_of?(Array)
+      raise "Unexpected terms: #{terms.inspect}" unless terms.instance_of?(Array)
 
-      mappings = _lookup(terms)
+      mappings = if @dictionary
+        _dictionary_lookup(terms)
+      else
+        _endpoint_lookup(endpoint_url, name_predicates)
+      end
 
+      # TODO: partition instead of interpolation
       # interpolation
       mappings.each_key do |k|
         next unless mappings[k].empty?
@@ -35,7 +46,7 @@ module Term
         length = ngram.length
         (1...length).reverse_each do |m|
           subkeys = (0..length - m).collect { |b| ngram[b, m].join(' ') }
-          submappings = _lookup(subkeys).values.flatten.uniq
+          submappings = _dictionary_lookup(subkeys).values.flatten.uniq
           unless submappings.empty?
             mappings[k] = [submappings.last]
             break
@@ -46,7 +57,7 @@ module Term
 
     private
 
-    def _lookup terms
+    def _dictionary_lookup terms
       logger.debug 'Lookup Dictionary',
                    url: @dictionary.url,
                    method: 'POST',
@@ -80,5 +91,21 @@ module Term
       logger.info 'A request to the dictionary was timeout', url: @dictionary.url, requet_body: terms.to_json
       raise FindError, "Term find timeout error to #{@dictionary.url}"
     end
+
+    def class? term
+      yield(false) unless /^http/ =~ term
+
+      @endpoint.query_async(sparql_for(term)) do |err, result|
+        yield([err, result ? !result.empty? : false])
+      end
+    end
+
+    def sparql_for term
+      sparql  = "SELECT ?p\n"
+      sparql += "FROM <#{@graph_uri}>\n" if @graph_uri.present?
+      sparql += "WHERE {?s ?p <#{term}> FILTER (str(?p) IN (#{@sortal_predicates.map { |s| "\"#{s}\"" }.join(', ')}))} LIMIT 1"
+      sparql
+    end
+
   end
 end

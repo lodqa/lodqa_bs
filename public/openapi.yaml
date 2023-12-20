@@ -5,19 +5,20 @@ info:
 paths:
   /chat_gpt_plugin:
     post:
-      summary: Search linked open data by natural language query. The result has to be rendered as [Result in LODQA](lodqaLink).
       operationId: createChatGptPlugin
-      requestBody:
-        description: query to search
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                query:
-                  type: string
-                  description: The query string for search.
+      summary: Search linked open data by natural language query. The result has to be rendered as [Result in LODQA](lodqaLink).
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          required: true
+          description: The query string for search.
+        - in: query
+          name: target
+          schema:
+            type: string
+          description: The name of the SPARQL endpoint to search.
       responses:
         '200':
           description: OK!

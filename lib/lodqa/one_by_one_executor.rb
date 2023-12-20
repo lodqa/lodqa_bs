@@ -73,7 +73,7 @@ module Lodqa
       emit(:pgp, dataset:, pgp:)
 
       # mappings
-      mappings = @mappings.presence || mappings(@target_dataset[:dictionary_url], pgp)
+      mappings = @mappings.presence || mappings(pgp, @target_dataset[:dictionary_url], @target_dataset[:endpoint_url], @target_dataset[:name_predicates])
       emit(:mappings, dataset:, pgp:, mappings:)
 
       parallel = 16
@@ -230,17 +230,20 @@ module Lodqa
            answer: { uri:, label:, urls: urls&.select { |u| u[:forwarding][:url].length < 10_000 }, first_rendering: }
     end
 
-    def mappings dictionary_url, pgp
+    def mappings pgp, dictionary_url, endpoint_url, name_predicates
       keywords = pgp[:nodes].values.pluck(:text).concat(pgp[:edges].pluck(:text))
 
-      begin
-        tf = Term::Finder.new dictionary_url
-        tf.logger = logger
-        tf.find keywords
-      rescue Term::Redirect => e
-        tf = Term::Finder.new e.message
-        tf.logger = logger
-        tf.find keywords
+      if dictionary_url
+        begin
+          tf = Term::Finder.new dictionary_url, endpoint_url, name_predicates
+          tf.logger = logger
+          tf.find keywords
+        rescue Term::Redirect => e
+          tf = Term::Finder.new e.message
+          tf.logger = logger
+          tf.find keywords
+        end
+      else
       end
     end
 

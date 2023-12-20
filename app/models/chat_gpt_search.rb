@@ -4,9 +4,13 @@
 class ChatGptSearch
   include CanStartSearch
 
-  def initialize query
+  def initialize query, target = nil
     @query = query
-    @targets = Lodqa::Sources.targets
+    @targets = if target.nil?
+      Lodqa::Sources.targets
+    else
+      [target]
+    end
   end
 
   # This is simple prototype search.
