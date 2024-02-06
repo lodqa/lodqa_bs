@@ -15,11 +15,7 @@ module Term
     def initialize dictionary_url, endpoint_url, name_predicates
       raise ArgumentError, 'dictionary_url should be given.' if dictionary_url.blank? && endpoint_url.blank?
 
-      @dictionary = if dictionary_url
-        RestClient::Resource.new dictionary_url, headers: { content_type: :json, accept: :json }, timeout: 10
-      else
-        nil
-      end
+      @dictionary = (RestClient::Resource.new dictionary_url, headers: { content_type: :json, accept: :json }, timeout: 10 if dictionary_url)
       @endpoint_url = endpoint_url
       @name_predicates = name_predicates
     end
@@ -32,10 +28,10 @@ module Term
       raise "Unexpected terms: #{terms.inspect}" unless terms.instance_of?(Array)
 
       mappings = if @dictionary
-        _dictionary_lookup(terms)
-      else
-        _endpoint_lookup(endpoint_url, name_predicates)
-      end
+                   _dictionary_lookup(terms)
+                 else
+                   _endpoint_lookup(endpoint_url, name_predicates)
+                 end
 
       # TODO: partition instead of interpolation
       # interpolation
@@ -106,6 +102,5 @@ module Term
       sparql += "WHERE {?s ?p <#{term}> FILTER (str(?p) IN (#{@sortal_predicates.map { |s| "\"#{s}\"" }.join(', ')}))} LIMIT 1"
       sparql
     end
-
   end
 end
